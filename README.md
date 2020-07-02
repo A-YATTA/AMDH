@@ -1,2 +1,2 @@
-# mdha
-Mobile Device Hardening Android
+# AMDH
+Android Mobile Device Hardening 

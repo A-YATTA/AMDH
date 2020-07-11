@@ -1,0 +1,190 @@
+{
+    "dumpsys": [
+        {
+            "name": "lock_settings",
+            "description": "lock settings enabled",
+            "expected": "1"
+        }
+       
+    ],
+    "secure": [
+        {
+            "name": "lock_screen_show_notifications",
+            "description": "show notifications when screen is locked",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "unknown_sources_default_reversed",
+            "description": "restrict non market apps to the current user",
+            "expected": "1",
+            "type": "i"
+        },
+
+        {
+            "name": "autofill_user_data_max_category_count",
+            "description": "relative to autofill service",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "user_full_data_backup_aware",
+            "description": "governs whether the user is eligible for full app-data backup",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "location_mode",
+            "description": "the current location mode of the device.",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "location_providers_allowed",
+            "description": "providers allowed for geolocation",
+            "expected": "",
+            "type": "s"
+        },
+        {
+            "name": "lock_screen_allow_private_notifications",
+            "description": "private notifications allowed when screen is locked",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "speak_password",
+            "description": "speak passwords",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "wake_gesture_enabled",
+            "description": "",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "wake_gesture_enabled",
+            "description": "",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "backup_enabled",
+            "description": "backup enabled",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "user_setup_complete",
+            "description": "user has completed the setup",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "lock_screen_lock_after_timeout",
+            "description": "time to lock screen after screen goes off",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "lockscreen.disabled",
+            "description": "screen lock disabled",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "lock_screen_owner_info_enabled",
+            "description": "enable owner information when screen is locked",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "bluetooth_addr_valid",
+            "description": "bluetooth address valid",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "lockscreen_disabled",
+            "description": "lockscreen disabled ",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "install_non_market_apps",
+            "description": "enable installing apps not from the store",
+            "expected": "0",
+            "type": "i"
+        }
+    ],
+    "global": [ 
+        {
+            "name": "network_avoid_bad_wifi",
+            "description": "Only connect to trusted networks",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "device_provisioned",
+            "description": "Setup completed of the phone",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "bluetooth_on",
+            "description": "Bluetooth is enabled",
+            "expected": "0",
+            "type": "i"
+        },
+
+        {
+            "name": "http_proxy",
+            "description": "Host name and port for global http proxy",
+            "expected": "null",
+            "type": "s"
+        },
+        {
+            "name": "wifi_on",
+            "description": "WiFi is enabled",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "auto_time",
+            "description": "Automatic time synchronisation",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "auto_time_zone",
+            "description": "Automatic time zone synchronisation",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "stay_on_while_plugged_in",
+            "description": "Keep the device on while the device is plugged in",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "wait_for_debugger",
+            "description": "Keep the device on while the device is plugged in",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "development_settings_enabled",
+            "description": "development settings are enabled",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "adb_enabled",
+            "description": "Android Debug Bridge is enabled",
+            "expected": "0",
+            "type": "i"
+        }
+    ]
+}

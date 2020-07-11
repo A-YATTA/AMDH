@@ -46,5 +46,4 @@ optional arguments:
 - Malware detection
 - Add APK client instead of using ADB
 
-## Participate
-If you would like to participate to this open source project you can make a donation [HERE](https://www.paypal.com/donate/?token=KYRjlSileLTT8cS-pPPewYjw_jKlsyji1jlMT5RuxaP8s_b3kopjAkgxb2ksXTZ3rE7y3W&country.x=CH&locale.x=CH).
+

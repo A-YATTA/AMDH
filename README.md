@@ -2,10 +2,10 @@
 An Android Mobile Device Hardening written with python3 
 
 ## Motivations
-AMDH was created to help people automating and listing all applications installed onn there devices and also to protect there privacy in this "big" age of "data"
+AMDH was created to help people automating and listing all applications installed on their devices and also to protect their privacy.
 
 ## Concept 
-Android Mobile Device Hardening is divided on two parts (at this time):
+Android Mobile Device Hardening is divided on two parts (at this time = v1.0):
 - The first part list the installed applications on the device that use one or more [permissions flagged as dangerous by Google](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)
 - The second part based on some CIS (Center of Internet Security) recommandations for checking and hardening settings of Android devices.
 

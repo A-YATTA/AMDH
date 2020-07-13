@@ -116,9 +116,28 @@
             "description": "enable installing apps not from the store",
             "expected": "0",
             "type": "i"
+        },
+        {
+            "name": "user_full_data_backup_aware",
+            "description": "User eligible for full app full app-data backup",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "has_enabled_photos_backup_before",
+            "description": "",
+            "expected": "0",
+            "type": "i"
+
+        },
+        {
+            "name": "lockdown_in_power_menu",
+            "description": "Puts the phone into the state where it can only be unlocked via the user's primary knowledge factor",
+            "expected": "1",
+            "type": "i"
         }
     ],
-    "global": [ 
+    "global": [
         {
             "name": "network_avoid_bad_wifi",
             "description": "Only connect to trusted networks",
@@ -137,7 +156,6 @@
             "expected": "0",
             "type": "i"
         },
-
         {
             "name": "http_proxy",
             "description": "Host name and port for global http proxy",
@@ -172,6 +190,68 @@
             "name": "wait_for_debugger",
             "description": "Keep the device on while the device is plugged in",
             "expected": "0",
+            "type": "i"
+        },
+
+        {
+            "name": "add_users_when_locked",
+            "description": "Add new user when device is locked",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "assisted_gps_enabled",
+            "description": "Add new user when device is locked",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "accessibility_enabled",
+            "description": "Add new user when device is locked",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "google_assistant_button_on",
+            "description": "Google assistant button",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "package_verifier_enable",
+            "description": "Package verifier",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "package_verifier_enable",
+            "description": "Package verifier",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "ble_scan_always_enabled",
+            "description": "Bluetooth scan always enabled",
+            "expected": "0",
+            "type": "i"
+        },
+
+        {
+            "name": "set_install_location",
+            "description": "Let the user pick default install location",
+            "expected": "0",
+            "type": "i"
+        },
+        {
+            "name": "upload_apk_enable",
+            "description": "Enable upload APK to Play Protect",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "package_verifier_user_consent",
+            "description": "ACCEPT PLAY PROTECT USER CONSENT",
+            "expected": "1",
             "type": "i"
         },
         {

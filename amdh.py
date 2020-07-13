@@ -1,13 +1,13 @@
-from adb import ADB
-from out import *
-from settings import Settings
+from core.adb import ADB
+from utils.out import *
+from core.settings import Settings
 from enum import Enum
 import argparse
-from app import App
+from core.app import App
 from argparse import RawTextHelpFormatter
 
 adb_path = "/usr/bin/adb"
-settings_file = "settings.json"
+settings_file = "config/settings.json"
 
 
 def args_parse():
@@ -19,7 +19,7 @@ def args_parse():
     parser.add_argument('-a', '--adb-path', help='Path to ADB binary', default="/usr/bin/adb", dest="adb_path")
     """parser.add_argument('-d', '--device', help='Device id (check "adb list-devices"). If none the script will list ' + \
                                                'current connected devices', dest="device_id", action='store_true')"""
-    parser.add_argument('-t', choices=['e', 'd', '3', 's'], help='Type of application:\n\te : enabled Apps\n\td : ' + \
+    parser.add_argument('-t', choices=['e', 'd', '3', 's'], help='Type of applications:\n\te : enabled Apps\n\td : ' + \
                                                                  'disabled Apps\n\t3 : Third party Apps\n\ts : System Apps',
                         default='3', dest='app_type')
     parser.add_argument('-D', '--dump-apks',

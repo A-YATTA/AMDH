@@ -51,17 +51,15 @@ class ADB:
 
     # if the outputFile exist, it will be overriten
     def dump_apk_from_device(self, package_name, outputFile="base.apk"):
-        try:
-            adb_path_command = ["shell", "pm", "path", str(package_name)]
-            apk_path = (self.adb_exec(adb_path_command)).split("\n")[0].split(":")[1]
+        adbPathCommand = ["shell", "pm", "path", str(package_name)]
+        apkPath = (self.adb_exec(adbPathCommand)).split("\n")[0].split(":")[1]
 
-            adb_pull_command = ["pull", apk_path.strip(), output_file]
-            output_pull_command = self.adb_exec(adb_pull_command)
+        adb_pull_command = ["pull", apkPath.strip(), outputFile]
+        output_pull_command = self.adb_exec(adb_pull_command)
 
-            if "1 file pulled" in output_pull_command:
-                return True
-        except Exception as e:
-            print_error("An error occured while pulling APK :" + package_name)
+        if "1 file pulled" in output_pull_command:
+            return True
+
         return False
 
     def uninstall_app(self, package_name):
@@ -99,11 +97,6 @@ class ADB:
             return re.split(" +", perms_part_tmp)
 
         return []
-
-    # TO-DO
-    def get_flags_dumpsys_package(self, dumpsys_output):
-        # TO-DO
-        return
 
 
     # section can be : secure, global or system 

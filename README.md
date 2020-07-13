@@ -2,12 +2,12 @@
 An Android Mobile Device Hardening written with python3 
 
 ## Motivations
-AMDH was created to help people automating and listing all applications installed onn there devices and also to protect there privacy in this "big" age of "data"
+AMDH was created to help automating and listing all applications installed on their devices and also to protect their privacy in this "big" age of "data"
 
 ## Concept 
 Android Mobile Device Hardening is divided on two parts (at this time):
-- The first part list the installed applications on the device that use one or more [permissions flagged as dangerous by Google](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)
-- The second part based on some CIS (Center of Internet Security) recommandations for checking and hardening settings of Android devices.
+- The first part list the installed applications on the device that use one or more [permissions flagged as dangerous by Android itself](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions) and dump all the APKs
+- The second part is based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure)) 
 
 ## Requirement
 - Python3 
@@ -31,7 +31,7 @@ optional arguments:
   -H                    Harden system settings /!\ Developer Options and ADB will be disabled /!\ 
   -a ADB_PATH, --adb-path ADB_PATH
                         Path to ADB binary
-  -t {e,d,3,s}          Type of application:
+  -t {e,d,3,s}          Type of applications:
                                 e : enabled Apps
                                 d : disabled Apps
                                 3 : Third party Apps
@@ -40,11 +40,16 @@ optional arguments:
                         Dump APKs from device to APKS_DUMP_FOLDER directory
 ```
 
+## Tests & CIS version
+- Tested on Android 8, 9 and 10
+- Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
+- CIS version: 1.3.0 
+
 ## Roadmap
-- Application settings hardening
-- GUI
 - Malware detection
+- Applications settings hardening
+- GUI
 - Add APK client instead of using ADB
 
 ## Participate
-If you would like to participate to this open source project you can make a donation [HERE](https://www.paypal.com/donate/?token=KYRjlSileLTT8cS-pPPewYjw_jKlsyji1jlMT5RuxaP8s_b3kopjAkgxb2ksXTZ3rE7y3W&country.x=CH&locale.x=CH).
+If you would like to participate to this open source project you can make a donation: [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url).

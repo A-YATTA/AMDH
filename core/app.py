@@ -2,7 +2,7 @@ from enum import Enum
 import json
 import re
 import os
-from out import *
+from utils.out import *
 
 
 # Status of the App
@@ -14,7 +14,7 @@ class Status(Enum):
 
 
 perms_combination_file = "perms_combination.json"
-permissions_file = "permissions.json"
+permissions_file = "config/permissions.json"
 
 
 class App:
@@ -52,7 +52,7 @@ class App:
                     dangerous_perms[mapped[0]["permission"]] = mapped[0]["desc"]
 
             except Exception as e:
-                # TO-DO
+
                 continue
         return perms_desc, dangerous_perms
 

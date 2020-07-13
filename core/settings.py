@@ -1,10 +1,7 @@
-from typing import Dict, Any
-
-from out import *
+from utils.out import *
 import json
 
-from collections import defaultdict
-
+settings_file = "config/settings.json"
 
 class Settings:
 
@@ -15,7 +12,7 @@ class Settings:
         self.result_scan = dict()
 
     def check(self):
-        with open('settings.json') as settingsFile:
+        with open(settings_file) as settingsFile:
             settings = json.load(settingsFile)
 
         print_info("++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -70,3 +67,4 @@ class Settings:
 
         else:
             self.result_scan[key] = [value]
+

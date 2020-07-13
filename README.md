@@ -2,21 +2,12 @@
 An Android Mobile Device Hardening written with python3 
 
 ## Motivations
-<<<<<<< HEAD
 AMDH was created to help automating and listing all applications installed on their devices and also to protect their privacy in this "big" age of "data"
 
 ## Concept 
 Android Mobile Device Hardening is divided on two parts (at this time):
 - The first part list the installed applications on the device that use one or more [permissions flagged as dangerous by Android itself](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions) and dump all the APKs
 - The second part is based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure)) 
-=======
-AMDH was created to help people automating and listing all applications installed on their devices and also to protect their privacy.
-
-## Concept 
-Android Mobile Device Hardening is divided on two parts (at this time = v1.0):
-- The first part list the installed applications on the device that use one or more [permissions flagged as dangerous by Google](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)
-- The second part based on some CIS (Center of Internet Security) recommandations for checking and hardening settings of Android devices.
->>>>>>> bcb435feb15a347d014b417f279463eeb27fef75
 
 ## Requirement
 - Python3 
@@ -60,9 +51,7 @@ optional arguments:
 - GUI
 - Add APK client instead of using ADB
 
-<<<<<<< HEAD
+
 ## Participate
 If you would like to participate to this open source project you can make a donation: [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url).
-=======
 
->>>>>>> bcb435feb15a347d014b417f279463eeb27fef75

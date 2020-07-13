@@ -80,17 +80,15 @@ class ADB:
     # output = dumpsys package package_name
     def get_req_perms_dumpsys_package(self, dumpsys_output):
         if "requested permissions" in dumpsys_output:
-            p = re.compile(r'(?<=requested permissions:).+?(?=(User [0-9]+:|install permissions))')
-            perms_part = re.search(p, dumpsys_output.replace("\n", " "))
-            perms_part_tmp = perms_part.group(0).strip().replace(": granted=true", "")
-            return re.split(" +", perms_part_tmp)
-            # return ' '.join(re.search(p,dumpsys_output.replace("\n", "")).group(0).split()).split(" ")
+            granted_perms = re.findall(r"(.*): granted=true", dumpsys_output)
+            return [perm.strip(' ') for perm in granted_perms]#re.split(" +", perms_part_tmp)
+
         return []
 
     def get_install_perms_dumpsys_package(self, dumpsys_output):
-        
+
         if "install permissions" in dumpsys_output:
-            
+
             p = re.compile(r'(?<=install permissions:).+?(?=User [0-9]+:)')
             perms_part = re.search(p, dumpsys_output.replace("\n", " "))
             perms_part_tmp = perms_part.group(0).strip().replace(": granted=true", "")
@@ -117,3 +115,10 @@ class ADB:
         command = ["shell", "content", "insert", "--uri", "content://settings/" + settings_section,
                    "--bind", "name:s:" + key, "--bind value:" + expected_value_type + ":" + expected_value]
         return self.adb_exec(command)
+
+
+    def remove_dpm(self, dpm_receiver):
+        self.adb_exec(["shell", "dpm", "remove-active-admin", dpm_receiver])
+
+    def revoke_perm_pkg(self, package_name, permission):
+        self.adb_exec(["shell", "pm", "revoke", package_name, permission])

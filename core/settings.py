@@ -29,6 +29,7 @@ class Settings:
 
 
 
+
     def loop_settings_check(self, section, settings):
         for a in settings[section]:
             command_result = self.adb.content_query(section, a["name"])
@@ -67,4 +68,5 @@ class Settings:
 
         else:
             self.result_scan[key] = [value]
+
 

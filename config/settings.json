@@ -1,12 +1,4 @@
 {
-    "dumpsys": [
-        {
-            "name": "lock_settings",
-            "description": "lock settings enabled",
-            "expected": "1"
-        }
-       
-    ],
     "secure": [
         {
             "name": "lock_screen_show_notifications",

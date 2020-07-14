@@ -65,5 +65,6 @@ optional arguments:
 - Add APK client instead of using ADB
 
 ## Participate
-If you would like to participate to this open source project you can make a donation: [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url).
+Pull requests are welcome.
+Donation: [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url).
 

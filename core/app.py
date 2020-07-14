@@ -46,24 +46,25 @@ class App:
             perm_desc, self.dangerous_perms = self.check_perms()
             return perm_desc, self.dangerous_perms, self.is_app_device_owner()
 
-        return "No operation selected"
+        return None, None, None
 
     def check_perms(self):
         with open(permissions_file) as json_file:
             permissions = json.load(json_file)
         perms_desc = {}
-        dangerous_perms = {}
+        self.dangerous_perms = {}
         for perm in self.perms_list:
             try:
                 mapped = list(filter(lambda x: x["permission"] == perm, permissions))
                 perms_desc[perm] = {"desc": mapped[0]["desc"], "level": mapped[0]["protection_lvl"]}
                 if any(re.findall(r'dangerous', mapped[0]["protection_lvl"], re.IGNORECASE)):
-                    dangerous_perms[mapped[0]["permission"]] = mapped[0]["desc"]
+                    self.dangerous_perms[mapped[0]["permission"]] = mapped[0]["desc"]
 
             except Exception as e:
+                print(e)
                 continue
 
-        return perms_desc, dangerous_perms
+        return perms_desc, self.dangerous_perms
 
     # check if package_name is device owner
     def is_app_device_owner(self):
@@ -84,7 +85,6 @@ class App:
         for perm in self.dangerous_perms:
             try:
                 self.adb_instance.revoke_perm_pkg(self.package_name, perm)
-                return True
             except Exception as e:
-                return False
-                return
+                continue
+        return True

@@ -166,14 +166,14 @@ def amdh():
         print("")
         if scan:
             if dangerous_perms.items():
-                out.print_warning_header("Package " + package + " have some dangerous permissions: ")
+                out.print_warning_header("Package " + package + " has some dangerous permissions: ")
                 for perm, desc in dangerous_perms.items():
                     out.print_warning("\t " + perm + " : ")
                     out.print_warning("\t\t" + desc)
                 report_apps[package] = {"permissions": perms, "dangerous_perms": dangerous_perms}
 
             else:
-                out.print_info("Package " + package + " have no dangerous permissions")
+                out.print_info("Package " + package + " has no dangerous permissions")
 
             if is_device_owner:
                 message = "/!\ \t" + package + " is device owner\t/!\ "
@@ -187,7 +187,7 @@ def amdh():
                     if removed:
                         out.print_info("Device admin receivers for " + app.package_name + " removed\n")
                     else:
-                        out.print_error("An error occured while removing device admin " + dpm + " .")
+                        out.print_error("An error occured while removing the device admin " + dpm + " .")
 
             # Revoke all Dangerous permissions
             if arguments.R and app.dangerous_perms:
@@ -207,7 +207,8 @@ def amdh():
     else:
         settings_check = Settings(settings_file, adb_instance, out=out)
 
-    settings_check.check()
+    if arguments.s:
+        settings_check.check()
 
 
 if __name__ == "__main__":

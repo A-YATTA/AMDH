@@ -12,7 +12,8 @@ class Status(Enum):
     THIRD_PARTY = '3'
     SYSTEM = 's'
 
-class Action(Enum):
+
+class AppAction(Enum):
     UNINSTALL = 'u'
     DISABLE = 'd'
     NONE = 'n'
@@ -20,8 +21,9 @@ class Action(Enum):
 perms_combination_file = "perms_combination.json"
 permissions_file = "config/permissions.json"
 
+
 class App:
-    def __init__(self, adb_instance, package_name, dump_apk=False, out_dir="apks_dump", perms_list={}):
+    def __init__(self, adb_instance, package_name, scan=True, dump_apk=False, out_dir="apks_dump", perms_list={}):
         self.adb_instance = adb_instance
         self.package_name = package_name
         self.out_dir = out_dir
@@ -29,10 +31,10 @@ class App:
         self.dump_apk = dump_apk
         self.device_policy_out = self.adb_instance.dumpsys(["device_policy"])
         self.dangerous_perms = None
+        self.scan = scan
 
     def check_app(self):
         packages = self.adb_instance.list_installed_packages(Status.THIRD_PARTY.value)
-        print_info(self.package_name)
         if self.dump_apk:
             if not os.path.isdir(self.out_dir):
                 os.mkdir(self.out_dir)
@@ -40,9 +42,11 @@ class App:
             out_file = self.out_dir + "/" + self.package_name + ".apk"
             self.adb_instance.dump_apk_from_device(self.package_name, out_file)
 
-        perm_desc, self.dangerous_perms = self.check_perms()
+        if self.scan:
+            perm_desc, self.dangerous_perms = self.check_perms()
+            return perm_desc, self.dangerous_perms, self.is_app_device_owner()
 
-        return perm_desc, self.dangerous_perms, self.is_app_device_owner()
+        return "No operation selected"
 
     def check_perms(self):
         with open(permissions_file) as json_file:
@@ -70,18 +74,17 @@ class App:
         device_admin_receivers = re.findall(r"(" + self.package_name + ".*):", self.device_policy_out)
         for device_admin_receiver in device_admin_receivers:
             try:
-                print_info("Removing device admin " + device_admin_receiver)
                 self.adb_instance.remove_dpm(device_admin_receiver)
+                return True, device_admin_receiver
             except Exception as e:
-                print_error("An error occured while removing device admin " + device_admin_receiver + " .")
+                return False, device_admin_receiver
 
 
     def revoke_dangerous_perms(self):
         for perm in self.dangerous_perms:
             try:
                 self.adb_instance.revoke_perm_pkg(self.package_name, perm)
+                return True
             except Exception as e:
-                print_error("An error occured while revoking permission " + perm + " to package " + self.package_name)
-
-
-
+                return False
+                return

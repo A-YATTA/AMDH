@@ -58,13 +58,44 @@ optional arguments:
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
 - CIS version: 1.3.0 
 
+## Screenshots:
+**First scan**
+```
+$ python amdh.py -s
+```
+![Applications](screenshots/apps_scan.png "Dangerous permissions")
+
+![Device Owner](screenshots/device_owner_app.png "Device admin application")
+
+![Settings](screenshots/apps_scan.png "Settings")
+
+
+**Hardening settings and applications permissions**
+```
+$ python amdh.py -H -rar -R
+```
+
+![Applications](screenshots/revoke_dangerous_permissions.png "Revole dangerous permissions")
+
+![Settings](screenshots/settings_hardening.png "Settings Hardening")
+
+> Note: ADB was disabled and "Developper Mode" hidden from the settings.
+
+**Scan after Hardening**
+![Applications](screenshots/scan_after_revoking_dangerous_perms.png "Permissions after hardening")
+
+The application com.example.deviceadminsample was device owner before the hardening:
+![Device Owner](screenshots/device_owner_after_hardening.png "Device Owner after hardening")
+
+![Settings](screenshots/device_owner_after_hardening.png "Settings after hardening")
+
 ## Roadmap
 - Malware detection
 - Applications settings hardening
 - GUI
-- Add APK client instead of using ADB
 
 ## Participate
-Pull requests are welcome.
+Ideas and pull requests are welcome. 
+
 Donation: [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url).
 

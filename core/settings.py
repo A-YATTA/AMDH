@@ -66,7 +66,6 @@ class Settings:
     def append_key_to_result_scan_dict(self, key, value):
         if key in self.result_scan:
             self.result_scan[key].append(value)
-
         else:
             self.result_scan[key] = [value]
 

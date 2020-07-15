@@ -33,7 +33,7 @@
         },
         {
             "name": "location_providers_allowed",
-            "description": "providers allowed for geolocation",
+            "description": "providers allowed for location",
             "expected": "",
             "type": "s"
         },
@@ -51,13 +51,7 @@
         },
         {
             "name": "wake_gesture_enabled",
-            "description": "",
-            "expected": "0",
-            "type": "i"
-        },
-        {
-            "name": "wake_gesture_enabled",
-            "description": "",
+            "description": "Wake up device on gesture",
             "expected": "0",
             "type": "i"
         },
@@ -86,6 +80,12 @@
             "type": "i"
         },
         {
+            "name": "lockscreen_disabled",
+            "description": "lockscreen disabled ",
+            "expected": "0",
+            "type": "i"
+        },
+        {
             "name": "lock_screen_owner_info_enabled",
             "description": "enable owner information when screen is locked",
             "expected": "1",
@@ -97,12 +97,7 @@
             "expected": "1",
             "type": "i"
         },
-        {
-            "name": "lockscreen_disabled",
-            "description": "lockscreen disabled ",
-            "expected": "0",
-            "type": "i"
-        },
+
         {
             "name": "install_non_market_apps",
             "description": "enable installing apps not from the store",
@@ -117,7 +112,7 @@
         },
         {
             "name": "has_enabled_photos_backup_before",
-            "description": "",
+            "description": "Photos backup has been enabled",
             "expected": "0",
             "type": "i"
 
@@ -180,7 +175,7 @@
         },
         {
             "name": "wait_for_debugger",
-            "description": "Keep the device on while the device is plugged in",
+            "description": "Is waiting for debugger",
             "expected": "0",
             "type": "i"
         },
@@ -193,13 +188,13 @@
         },
         {
             "name": "assisted_gps_enabled",
-            "description": "Add new user when device is locked",
+            "description": "Assisted GPS enabled",
             "expected": "0",
             "type": "i"
         },
         {
             "name": "accessibility_enabled",
-            "description": "Add new user when device is locked",
+            "description": "Accessibility enabled",
             "expected": "0",
             "type": "i"
         },
@@ -207,12 +202,6 @@
             "name": "google_assistant_button_on",
             "description": "Google assistant button",
             "expected": "0",
-            "type": "i"
-        },
-        {
-            "name": "package_verifier_enable",
-            "description": "Package verifier",
-            "expected": "1",
             "type": "i"
         },
         {

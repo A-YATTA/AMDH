@@ -53,13 +53,44 @@ optional arguments:
   -R                    For each app revoke all dangerous permissions
 ```
 
+## Screenshots
+**Scan**
+```
+python amdh.py -s
+```
+![Scan Applications](screenshots/scan_apps.png (Applications scan))
+
+![Scan Settings](screenshots/scan_settings.png (Settings scan))
+
+**Harden**
+```
+python amdh.py -s -H 
+```
+![Hardening Applications Permissions](screenshots/apps_hardening_permissions.png (Revoking dangerous permissions and removing device admin receiver))
+
+![Hardening Settings](screenshots/settings_hardening.png (Settings Hardening))
+
+**Scan after hardening**
+
+All dangerous permissions have been revoked and admin receivers removed 
+```
+python amdh.py -s 
+```
+![Application Scan](screenshots/scan_apps_after_hardening.png (Applications scan after hardening))
+
+> ADB has been disabled and Developpement settings has disappeared from the settings menu.
+
+![Application Scan](screenshots/scan_settings_after_hardening.png (Applications scan after hardening))
+
 ## Tests & CIS version
 - Tested on Android 8, 9 and 10
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
-- CIS version: 1.3.0 
+- CIS version: 1.3.0
+
 
 ## Roadmap
-- Malware detection
+- Android application
+- Malware detection 
 - Applications settings hardening
 - GUI
 

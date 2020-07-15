@@ -61,7 +61,6 @@ class App:
                     self.dangerous_perms[mapped[0]["permission"]] = mapped[0]["desc"]
 
             except Exception as e:
-                print(e)
                 continue
 
         return perms_desc, self.dangerous_perms

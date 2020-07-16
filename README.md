@@ -70,6 +70,8 @@ python amdh.py -s
 
 ![Scan Settings](screenshots/scan_settings.png (Settings scan))
 
+![Malwares detection](screenshots/malwares_detect.png (Malwares detection))
+
 **Harden**
 ```
 python amdh.py -s -H 

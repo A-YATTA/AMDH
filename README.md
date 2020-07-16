@@ -33,25 +33,28 @@ $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 # Usage
 ```
 $ python amdh.py -h
-usage: amdh.py [-h] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
+usage: amdh.py [-h] [-s] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
 
 Android Mobile Device Hardening
 By default the script will scan the Android system and Apps without any modification
 
 optional arguments:
   -h, --help            show this help message and exit
+  -s                    scan the settings and applications installed
   -H                    Harden system settings /!\ Developer Options and ADB will be disabled /!\ 
   -a ADB_PATH, --adb-path ADB_PATH
                         Path to ADB binary
   -t {e,d,3,s}          Type of applications:
-                                e : enabled Apps
-                                d : disabled Apps
-                                3 : Third party Apps
-                                s : System Apps
+                        	e : enabled Apps
+                        	d : disabled Apps
+                        	3 : Third party Apps
+                        	s : System Apps
   -D APKS_DUMP_FOLDER, --dump-apks APKS_DUMP_FOLDER
                         Dump APKs from device to APKS_DUMP_FOLDER directory
-  -rar                  Remove admin receivers: Remove all admin receivers if the app is not a system App
+  -rar                  remove admin receivers: Remove all admin receivers if the app is not a system App
+                        Scan option is required
   -R                    For each app revoke all dangerous permissions
+                        Scan option is required
 ```
 
 ## Screenshots

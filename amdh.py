@@ -162,9 +162,10 @@ def amdh():
         dumpsys_out = adb_instance.dumpsys(["package", package])
         perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
         app = App(adb_instance, package, scan, dump_apks, apks_dump_folder, perm_list)
-        perms, dangerous_perms, is_device_owner = app.check_app()
+        perms, dangerous_perms, is_device_owner, malware_confidence_detect = app.check_app()
         print("")
         if scan:
+
             if dangerous_perms.items():
                 out.print_warning_header("Package " + package + " has some dangerous permissions: ")
                 for perm, desc in dangerous_perms.items():
@@ -198,6 +199,11 @@ def amdh():
                     out.print_error("An error occured while revoking permission " + perm + " to package " + app.package_name)
             elif arguments.R and not app.dangerous_perms:
                 out.print_info("No dangerous permissions granted for this package\n")
+
+            if malware_confidence_detect > 0:
+                out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
+                out.print_high_warning("The application use some malwares permissions " )
+                out.print_high_warning("------------------------------------------------------------------------")
 
         print("************************************************************************")
         time.sleep(0.5)

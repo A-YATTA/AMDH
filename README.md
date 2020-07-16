@@ -15,6 +15,7 @@ The first part:
 - revoke admins receivers for third party Apps
 - revoke dangerous permissions for all Apps
 - dump APKs of all the Apps except system apps 
+- detect malwares based on permissions 
 
 The second part:
 - check the system settings (executed at every execution)
@@ -86,6 +87,16 @@ python amdh.py -s
 - Tested on Android 8, 9 and 10
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
 - CIS version: 1.3.0
+
+## Malware detection
+MDMA v2.0 include the first version of malware detection. 
+
+It's based on 543 malwares samples uniques permissions that are never used by legitimate application (based on 480 ligitimate applications).
+
+The python notebook will be added in a different repository.
+
+> Note: Most system Apps will be flagged as "Malware" but can be ignored for this version. 
+
 
 
 ## Roadmap

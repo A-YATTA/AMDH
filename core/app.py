@@ -20,6 +20,7 @@ class AppAction(Enum):
 
 perms_combination_file = "perms_combination.json"
 permissions_file = "config/permissions.json"
+malwares_perms = "config/malwares_perms.json"
 
 
 class App:
@@ -32,6 +33,7 @@ class App:
         self.device_policy_out = self.adb_instance.dumpsys(["device_policy"])
         self.dangerous_perms = None
         self.scan = scan
+        self.malware_confidence = 0
 
     def check_app(self):
         packages = self.adb_instance.list_installed_packages(Status.THIRD_PARTY.value)
@@ -43,16 +45,17 @@ class App:
             self.adb_instance.dump_apk_from_device(self.package_name, out_file)
 
         if self.scan:
-            perm_desc, self.dangerous_perms = self.check_perms()
-            return perm_desc, self.dangerous_perms, self.is_app_device_owner()
+            perm_desc, self.dangerous_perms  = self.check_perms()
+            return perm_desc, self.dangerous_perms, self.is_app_device_owner(), self.malware_confidence
 
-        return None, None, None
+        return None, None, None, None
 
     def check_perms(self):
         with open(permissions_file) as json_file:
             permissions = json.load(json_file)
         perms_desc = {}
         self.dangerous_perms = {}
+        self.malware_confidence = self.malware_perms_detect(self.perms_list)
         for perm in self.perms_list:
             try:
                 mapped = list(filter(lambda x: x["permission"] == perm, permissions))
@@ -87,3 +90,20 @@ class App:
             except Exception as e:
                 continue
         return True
+
+
+    def malware_perms_detect(self, perms):
+        score_malware_only = 0
+
+        with open(malwares_perms) as json_file:
+            malware_perms = json.load(json_file)
+
+        if not perms:
+            return 0
+        for perm in perms:
+            for p in malware_perms["malwares_only"]:
+                #curren_app_malware_perms.append(p)
+                if perm.split(".")[-1] == p:
+                    score_malware_only = score_malware_only + 1
+
+        return score_malware_only

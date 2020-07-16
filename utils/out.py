@@ -45,3 +45,9 @@ class Out:
             print(bcolors.OKGREEN + "[+] OK: " + f"{message}" + bcolors.ENDC)
         else:
             print("[+] OK: " + f"{message}")
+
+    def print_high_warning(self, message):
+        if self.platform == "Linux" or self.platform == "Darwin":
+            print(bcolors.FAIL + "[!] WARNING: " + f"{message}" + bcolors.ENDC)
+        else:
+            print("[!] WARNING: " + f"{message}")

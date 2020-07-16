@@ -45,7 +45,7 @@ class App:
             self.adb_instance.dump_apk_from_device(self.package_name, out_file)
 
         if self.scan:
-            perm_desc, self.dangerous_perms  = self.check_perms()
+            perm_desc, self.dangerous_perms = self.check_perms()
             return perm_desc, self.dangerous_perms, self.is_app_device_owner(), self.malware_confidence
 
         return None, None, None, None
@@ -105,5 +105,13 @@ class App:
                 #curren_app_malware_perms.append(p)
                 if perm.split(".")[-1] == p:
                     score_malware_only = score_malware_only + 1
+
+        for nb in malware_perms["combinations"]:
+            for p in malware_perms["combinations"][nb]:
+                #print(p["permissions"])
+
+                if set(p["permissions"]).issubset(set([item.split(".")[-1] for item in perms])):
+                    score_malware_only = score_malware_only + 1
+
 
         return score_malware_only

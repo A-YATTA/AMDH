@@ -1,3 +1,7 @@
+<div align="center">
+<img src="screenshots/AMDH_800x400.png">
+</div>
+
 # AMDH
 An Android Mobile Device Hardening written with python3 
 
@@ -94,7 +98,7 @@ python amdh.py -s
 ## Malware detection
 MDMA v2.0 include the first version of malware detection. 
 
-It's based on 543 malwares samples uniques permissions that are never used by legitimate application (based on 480 ligitimate applications).
+It's based on 543 malwares samples uniques permissions that are never used by legitimate applications (based on 480 ligitimate applications).
 
 The python notebook will be added in a different repository.
 

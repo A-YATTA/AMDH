@@ -202,7 +202,8 @@ def amdh():
 
             if malware_confidence_detect > 0:
                 out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
-                out.print_high_warning("The application use some malwares permissions " )
+                out.print_high_warning("The application uses some malwares permissions ")
+                out.print_high_warning(str(malware_confidence_detect) + " combinations ")
                 out.print_high_warning("------------------------------------------------------------------------")
 
         print("************************************************************************")

@@ -49,7 +49,7 @@ def args_parse(print_help=False):
         sys.exit(1)
 
     if args.H and not (args.sA or args.sS):
-        out.print_error("Option depend on scan -sA or -sS")
+        out.print_error("Option depend on settings Scan '-sS'")
         sys.exit(1)
 
     if print_help:

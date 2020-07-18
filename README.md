@@ -114,7 +114,7 @@ python amdh.py -sS
 - CIS version: 1.3.0
 
 ## Malware detection
-MDMA v2.0 include the first version of malware detection. 
+AMDH v2.0 include the first version of malware detection. 
 
 It's based on 543 malwares samples uniques permissions that are never used by legitimate applications (based on 480 ligitimate applications).
 

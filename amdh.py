@@ -20,7 +20,8 @@ def args_parse(print_help=False):
     parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan ' + \
                                                  'the Android system and Apps without any modification',
                                      formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-s', help='scan the settings and applications installed', action='store_true')
+    parser.add_argument('-sS', help='scan the system settings', action='store_true')
+    parser.add_argument('-sA', help='scan the installed applications', action='store_true')
     parser.add_argument('-H', help='Harden system settings /!\ Developer Options and ADB will be disabled /!\ ',
                         action='store_true')
     parser.add_argument('-a', '--adb-path', help='Path to ADB binary', default='/usr/bin/adb', dest='adb_path')
@@ -43,8 +44,12 @@ def args_parse(print_help=False):
 
     args = parser.parse_args()
 
-    if (args.rar or args.R) and not args.s:
-        out.print_error("Option depend on -s")
+    if (args.rar or args.R) and not args.sA:
+        out.print_error("Option depend on scan application '-sA' ")
+        sys.exit(1)
+
+    if args.H and not (args.sA or args.sS):
+        out.print_error("Option depend on scan -sA or -sS")
         sys.exit(1)
 
     if print_help:
@@ -132,9 +137,13 @@ def amdh():
         apks_dump_folder = arguments.apks_dump_folder
 
     # Related to scan
-    scan = False
-    if arguments.s:
-        scan = True
+    scan_settings = False
+    if arguments.sS:
+        scan_settings = True
+
+    scan_applications = False
+    if arguments.sA:
+        scan_applications = True
 
     # Hardening param
     harden = False
@@ -142,7 +151,7 @@ def amdh():
         harden = True
 
     # Check if one of the operation are chosen
-    if not scan and not dump_apks and not harden:
+    if not scan_settings and not scan_applications and not dump_apks and not harden:
         out.print_error("Please choose an operation")
         args_parse(True)
         exit(1)
@@ -157,64 +166,66 @@ def amdh():
         packages = adb_instance.list_installed_packages(arguments.app_type)
 
     report_apps = {}
-    for package in packages:
-        out.print_info(package)
-        dumpsys_out = adb_instance.dumpsys(["package", package])
-        perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
-        app = App(adb_instance, package, scan, dump_apks, apks_dump_folder, perm_list)
-        perms, dangerous_perms, is_device_owner, malware_confidence_detect = app.check_app()
-        print("")
-        if scan:
+    if scan_applications or dump_apks:
+        for package in packages:
+            out.print_info(package)
+            dumpsys_out = adb_instance.dumpsys(["package", package])
+            perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
+            app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
+            perms, dangerous_perms, is_device_owner, malware_confidence_detect = app.check_app()
+            print("")
+            if scan_applications:
 
-            if dangerous_perms.items():
-                out.print_warning_header("Package " + package + " has some dangerous permissions: ")
-                for perm, desc in dangerous_perms.items():
-                    out.print_warning("\t " + perm + " : ")
-                    out.print_warning("\t\t" + desc)
-                report_apps[package] = {"permissions": perms, "dangerous_perms": dangerous_perms}
+                if dangerous_perms.items():
+                    out.print_warning_header("Package " + package + " has some dangerous permissions: ")
+                    for perm, desc in dangerous_perms.items():
+                        out.print_warning("\t " + perm + " : ")
+                        out.print_warning("\t\t" + desc)
+                    report_apps[package] = {"permissions": perms, "dangerous_perms": dangerous_perms}
 
-            else:
-                out.print_info("Package " + package + " has no dangerous permissions")
-
-            if is_device_owner:
-                message = "/!\ \t" + package + " is device owner\t/!\ "
-                padding = len(message)
-                out.print_warning("-" * padding)
-                out.print_warning(message)
-                out.print_warning("-" * padding)
-
-                if arguments.rar:
-                    removed, dpm = app.remove_device_admin_for_app()
-                    if removed:
-                        out.print_info("Device admin receivers for " + app.package_name + " removed\n")
-                    else:
-                        out.print_error("An error occured while removing the device admin " + dpm + " .")
-
-            # Revoke all Dangerous permissions
-            if arguments.R and app.dangerous_perms:
-                successed = app.revoke_dangerous_perms()
-                if successed:
-                    out.print_info("Dangerous permissions revoked\n")
                 else:
-                    out.print_error("An error occured while revoking permission " + perm + " to package " + app.package_name)
-            elif arguments.R and not app.dangerous_perms:
-                out.print_info("No dangerous permissions granted for this package\n")
+                    out.print_info("Package " + package + " has no dangerous permissions")
 
-            if malware_confidence_detect > 0:
-                out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
-                out.print_high_warning("The application uses some malwares permissions ")
-                out.print_high_warning(str(malware_confidence_detect) + " combinations ")
-                out.print_high_warning("------------------------------------------------------------------------")
+                if is_device_owner:
+                    message = "/!\ \t" + package + " is device owner\t/!\ "
+                    padding = len(message)
+                    out.print_warning("-" * padding)
+                    out.print_warning(message)
+                    out.print_warning("-" * padding)
 
-        print("************************************************************************")
-        time.sleep(0.5)
+                    if arguments.rar:
+                        removed, dpm = app.remove_device_admin_for_app()
+                        if removed:
+                            out.print_info("Device admin receivers for " + app.package_name + " removed\n")
+                        else:
+                            out.print_error("An error occured while removing the device admin " + dpm + " .")
 
-    if arguments.H:
+                # Revoke all Dangerous permissions
+                if arguments.R and app.dangerous_perms:
+                    successed = app.revoke_dangerous_perms()
+                    if successed:
+                        out.print_info("Dangerous permissions revoked\n")
+                    else:
+                        out.print_error(
+                            "An error occured while revoking permission " + perm + " to package " + app.package_name)
+                elif arguments.R and not app.dangerous_perms:
+                    out.print_info("No dangerous permissions granted for this package\n")
+
+                if malware_confidence_detect > 0:
+                    out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
+                    out.print_high_warning("The application uses some malwares permissions ")
+                    out.print_high_warning(str(malware_confidence_detect) + " malwares permissions combinations ")
+                    out.print_high_warning("------------------------------------------------------------------------")
+
+            print("************************************************************************")
+            time.sleep(0.5)
+
+    if harden:
         settings_check = Settings(settings_file, adb_instance, True, out=out)
     else:
         settings_check = Settings(settings_file, adb_instance, out=out)
 
-    if arguments.s:
+    if scan_settings:
         settings_check.check()
 
 

@@ -108,10 +108,8 @@ class App:
 
         for nb in malware_perms["combinations"]:
             for p in malware_perms["combinations"][nb]:
-                #print(p["permissions"])
 
                 if set(p["permissions"]).issubset(set([item.split(".")[-1] for item in perms])):
                     score_malware_only = score_malware_only + 1
-
 
         return score_malware_only

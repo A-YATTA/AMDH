@@ -1,8 +1,10 @@
-<div align="center">
-<img src="screenshots/AMDH_800x400.png">
-</div>
 
 # AMDH
+<div align="center">
+<img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
+</div>
+
+
 An Android Mobile Device Hardening written with python3 
 
 ## Motivations
@@ -35,16 +37,18 @@ $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 ```
 
 # Usage
+> Note: For Windows you have to specify the ADB path or edit the variable "adb_windows_path" in amdh.py
 ```
 $ python amdh.py -h
-usage: amdh.py [-h] [-s] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
+usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
 
 Android Mobile Device Hardening
 By default the script will scan the Android system and Apps without any modification
 
 optional arguments:
   -h, --help            show this help message and exit
-  -s                    scan the settings and applications installed
+  -sS                   scan the system settings
+  -sA                   scan the installed applications
   -H                    Harden system settings /!\ Developer Options and ADB will be disabled /!\ 
   -a ADB_PATH, --adb-path ADB_PATH
                         Path to ADB binary
@@ -61,33 +65,45 @@ optional arguments:
                         Scan option is required
 ```
 
+
+
 ## Screenshots
 **Scan**
 ```
-python amdh.py -s
+python amdh.py -sA
 ```
 ![Scan Applications](screenshots/scan_apps.png (Applications scan))
 
+![Malwares detection](screenshots/malwares_detect.png (Malwares detection))
+
+```
+python amdh.py -sS
+```
 ![Scan Settings](screenshots/scan_settings.png (Settings scan))
 
-![Malwares detection](screenshots/malwares_detect.png (Malwares detection))
 
 **Harden**
 ```
-python amdh.py -s -H 
+python amdh.py -sA -H 
 ```
 ![Hardening Applications Permissions](screenshots/apps_hardening_permissions.png (Revoking dangerous permissions and removing device admin receiver))
-
+```
+python amdh.py -sS -H 
+```
 ![Hardening Settings](screenshots/settings_hardening.png (Settings Hardening))
 
 **Scan after hardening**
 
 All dangerous permissions have been revoked and admin receivers removed 
 ```
-python amdh.py -s 
+python amdh.py -sA
 ```
 ![Application Scan](screenshots/scan_apps_after_hardening.png (Applications scan after hardening))
 
+
+```
+python amdh.py -sS
+```
 > ADB has been disabled and Developpement settings has disappeared from the settings menu.
 
 ![Application Scan](screenshots/scan_settings_after_hardening.png (Applications scan after hardening))
@@ -102,7 +118,7 @@ MDMA v2.0 include the first version of malware detection.
 
 It's based on 543 malwares samples uniques permissions that are never used by legitimate applications (based on 480 ligitimate applications).
 
-The python notebook will be added in a different repository.
+The python notebook will be added in a different repository once completed.
 
 > Note: Most system Apps will be flagged as "Malware" but can be ignored for this version. 
 

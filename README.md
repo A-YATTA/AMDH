@@ -1,9 +1,7 @@
-
 # AMDH
 <div align="center">
 <img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
 </div>
-
 
 An Android Mobile Device Hardening written with python3 
 
@@ -41,6 +39,7 @@ $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 ```
 $ python amdh.py -h
 usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
+               [-l]
 
 Android Mobile Device Hardening
 By default the script will scan the Android system and Apps without any modification
@@ -63,6 +62,7 @@ optional arguments:
                         Scan option is required
   -R                    For each app revoke all dangerous permissions
                         Scan option is required
+  -l                    list numbered applications to disable or uninstall
 ```
 
 
@@ -98,7 +98,7 @@ All dangerous permissions have been revoked and admin receivers removed
 ```
 python amdh.py -sA
 ```
-![Application Scan](screenshots/scan_apps_after_hardening.png (Applications scan after hardening))
+![Applications Scan](screenshots/scan_apps_after_hardening.png (Applications scan after hardening))
 
 
 ```
@@ -106,12 +106,17 @@ python amdh.py -sS
 ```
 > ADB has been disabled and Developpement settings has disappeared from the settings menu.
 
-![Application Scan](screenshots/scan_settings_after_hardening.png (Applications scan after hardening))
+![Applications Scan](screenshots/scan_settings_after_hardening.png (Applications scan after hardening))
 
 ## Tests & CIS version
 - Tested on Android 8, 9 and 10
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
 - CIS version: 1.3.0
+
+```
+python amdh.py -l
+``` 
+![Applications list](screenshots/uninstall_apps.png (Applications list and uninstalling))
 
 ## Malware detection
 MDMA v2.0 include the first version of malware detection. 

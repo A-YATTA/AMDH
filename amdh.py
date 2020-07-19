@@ -31,6 +31,7 @@ def args_parse(print_help=False):
                                                                  'disabled Apps\n\t3 : Third party Apps\n\ts : System '
                                                                  'Apps',
                         default='3', dest='app_type')
+
     parser.add_argument('-D', '--dump-apks', help='Dump APKs from device to APKS_DUMP_FOLDER directory',
                         dest='apks_dump_folder')
     parser.add_argument('-rar',
@@ -42,14 +43,18 @@ def args_parse(print_help=False):
                              'Scan option is required',
                         action='store_true')
 
+    parser.add_argument('-l',
+                        help='list numbered applications to disable or uninstall\n',
+                        action='store_true')
+
     args = parser.parse_args()
 
     if (args.rar or args.R) and not args.sA:
         out.print_error("Option depend on scan application '-sA' ")
         sys.exit(1)
 
-    if args.H and not (args.sA or args.sS):
-        out.print_error("Option depend on settings Scan '-sS'")
+    if args.H and not args.sS:
+        out.print_error("Option depend on scan -sS")
         sys.exit(1)
 
     if print_help:
@@ -87,9 +92,16 @@ def device_choice(adb_instance):
 
         keys = list(devices)
 
-        choice = int(input("Select device in list [ " + ''.join([str(i + 1) + " " for i in range(choice)]) + "]:"))
+        try:
+            choice = int(input("Select device in list [ " + ''.join([str(i + 1) + " " for i in range(choice)]) + "]:"))
+        except Exception as e:
+            out.print_error("Choose a device in the list")
+            choice = 0
+            continue
+
         if choice < 1 or choice > len(devices):
             out.print_error("Choose a device in the list")
+            choice = 0
             continue
 
         chosen_device = str(keys[choice - 1])
@@ -150,8 +162,13 @@ def amdh():
     if arguments.H:
         harden = True
 
+
+    list_apps = False
+    if arguments.l:
+        list_apps = True
+
     # Check if one of the operation are chosen
-    if not scan_settings and not scan_applications and not dump_apks and not harden:
+    if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps:
         out.print_error("Please choose an operation")
         args_parse(True)
         exit(1)
@@ -166,7 +183,7 @@ def amdh():
         packages = adb_instance.list_installed_packages(arguments.app_type)
 
     report_apps = {}
-    if scan_applications or dump_apks:
+    if scan_applications or dump_apks or list_apps:
         for package in packages:
             out.print_info(package)
             dumpsys_out = adb_instance.dumpsys(["package", package])
@@ -217,8 +234,50 @@ def amdh():
                     out.print_high_warning(str(malware_confidence_detect) + " malwares permissions combinations ")
                     out.print_high_warning("------------------------------------------------------------------------")
 
-            print("************************************************************************")
-            time.sleep(0.5)
+                print("************************************************************************")
+                time.sleep(0.5)
+    if list_apps:
+        print("************************************************************************")
+        out.print_info("List of installed packages: ")
+        for package in packages:
+            out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
+        print("")
+        apps_choice = input("Select application(s) (separated by comma ','): ")
+        apps_choice_list = apps_choice.replace(" ", "").split(",")
+
+        if arguments.app_type == 'e':
+            out.print_high_warning("Uninstalling or disabling system Apps can break your system")
+
+        action = ""
+        while True:
+            out.print_info("choose an action")
+            out.print_info("\td: disable selected apps")
+            out.print_info("\tu: uninstall selected apps")
+            print("")
+            action = input("Action: ")
+            action = action.replace(" ","")
+            if action == 'd' or action == 'u':
+                break
+            else:
+                print("action " + action + " this")
+                out.print_error("Invalid action")
+                continue
+
+        for id_app in apps_choice_list:
+
+            if action == 'd':
+                try:
+                    adb_instance.disable_app(packages[int(id_app)-1])
+                    out.print_success(packages[int(id_app) - 1] + " disabled")
+                except Exception as e :
+                    out.print_error("An Error occured while disabling " + packages[int(id_app)-1])
+            elif action == 'u':
+                try:
+                    adb_instance.uninstall_app(packages[int(id_app) - 1])
+                    out.print_success(packages[int(id_app) - 1] + " uninstalled")
+                except Exception as e :
+                    out.print_error("An Error occured while uninstalling " + packages[int(id_app) - 1])
+
 
     if harden:
         settings_check = Settings(settings_file, adb_instance, True, out=out)
@@ -227,6 +286,7 @@ def amdh():
 
     if scan_settings:
         settings_check.check()
+
 
 
 if __name__ == "__main__":

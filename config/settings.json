@@ -80,12 +80,6 @@
             "type": "i"
         },
         {
-            "name": "lockscreen_disabled",
-            "description": "lockscreen disabled ",
-            "expected": "0",
-            "type": "i"
-        },
-        {
             "name": "lock_screen_owner_info_enabled",
             "description": "enable owner information when screen is locked",
             "expected": "1",

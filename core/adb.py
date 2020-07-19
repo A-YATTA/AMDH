@@ -63,7 +63,16 @@ class ADB:
         return False
 
     def uninstall_app(self, package_name):
-        adb_uninstall_command = ["uninstall", package_name]
+        adb_uninstall_command = ["shell", "pm", "uninstall", "--user", "0", package_name]
+        output_uninstall_command = self.adb_exec(adb_uninstall_command)
+
+        if "Success" in output_uninstall_command:
+            return True
+
+        return False
+
+    def disable_app(self, package_name):
+        adb_uninstall_command = ["shell", "pm", "disable", "--user", "0", package_name]
         output_uninstall_command = self.adb_exec(adb_uninstall_command)
 
         if "Success" in output_uninstall_command:

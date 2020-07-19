@@ -34,6 +34,7 @@ class App:
         self.dangerous_perms = None
         self.scan = scan
         self.malware_confidence = 0
+        self.score = 0
 
     def check_app(self):
         packages = self.adb_instance.list_installed_packages(Status.THIRD_PARTY.value)
@@ -46,7 +47,7 @@ class App:
 
         if self.scan:
             perm_desc, self.dangerous_perms = self.check_perms()
-            return perm_desc, self.dangerous_perms, self.is_app_device_owner(), self.malware_confidence
+            return perm_desc, self.dangerous_perms, self.is_app_device_owner()
 
         return None, None, None, None
 
@@ -55,7 +56,7 @@ class App:
             permissions = json.load(json_file)
         perms_desc = {}
         self.dangerous_perms = {}
-        self.malware_confidence = self.malware_perms_detect(self.perms_list)
+        self.malware_perms_detect(self.perms_list)
         for perm in self.perms_list:
             try:
                 mapped = list(filter(lambda x: x["permission"] == perm, permissions))
@@ -93,7 +94,6 @@ class App:
 
 
     def malware_perms_detect(self, perms):
-        score_malware_only = 0
 
         with open(malwares_perms) as json_file:
             malware_perms = json.load(json_file)
@@ -104,12 +104,21 @@ class App:
             for p in malware_perms["malwares_only"]:
                 #curren_app_malware_perms.append(p)
                 if perm.split(".")[-1] == p:
-                    score_malware_only = score_malware_only + 1
+                    self.malware_confidence = self.malware_confidence + 1
 
         for nb in malware_perms["combinations"]:
             for p in malware_perms["combinations"][nb]:
 
                 if set(p["permissions"]).issubset(set([item.split(".")[-1] for item in perms])):
-                    score_malware_only = score_malware_only + 1
+                    self.malware_confidence = self.malware_confidence + 1
 
-        return score_malware_only
+        dict_all_perms = malware_perms["all"]
+        sum_malware = 0
+        sum_benign = 0
+        for perm in perms:
+            current_perm = perm.split(".")[-1]
+            if current_perm in dict_all_perms.keys():
+                sum_malware = sum_malware + dict_all_perms[current_perm]["malware"]
+                sum_benign = sum_benign + dict_all_perms[current_perm]["benign"]
+
+        self.score = sum_benign - sum_malware

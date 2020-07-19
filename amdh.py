@@ -189,7 +189,7 @@ def amdh():
             dumpsys_out = adb_instance.dumpsys(["package", package])
             perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
             app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
-            perms, dangerous_perms, is_device_owner, malware_confidence_detect = app.check_app()
+            perms, dangerous_perms, is_device_owner = app.check_app()
             print("")
             if scan_applications:
 
@@ -228,11 +228,16 @@ def amdh():
                 elif arguments.R and not app.dangerous_perms:
                     out.print_info("No dangerous permissions granted for this package\n")
 
-                if malware_confidence_detect > 0:
+                if app.malware_confidence > 0:
                     out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
                     out.print_high_warning("The application uses some malwares permissions ")
-                    out.print_high_warning(str(malware_confidence_detect) + " malwares permissions combinations ")
-                    out.print_high_warning("------------------------------------------------------------------------")
+                    out.print_high_warning(str(app.malware_confidence) + " malwares permissions combinations ")
+
+
+                if app.score < 0:
+                    out.print_high_warning("The application uses more malwares permissions ")
+
+
 
                 print("************************************************************************")
                 time.sleep(0.5)

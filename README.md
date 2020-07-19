@@ -108,15 +108,19 @@ python amdh.py -sS
 
 ![Applications Scan](screenshots/scan_settings_after_hardening.png (Applications scan after hardening))
 
+**Uninstall/disable apps**
+```
+python amdh.py -l
+``` 
+![Applications list](screenshots/uninstall_apps.png (Applications list and uninstalling))
+
+An error occured for the second app because it's a device admin app. Runing with flag '-rar' solved the problem.
+
 ## Tests & CIS version
 - Tested on Android 8, 9 and 10
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
 - CIS version: 1.3.0
 
-```
-python amdh.py -l
-``` 
-![Applications list](screenshots/uninstall_apps.png (Applications list and uninstalling))
 
 ## Malware detection
 MDMA v2.0 include the first version of malware detection. 

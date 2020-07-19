@@ -235,9 +235,7 @@ def amdh():
 
 
                 if app.score < 0:
-                    out.print_high_warning("The application uses more malwares permissions ")
-
-
+                    out.print_high_warning("The application uses frequent malwares permissions ")
 
                 print("************************************************************************")
                 time.sleep(0.5)

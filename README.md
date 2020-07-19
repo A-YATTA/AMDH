@@ -20,6 +20,7 @@ The first part:
 - revoke dangerous permissions for all Apps
 - dump APKs of all the Apps except system apps 
 - detect malwares based on permissions 
+- uninstall/disable applications (including system apps)
 
 The second part:
 - check the system settings (executed at every execution)
@@ -36,6 +37,8 @@ $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 
 # Usage
 > Note: For Windows you have to specify the ADB path or edit the variable "adb_windows_path" in amdh.py
+
+> Warning: when using -l argument with enabled application '-t e', system apps will be listed. Uninstalling system Apps can break your Android system. The use of 'disable' instead of 'uninstall' is recommanded for system Apps.
 ```
 $ python amdh.py -h
 usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
@@ -64,7 +67,6 @@ optional arguments:
                         Scan option is required
   -l                    list numbered applications to disable or uninstall
 ```
-
 
 
 ## Screenshots
@@ -123,19 +125,15 @@ An error occured for the second app because it's a device admin app. Runing with
 
 
 ## Malware detection
-MDMA v2.0 include the first version of malware detection. 
+MDMA v2.1 include malware detection based on most used permissions and combinations by malwares. 
 
-It's based on 543 malwares samples uniques permissions that are never used by legitimate applications (based on 480 ligitimate applications).
-
-The python notebook will be added in a different repository once completed.
+It's based on more than 500 malwares samples uniques permissions that are never used by legitimate applications (based on more than 400 ligitimate applications).
 
 > Note: Most system Apps will be flagged as "Malware" but can be ignored for this version. 
 
 
-
 ## Roadmap
-- Android application
-- Malware detection 
+- Android application 
 - Applications settings hardening
 - GUI
 

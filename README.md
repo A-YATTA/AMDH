@@ -23,7 +23,7 @@ The first part:
 - uninstall/disable applications (including system apps)
 
 The second part:
-- check the system settings (executed at every execution)
+- check the system settings
 - harden the system settings
 
 ## Requirement
@@ -136,6 +136,7 @@ It's based on more than 500 malwares samples uniques permissions that are never 
 - Android application 
 - Applications settings hardening
 - GUI
+- Static analysis
 
 ## Participate
 Ideas and pull requests are welcome. 

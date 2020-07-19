@@ -256,10 +256,11 @@ def amdh():
             out.print_info("choose an action")
             out.print_info("\td: disable selected apps")
             out.print_info("\tu: uninstall selected apps")
+            out.print_info("\ts: skip")
             print("")
             action = input("Action: ")
             action = action.replace(" ","")
-            if action == 'd' or action == 'u':
+            if action == 'd' or action == 'u' or action == 's':
                 break
             else:
                 print("action " + action + " this")
@@ -280,6 +281,8 @@ def amdh():
                     out.print_success(packages[int(id_app) - 1] + " uninstalled")
                 except Exception as e :
                     out.print_error("An Error occured while uninstalling " + packages[int(id_app) - 1])
+            elif action == 's':
+                break
 
 
     if harden:

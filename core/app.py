@@ -49,7 +49,7 @@ class App:
             perm_desc, self.dangerous_perms = self.check_perms()
             return perm_desc, self.dangerous_perms, self.is_app_device_owner()
 
-        return None, None, None, None
+        return None, None, None
 
     def check_perms(self):
         with open(permissions_file) as json_file:

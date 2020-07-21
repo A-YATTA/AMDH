@@ -137,12 +137,14 @@ Used malwares collections:
 - [https://github.com/sk3ptre/AndroidMalware_2019](https://github.com/sk3ptre/AndroidMalware_2019)
 - [https://github.com/sk3ptre/AndroidMalware_2020](https://github.com/sk3ptre/AndroidMalware_2020)
 
+> Note: the malware scan is a prediction not a 
+
 
 ## Roadmap
 | Feature        | status           | 
 | ------------- |:-------------:| 
 | Static Analysis       | In progress | 
-| Android application       | In progress | 
+| Android application       | In progress ([PObY-A](https://github.com/SecTheTech/PObY-A))| 
 | Applications settings hardening     | -      | 
 | GUI | - |
 

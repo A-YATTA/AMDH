@@ -15,9 +15,11 @@ settings_file = "config/settings.json"
 out = Out("Linux")
 adb_windows_path = "%LOCALAPPDATA%/Android/Sdk/platform-tools/adb"
 
+LIST_APPS_MAX_PRINT = 10
+
 
 def args_parse(print_help=False):
-    parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan ' + \
+    parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan ' 
                                                  'the Android system and Apps without any modification',
                                      formatter_class=RawTextHelpFormatter)
     parser.add_argument('-sS', help='scan the system settings', action='store_true')
@@ -141,7 +143,7 @@ def amdh():
 
     # Related to APKs dump
     dump_apks = False
-    apks_dump_folder = ""
+    apks_dump_folder = "out"
     if arguments.apks_dump_folder:
         dump_apks = True
         apks_dump_folder = arguments.apks_dump_folder
@@ -184,13 +186,16 @@ def amdh():
 
     report_apps = {}
     if scan_applications or dump_apks or list_apps:
+        if arguments.app_type == 'e':
+            out.print_info("Scanning system apps may takes a while ...")
         for package in packages:
-            out.print_info(package)
+            if not list_apps:
+                out.print_info(package)
+
             dumpsys_out = adb_instance.dumpsys(["package", package])
             perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
             app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
             perms, dangerous_perms, is_device_owner = app.check_app()
-            print("")
             if scan_applications:
 
                 if dangerous_perms.items():
@@ -230,8 +235,9 @@ def amdh():
 
                 if app.malware_confidence > 0:
                     out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
-                    out.print_high_warning("The application uses some malwares permissions ")
-                    out.print_high_warning(str(app.malware_confidence) + " malwares permissions combinations ")
+                    out.print_high_warning("The application uses some permissions used also by malwares")
+                    out.print_high_warning(str(app.malware_confidence) + " permissions combinations used also by "
+                                                                         "malwares")
 
                 if app.score < 0:
                     out.print_high_warning("The application uses frequent malwares permissions ")
@@ -241,11 +247,34 @@ def amdh():
     if list_apps:
         print("************************************************************************")
         out.print_info("List of installed packages: ")
+        nbr_listed_apps = 0
+        apps_choice_list = []
         for package in packages:
-            out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
-        print("")
-        apps_choice = input("Select application(s) (separated by comma ','): ")
-        apps_choice_list = apps_choice.replace(" ", "").split(",")
+            if nbr_listed_apps < LIST_APPS_MAX_PRINT:
+                out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
+
+                nbr_listed_apps = nbr_listed_apps + 1
+            else:
+                choice = input("Select application(s) (separated by comma ','), 'c' to continue listing apps and "
+                                    "'A' for actions menu: ")
+                if choice == 'c':
+                    nbr_listed_apps = 0
+                    continue
+
+                elif choice == 'A':
+                    break
+
+                else :
+
+                    choosen_apps = choice.replace(" ", "").split(",")
+                    for c in choosen_apps:
+                        if c.isdigit() and (int(c) > 0 and int(c) < len(packages) + 1):
+                            apps_choice_list = apps_choice_list + [c]
+
+                        else:
+                            out.print_error("option " + c + " does not exist")
+
+
 
         if arguments.app_type == 'e':
             out.print_high_warning("Uninstalling or disabling system Apps can break your system")

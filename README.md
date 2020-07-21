@@ -23,7 +23,7 @@ The first part:
 - uninstall/disable applications (including system apps)
 
 The second part:
-- check the system settings
+- check the system settings 
 - harden the system settings
 
 ## Requirement
@@ -131,12 +131,21 @@ It's based on more than 500 malwares samples uniques permissions that are never 
 
 > Note: Most system Apps will be flagged as "Malware" but can be ignored for this version. 
 
+Used malwares collections:
+- [https://github.com/ashishb/android-malware](https://github.com/ashishb/android-malware)
+- [https://github.com/sk3ptre/AndroidMalware_2018](https://github.com/sk3ptre/AndroidMalware_2018)
+- [https://github.com/sk3ptre/AndroidMalware_2019](https://github.com/sk3ptre/AndroidMalware_2019)
+- [https://github.com/sk3ptre/AndroidMalware_2020](https://github.com/sk3ptre/AndroidMalware_2020)
+
 
 ## Roadmap
-- Android application 
-- Applications settings hardening
-- GUI
-- Static analysis
+| Feature        | status           | 
+| ------------- |:-------------:| 
+| Static Analysis       | In progress | 
+| Android application       | In progress | 
+| Applications settings hardening     | -      | 
+| GUI | - |
+
 
 ## Participate
 Ideas and pull requests are welcome. 

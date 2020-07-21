@@ -2,7 +2,6 @@ from enum import Enum
 import json
 import re
 import os
-from utils.out import *
 
 
 # Status of the App
@@ -13,10 +12,12 @@ class Status(Enum):
     SYSTEM = 's'
 
 
+# Actions
 class AppAction(Enum):
     UNINSTALL = 'u'
     DISABLE = 'd'
     NONE = 'n'
+
 
 perms_combination_file = "perms_combination.json"
 permissions_file = "config/permissions.json"
@@ -57,11 +58,13 @@ class App:
         perms_desc = {}
         self.dangerous_perms = {}
         self.malware_perms_detect(self.perms_list)
+
         for perm in self.perms_list:
             try:
                 mapped = list(filter(lambda x: x["permission"] == perm, permissions))
                 perms_desc[perm] = {"desc": mapped[0]["desc"], "level": mapped[0]["protection_lvl"]}
                 if any(re.findall(r'dangerous', mapped[0]["protection_lvl"], re.IGNORECASE)):
+                    # Permission is flagged as dangerous
                     self.dangerous_perms[mapped[0]["permission"]] = mapped[0]["desc"]
 
             except Exception as e:
@@ -83,7 +86,6 @@ class App:
             except Exception as e:
                 return False, device_admin_receiver
 
-
     def revoke_dangerous_perms(self):
         for perm in self.dangerous_perms:
             try:
@@ -92,20 +94,20 @@ class App:
                 continue
         return True
 
-
     def malware_perms_detect(self, perms):
-
         with open(malwares_perms) as json_file:
             malware_perms = json.load(json_file)
 
         if not perms:
             return 0
+
         for perm in perms:
+            # check malware only permissions
             for p in malware_perms["malwares_only"]:
-                #curren_app_malware_perms.append(p)
                 if perm.split(".")[-1] == p:
                     self.malware_confidence = self.malware_confidence + 1
 
+        # check permissions combinations
         for nb in malware_perms["combinations"]:
             for p in malware_perms["combinations"][nb]:
 

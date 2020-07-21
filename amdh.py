@@ -10,7 +10,7 @@ import time
 import sys
 import os
 
-adb_path = "/usr/bin/adba"
+adb_path = "/usr/bin/adb"
 settings_file = "config/settings.json"
 out = Out("Linux")
 adb_windows_path = "%LOCALAPPDATA%/Android/Sdk/platform-tools/adb"
@@ -25,8 +25,6 @@ def args_parse(print_help=False):
     parser.add_argument('-H', help='Harden system settings /!\ Developer Options and ADB will be disabled /!\ ',
                         action='store_true')
     parser.add_argument('-a', '--adb-path', help='Path to ADB binary', default='/usr/bin/adb', dest='adb_path')
-    """parser.add_argument('-d', '--device', help='Device id (check "adb list-devices"). If none the script will list ' 
-                                               'current connected devices', dest="device_id")"""
     parser.add_argument('-t', choices=['e', 'd', '3', 's'], help='Type of applications:\n\te : enabled Apps\n\td : '
                                                                  'disabled Apps\n\t3 : Third party Apps\n\ts : System '
                                                                  'Apps',
@@ -36,11 +34,11 @@ def args_parse(print_help=False):
                         dest='apks_dump_folder')
     parser.add_argument('-rar',
                         help='remove admin receivers: Remove all admin receivers if the app is not a system App\n'
-                             'Scan option is required',
+                             'Scan application option "-sA" is required',
                         action='store_true')
     parser.add_argument('-R',
                         help='For each app revoke all dangerous permissions\n'
-                             'Scan option is required',
+                             'Scan application option "-sA" is required',
                         action='store_true')
 
     parser.add_argument('-l',
@@ -149,10 +147,12 @@ def amdh():
         apks_dump_folder = arguments.apks_dump_folder
 
     # Related to scan
+    #   scan settings
     scan_settings = False
     if arguments.sS:
         scan_settings = True
 
+    #   scan applications
     scan_applications = False
     if arguments.sA:
         scan_applications = True
@@ -162,7 +162,7 @@ def amdh():
     if arguments.H:
         harden = True
 
-
+    # list applications param
     list_apps = False
     if arguments.l:
         list_apps = True
@@ -219,8 +219,8 @@ def amdh():
 
                 # Revoke all Dangerous permissions
                 if arguments.R and app.dangerous_perms:
-                    successed = app.revoke_dangerous_perms()
-                    if successed:
+                    succeeded = app.revoke_dangerous_perms()
+                    if succeeded:
                         out.print_info("Dangerous permissions revoked\n")
                     else:
                         out.print_error(
@@ -232,7 +232,6 @@ def amdh():
                     out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
                     out.print_high_warning("The application uses some malwares permissions ")
                     out.print_high_warning(str(app.malware_confidence) + " malwares permissions combinations ")
-
 
                 if app.score < 0:
                     out.print_high_warning("The application uses frequent malwares permissions ")
@@ -259,7 +258,7 @@ def amdh():
             out.print_info("\ts: skip")
             print("")
             action = input("Action: ")
-            action = action.replace(" ","")
+            action = action.replace(" ", "")
             if action == 'd' or action == 'u' or action == 's':
                 break
             else:
@@ -271,19 +270,18 @@ def amdh():
 
             if action == 'd':
                 try:
-                    adb_instance.disable_app(packages[int(id_app)-1])
+                    adb_instance.disable_app(packages[int(id_app) - 1])
                     out.print_success(packages[int(id_app) - 1] + " disabled")
-                except Exception as e :
-                    out.print_error("An Error occured while disabling " + packages[int(id_app)-1])
+                except Exception as e:
+                    out.print_error("An Error occured while disabling " + packages[int(id_app) - 1])
             elif action == 'u':
                 try:
                     adb_instance.uninstall_app(packages[int(id_app) - 1])
                     out.print_success(packages[int(id_app) - 1] + " uninstalled")
-                except Exception as e :
+                except Exception as e:
                     out.print_error("An Error occured while uninstalling " + packages[int(id_app) - 1])
             elif action == 's':
                 break
-
 
     if harden:
         settings_check = Settings(settings_file, adb_instance, True, out=out)
@@ -292,7 +290,6 @@ def amdh():
 
     if scan_settings:
         settings_check.check()
-
 
 
 if __name__ == "__main__":

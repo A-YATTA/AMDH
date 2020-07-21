@@ -250,29 +250,36 @@ def amdh():
         nbr_listed_apps = 0
         apps_choice_list = []
         for package in packages:
-            if nbr_listed_apps < LIST_APPS_MAX_PRINT:
+            if nbr_listed_apps < LIST_APPS_MAX_PRINT and packages.index(package) < (len(packages) - 1):
                 out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
-
                 nbr_listed_apps = nbr_listed_apps + 1
             else:
-                choice = input("Select application(s) (separated by comma ','), 'c' to continue listing apps and "
-                                    "'A' for actions menu: ")
-                if choice == 'c':
-                    nbr_listed_apps = 0
-                    continue
+                choice = ''
+                if packages.index(package) == (len(packages) - 1):
+                    out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
+                while True:
+                    choice = input("Select application(s) (separated by comma ','), 'c' to continue listing apps and "
+                                        "'A' for actions menu: ")
+                    if choice == 'c':
+                        out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
+                        nbr_listed_apps = 1
+                        break
 
-                elif choice == 'A':
-                    break
+                    if choice == 'A':
+                        break
 
-                else :
+                    else :
 
-                    choosen_apps = choice.replace(" ", "").split(",")
-                    for c in choosen_apps:
-                        if c.isdigit() and (int(c) > 0 and int(c) < len(packages) + 1):
-                            apps_choice_list = apps_choice_list + [c]
+                        choosen_apps = choice.replace(" ", "").split(",")
+                        for c in choosen_apps:
+                            if c.isdigit() and (int(c) > 0 and int(c) < len(packages) + 1):
+                                apps_choice_list = apps_choice_list + [c]
 
-                        else:
-                            out.print_error("option " + c + " does not exist")
+                            else:
+                                out.print_error("option " + c + " does not exist")
+
+                    if choice == 'A':
+                        break
 
 
 

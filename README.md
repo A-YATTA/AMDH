@@ -137,7 +137,7 @@ Used malwares collections:
 - [https://github.com/sk3ptre/AndroidMalware_2019](https://github.com/sk3ptre/AndroidMalware_2019)
 - [https://github.com/sk3ptre/AndroidMalware_2020](https://github.com/sk3ptre/AndroidMalware_2020)
 
-> Note: the malware scan is a prediction not a 
+> Note: The malware scan is probabilistic, not deterministic.
 
 
 ## Roadmap

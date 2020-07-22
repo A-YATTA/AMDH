@@ -269,7 +269,6 @@ def amdh():
                         break
 
                     else :
-
                         choosen_apps = choice.replace(" ", "").split(",")
                         for c in choosen_apps:
                             if c.isdigit() and (int(c) > 0 and int(c) < len(packages) + 1):
@@ -278,8 +277,8 @@ def amdh():
                             else:
                                 out.print_error("option " + c + " does not exist")
 
-                    if choice == 'A':
-                        break
+                if choice == 'A':
+                    break
 
 
 

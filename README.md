@@ -143,10 +143,11 @@ Used malwares collections:
 ## Roadmap
 | Feature        | status           | 
 | ------------- |:-------------:| 
-| Static Analysis       | Waiting | 
+| UI | Version 1.0 ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
+| Static Analysis       | In Progress | 
 | Android application       | Waiting ([PObY-A](https://github.com/SecTheTech/PObY-A))| 
 | Applications settings hardening     | -      | 
-| UI | In progress ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
+
 
 
 ## Participate

@@ -5,6 +5,9 @@ import os
 
 
 # Status of the App
+from core.androhelper import AndroHelper
+
+
 class Status(Enum):
     ENABLED = 'e'
     DISABLED = 'd'
@@ -124,3 +127,16 @@ class App:
                 sum_benign = sum_benign + dict_all_perms[current_perm]["benign"]
 
         self.score = sum_benign - sum_malware
+
+
+    def check_packed_apks(self):
+        if self.dump_apk:
+            if not os.path.isdir(self.out_dir):
+                os.mkdir(self.out_dir)
+
+            out_file = self.out_dir + "/" + self.package_name + ".apk"
+            self.adb_instance.dump_apk_from_device(self.package_name, out_file)
+            androhelper = AndroHelper(out_file)
+            return androhelper.check_files()
+
+

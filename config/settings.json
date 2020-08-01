@@ -91,7 +91,6 @@
             "expected": "1",
             "type": "i"
         },
-
         {
             "name": "install_non_market_apps",
             "description": "enable installing apps not from the store",
@@ -116,6 +115,18 @@
             "description": "Puts the phone into the state where it can only be unlocked via the user's primary knowledge factor",
             "expected": "1",
             "type": "i"
+        },
+        {
+            "name": "assistant",
+            "description": "Google assistance",
+            "expected": "",
+            "type": "s"
+        },
+        {
+            "name": "voice_interaction_service",
+            "description": "Voice interaction assistance",
+            "expected": "",
+            "type": "s"
         }
     ],
     "global": [
@@ -241,5 +252,6 @@
             "expected": "0",
             "type": "i"
         }
+
     ]
 }

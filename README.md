@@ -125,7 +125,7 @@ An error occured for the second app because it's a device admin app. Runing with
 
 
 ## Malware detection
-MDMA v2.1 include malware detection based on most used permissions and combinations by malwares. 
+AMDH v2.1 include malware detection based on most used permissions and combinations by malwares. 
 
 It's based on more than 500 malwares samples uniques permissions that are never used by legitimate applications (based on more than 400 ligitimate applications).
 
@@ -137,15 +137,16 @@ Used malwares collections:
 - [https://github.com/sk3ptre/AndroidMalware_2019](https://github.com/sk3ptre/AndroidMalware_2019)
 - [https://github.com/sk3ptre/AndroidMalware_2020](https://github.com/sk3ptre/AndroidMalware_2020)
 
-> Note: the malware scan is probabilistic, not deterministic.
 
+## Static Analysis
+- find and dump packed APKs
 
 ## Roadmap
 | Feature        | status           | 
 | ------------- |:-------------:| 
 | UI | Version 1.0 ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
 | Static Analysis       | In Progress | 
-| Android application       | Waiting ([PObY-A](https://github.com/SecTheTech/PObY-A))| 
+| Android application       | Waiting | 
 | Applications settings hardening     | -      | 
 
 

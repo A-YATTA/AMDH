@@ -19,7 +19,7 @@ LIST_APPS_MAX_PRINT = 10
 
 
 def args_parse(print_help=False):
-    parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan ' 
+    parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan '
                                                  'the Android system and Apps without any modification',
                                      formatter_class=RawTextHelpFormatter)
     parser.add_argument('-sS', help='scan the system settings', action='store_true')
@@ -74,7 +74,6 @@ class Status(Enum):
 
 def device_choice(adb_instance):
     choice = 0
-    keys = list()
     while True:
         out.print_info("List of devices:")
         devices = adb_instance.list_devices()
@@ -259,19 +258,18 @@ def amdh():
                     out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
                 while True:
                     choice = input("Select application(s) (separated by comma ','), 'c' to continue listing apps and "
-                                        "'A' for actions menu: ")
+                                   "'A' for actions menu: ")
                     if choice == 'c':
-                        out.print_info("\t[" + str(packages.index(package) + 1) + "] " + package)
                         nbr_listed_apps = 1
                         break
 
                     if choice == 'A':
                         break
 
-                    else :
+                    else:
                         choosen_apps = choice.replace(" ", "").split(",")
                         for c in choosen_apps:
-                            if c.isdigit() and (int(c) > 0 and int(c) < len(packages) + 1):
+                            if c.isdigit() and (0 < int(c) < len(packages) + 1):
                                 apps_choice_list = apps_choice_list + [c]
 
                             else:
@@ -279,8 +277,6 @@ def amdh():
 
                 if choice == 'A':
                     break
-
-
 
         if arguments.app_type == 'e':
             out.print_high_warning("Uninstalling or disabling system Apps can break your system")
@@ -290,11 +286,12 @@ def amdh():
             out.print_info("choose an action")
             out.print_info("\td: disable selected apps")
             out.print_info("\tu: uninstall selected apps")
+            out.print_info("\tS: static analysis")
             out.print_info("\ts: skip")
             print("")
             action = input("Action: ")
             action = action.replace(" ", "")
-            if action == 'd' or action == 'u' or action == 's':
+            if action == 'd' or action == 'u' or action == 's' or action == 'S':
                 break
             else:
                 print("action " + action + " this")
@@ -302,19 +299,30 @@ def amdh():
                 continue
 
         for id_app in apps_choice_list:
-
             if action == 'd':
                 try:
                     adb_instance.disable_app(packages[int(id_app) - 1])
                     out.print_success(packages[int(id_app) - 1] + " disabled")
                 except Exception as e:
-                    out.print_error("An Error occured while disabling " + packages[int(id_app) - 1])
+                    out.print_error("An Error occurred while disabling " + packages[int(id_app) - 1])
             elif action == 'u':
                 try:
                     adb_instance.uninstall_app(packages[int(id_app) - 1])
                     out.print_success(packages[int(id_app) - 1] + " uninstalled")
                 except Exception as e:
-                    out.print_error("An Error occured while uninstalling " + packages[int(id_app) - 1])
+                    out.print_error("An Error occurred while uninstalling " + packages[int(id_app) - 1])
+            elif action == "S":
+                try:
+                    app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True)
+                    out.print_info("Package {}".format(packages[int(id_app) - 1]))
+                    file, perms_desc, dangerous_perms = app.check_packed_apks()
+                    if file and perms_desc:
+                        out.print_error("The package {} has another apk inside".format(packages[int(id_app) - 1]))
+                        for key in dangerous_perms.keys():
+                            out.print_error("\tDangerous Permission: " + key)
+
+                except Exception as e:
+                    out.print_warning("An Error occurred while analysing " + packages[int(id_app) - 1])
             elif action == 's':
                 break
 

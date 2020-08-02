@@ -21,6 +21,8 @@ The first part:
 - dump APKs of all the Apps except system apps 
 - detect malwares based on permissions 
 - uninstall/disable applications (including system apps)
+- extract packed APKs 
+- detect known malwares packages
 
 The second part:
 - check the system settings 

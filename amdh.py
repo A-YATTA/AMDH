@@ -194,7 +194,9 @@ def amdh():
             dumpsys_out = adb_instance.dumpsys(["package", package])
             perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
             app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
-            perms, dangerous_perms, is_device_owner = app.check_app()
+            perms, dangerous_perms, is_device_owner, known_malware = app.check_app()
+            if known_malware:
+                out.print_error("{} is known as malware".format(package))
             if scan_applications:
 
                 if dangerous_perms.items():
@@ -315,11 +317,13 @@ def amdh():
                 try:
                     app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True)
                     out.print_info("Package {}".format(packages[int(id_app) - 1]))
-                    file, perms_desc, dangerous_perms = app.check_packed_apks()
-                    if file and perms_desc:
+                    package_info = app.check_packed_apks()
+                    if package_info and package_info[packages[int(id_app) - 1]].keys() :
                         out.print_error("The package {} has another apk inside".format(packages[int(id_app) - 1]))
-                        for key in dangerous_perms.keys():
-                            out.print_error("\tDangerous Permission: " + key)
+
+                        for file in package_info[packages[int(id_app) - 1]]:
+                            for perm in package_info[packages[int(id_app) - 1]][file]:
+                                out.print_error("\tDangerous Permission: " + perm)
 
                 except Exception as e:
                     out.print_warning("An Error occurred while analysing " + packages[int(id_app) - 1])

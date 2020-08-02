@@ -25,6 +25,7 @@ class AppAction(Enum):
 perms_combination_file = "perms_combination.json"
 permissions_file = "config/permissions.json"
 malwares_perms = "config/malwares_perms.json"
+malwares_packages_file = "config/malwares_packages.json"
 
 
 class App:
@@ -51,9 +52,9 @@ class App:
 
         if self.scan:
             perm_desc, self.dangerous_perms = self.check_perms()
-            return perm_desc, self.dangerous_perms, self.is_app_device_owner()
+            return perm_desc, self.dangerous_perms, self.is_app_device_owner(), self.known_malware()
 
-        return None, None, None
+        return None, None, None, self.known_malware()
 
     def check_perms(self):
         with open(permissions_file) as json_file:
@@ -136,7 +137,17 @@ class App:
 
             out_file = self.out_dir + "/" + self.package_name + ".apk"
             self.adb_instance.dump_apk_from_device(self.package_name, out_file)
-            androhelper = AndroHelper(out_file)
+            # output directory for embedded files: "outdir" + "package_name"
+            androhelper = AndroHelper(out_file, self.out_dir + self.package_name)
             return androhelper.check_files()
+
+    def known_malware(self):
+        with open(malwares_packages_file) as json_file:
+            malware_packages = json.load(json_file)
+
+        if self.package_name in malware_packages["packages"]:
+            return True
+
+        return False
 
 

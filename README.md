@@ -22,7 +22,7 @@ The first part:
 - detect malwares based on permissions 
 - uninstall/disable applications (including system apps)
 - extract packed APKs 
-- detect known malwares packages
+- detect known malwares packages and static analysis
 
 The second part:
 - check the system settings 
@@ -31,9 +31,11 @@ The second part:
 ## Requirement
 - Python3 
 - Android Debug Bridge (ADB) installed
+- androguard
 
 ## Installation 
 ```
+$ pip install androguard
 $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 ```
 
@@ -76,8 +78,6 @@ optional arguments:
 ```
 python amdh.py -sA
 ```
-![Scan Applications](screenshots/scan_apps.png (Applications scan))
-
 ![Malwares detection](screenshots/malwares_detect.png (Malwares detection))
 
 ```
@@ -120,6 +120,7 @@ python amdh.py -l
 
 An error occured for the second app because it's a device admin app. Runing with flag '-rar' solved the problem.
 
+
 ## Tests & CIS version
 - Tested on Android 8, 9 and 10
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
@@ -141,7 +142,12 @@ Used malwares collections:
 
 
 ## Static Analysis
+
 - find and dump packed APKs
+- Current Malwares detection:
+  - ActionSpy
+
+![Static Analyis](screenshots/Static_analysis.png (Embedded APK))
 
 ## Roadmap
 | Feature        | status           | 
@@ -149,7 +155,6 @@ Used malwares collections:
 | UI | Version 1.0 ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
 | Static Analysis       | In Progress | 
 | Android application       | Waiting | 
-| Applications settings hardening     | -      | 
 
 
 

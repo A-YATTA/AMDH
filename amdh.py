@@ -15,7 +15,7 @@ settings_file = "config/settings.json"
 out = Out("Linux")
 adb_windows_path = "%LOCALAPPDATA%/Android/Sdk/platform-tools/adb"
 
-LIST_APPS_MAX_PRINT = 10
+LIST_APPS_MAX_PRINT = 15
 
 
 def args_parse(print_help=False):
@@ -199,7 +199,7 @@ def amdh():
                 out.print_error("{} is known as malware".format(package))
             if scan_applications:
 
-                if dangerous_perms.items():
+                if dangerous_perms != None and dangerous_perms.items():
                     out.print_warning_header("Package " + package + " has some dangerous permissions: ")
                     for perm, desc in dangerous_perms.items():
                         out.print_warning("\t " + perm + " : ")
@@ -291,8 +291,10 @@ def amdh():
             out.print_info("\tS: static analysis")
             out.print_info("\ts: skip")
             print("")
+
             action = input("Action: ")
             action = action.replace(" ", "")
+
             if action == 'd' or action == 'u' or action == 's' or action == 'S':
                 break
             else:
@@ -307,26 +309,31 @@ def amdh():
                     out.print_success(packages[int(id_app) - 1] + " disabled")
                 except Exception as e:
                     out.print_error("An Error occurred while disabling " + packages[int(id_app) - 1])
+
             elif action == 'u':
                 try:
                     adb_instance.uninstall_app(packages[int(id_app) - 1])
                     out.print_success(packages[int(id_app) - 1] + " uninstalled")
                 except Exception as e:
                     out.print_error("An Error occurred while uninstalling " + packages[int(id_app) - 1])
+
             elif action == "S":
-                try:
-                    app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True)
-                    out.print_info("Package {}".format(packages[int(id_app) - 1]))
-                    package_info = app.check_packed_apks()
-                    if package_info and package_info[packages[int(id_app) - 1]].keys() :
-                        out.print_error("The package {} has another apk inside".format(packages[int(id_app) - 1]))
+                #try:
+                app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True, out_dir=apks_dump_folder)
+                out.print_info("Package {}".format(packages[int(id_app) - 1]))
+                package_info = app.static_analysis()
+                out.print_info("\tMalware identification")
+                for key, value in package_info["detected_malwares"].items():
+                    out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
 
-                        for file in package_info[packages[int(id_app) - 1]]:
-                            for perm in package_info[packages[int(id_app) - 1]][file]:
-                                out.print_error("\tDangerous Permission: " + perm)
+                out.print_info("\tPacked files")
+                if package_info and package_info["packed_file"][packages[int(id_app) - 1]].keys() :
+                    out.print_error("The package {} has another Application (APK) inside".format(packages[int(id_app) - 1]))
 
-                except Exception as e:
-                    out.print_warning("An Error occurred while analysing " + packages[int(id_app) - 1])
+                    for file in package_info["packed_file"][packages[int(id_app) - 1]]:
+                        for perm in package_info["packed_file"][packages[int(id_app) - 1]][file]:
+                            out.print_error("\tDangerous Permission: " + perm)
+
             elif action == 's':
                 break
 

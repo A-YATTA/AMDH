@@ -32,10 +32,11 @@ The second part:
 - Python3 
 - Android Debug Bridge (ADB) installed
 - androguard
+- pwntools
 
 ## Installation 
 ```
-$ pip install androguard
+$ pip install androguard pwntools
 $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 ```
 

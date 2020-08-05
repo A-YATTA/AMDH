@@ -46,9 +46,11 @@ class App:
         if self.dump_apk:
             if not os.path.isdir(self.out_dir):
                 os.mkdir(self.out_dir)
-
-            out_file = self.out_dir + "/" + self.package_name + ".apk"
-            self.adb_instance.dump_apk_from_device(self.package_name, out_file)
+            try:
+                out_file = self.out_dir + "/" + self.package_name + ".apk"
+                self.adb_instance.dump_apk_from_device(self.package_name, out_file)
+            except Exception as e:
+                return None, None, None, None
 
         if self.scan:
             perm_desc, self.dangerous_perms = self.check_perms()
@@ -130,16 +132,16 @@ class App:
         self.score = sum_benign - sum_malware
 
 
-    def check_packed_apks(self):
+    def static_analysis(self):
         if self.dump_apk:
             if not os.path.isdir(self.out_dir):
                 os.mkdir(self.out_dir)
 
             out_file = self.out_dir + "/" + self.package_name + ".apk"
             self.adb_instance.dump_apk_from_device(self.package_name, out_file)
-            # output directory for embedded files: "outdir" + "package_name"
-            androhelper = AndroHelper(out_file, self.out_dir + self.package_name)
-            return androhelper.check_files()
+            # output directory for embedded files: "outdir/package_name"
+            androhelper = AndroHelper(out_file, self.out_dir + "/" + self.package_name)
+            return androhelper.analyse()
 
     def known_malware(self):
         with open(malwares_packages_file) as json_file:

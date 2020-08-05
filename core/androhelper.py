@@ -2,6 +2,7 @@ from androguard.misc import AnalyzeAPK
 import re
 import json
 import os
+from core.malwares.actionSpy import ActionSpy
 
 permissions_file = "config/permissions.json"
 
@@ -10,6 +11,9 @@ permissions_file = "config/permissions.json"
 def check_header(header):
     if header == "504b0304":
         return "JAR"
+
+    if header == "7f454c46":
+        return "ELF"
 
     return "UNKNOWN"
 
@@ -24,11 +28,18 @@ class AndroHelper:
         # output directory
 
         self.output_dir = output_dir + "/"
+        self.packed_files = dict()
 
         self.a, self.d, self.dx = AnalyzeAPK(self.apk_path)
 
-    def check_files(self):
-        packed_files = dict()
+    def analyse(self):
+        self.packed_files = dict()
+        detected_malwares = dict()
+
+        actionSpy = ActionSpy(apk_path=self.apk_path, output_dir=self.output_dir)
+        succeeded_test = actionSpy.check()
+        detected_malwares["actionspy"] = succeeded_test
+
         for file in self.a.get_files():
             file_type = check_header(self.a.get_file(file)[0:4].hex())
 
@@ -36,18 +47,14 @@ class AndroHelper:
                 os.makedirs(self.output_dir)
 
             if file_type == "JAR":
-                print("Probable JAR file Founded: " + file.split("/")[-1])
-
                 f = open(self.output_dir + file.split("/")[-1], 'wb')
                 f.write(self.a.get_file(file))
                 f.close()
                 try:
                     a, d, dx = AnalyzeAPK(self.output_dir + file.split("/")[-1])
 
-
-
                     if a.get_package():
-                        packed_files[self.a.get_package()] = {file: {}}
+                        self.packed_files[self.a.get_package()] = {file: {}}
                     else:
                         continue
                 except Exception as e:  # not apk file
@@ -70,9 +77,9 @@ class AndroHelper:
                         except Exception as e:
                             continue
 
-                packed_files[self.a.get_package()][file] = dangerous_perms
+                self.packed_files[self.a.get_package()][file] = dangerous_perms
 
-        return packed_files
+        return {"packed_file": self.packed_files, "detected_malwares": detected_malwares}
 
 
 

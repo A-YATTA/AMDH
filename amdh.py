@@ -326,8 +326,9 @@ def amdh():
                 for key, value in package_info["detected_malwares"].items():
                     out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
 
-                out.print_info("\tPacked files")
-                if package_info and package_info["packed_file"][packages[int(id_app) - 1]].keys() :
+
+                if package_info and package_info["packed_file"] and package_info["packed_file"][packages[int(id_app) - 1]].keys() :
+                    out.print_info("\tPacked files")
                     out.print_error("The package {} has another Application (APK) inside".format(packages[int(id_app) - 1]))
 
                     for file in package_info["packed_file"][packages[int(id_app) - 1]]:

@@ -3,9 +3,9 @@ import re
 import json
 import os
 from core.malwares.actionSpy import ActionSpy
+from core.malwares.wolfRat import WolfRat
 
 permissions_file = "config/permissions.json"
-
 
 
 def check_header(header):
@@ -16,8 +16,6 @@ def check_header(header):
         return "ELF"
 
     return "UNKNOWN"
-
-
 
 
 class AndroHelper:
@@ -36,9 +34,13 @@ class AndroHelper:
         self.packed_files = dict()
         detected_malwares = dict()
 
-        actionSpy = ActionSpy(apk_path=self.apk_path, output_dir=self.output_dir)
-        succeeded_test = actionSpy.check()
+        action_spy = ActionSpy(apk_path=self.apk_path, output_dir=self.output_dir)
+        succeeded_test = action_spy.check()
         detected_malwares["actionspy"] = succeeded_test
+
+        wolf_rat = WolfRat(apk_path=self.apk_path, output_dir=self.output_dir)
+        succeeded_test = wolf_rat.check()
+        detected_malwares["wolfrat"] = succeeded_test
 
         for file in self.a.get_files():
             file_type = check_header(self.a.get_file(file)[0:4].hex())
@@ -65,7 +67,7 @@ class AndroHelper:
                 perms_desc = {}
                 dangerous_perms = {}
 
-                if a .get_permissions():
+                if a.get_permissions():
                     for perm in a.get_permissions():
                         try:
                             mapped = list(filter(lambda x: x["permission"] == perm, permissions))
@@ -80,14 +82,3 @@ class AndroHelper:
                 self.packed_files[self.a.get_package()][file] = dangerous_perms
 
         return {"packed_file": self.packed_files, "detected_malwares": detected_malwares}
-
-
-
-
-
-
-
-
-
-
-

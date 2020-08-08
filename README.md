@@ -13,20 +13,20 @@ Android Mobile Device Hardening is divided on two parts (at this time):
 - The first part list the installed applications on the device that use one or more [permissions flagged as dangerous by Android itself](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions) and dump all the APKs
 - The second part is based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure)) 
 
-The first part:
-- list application installed 
-- list dangerous permissions 
-- revoke admins receivers for third party Apps
-- revoke dangerous permissions for all Apps
-- dump APKs of all the Apps except system apps 
-- detect malwares based on permissions 
-- uninstall/disable applications (including system apps)
-- extract packed APKs 
-- detect known malwares packages and static analysis
+Features:
+- Check and harden system's settings
+- Analyse current installed applications on the device:
+  - list dangerous permissions and revoke them
+  - compare with permissions used by malwares 
+- List applications:
+  - uninstall/disable App
+  - revoke admins receivers
+- Dumps APKs of installed applications
+- Extract packed APKs if exists
+- Static analysis for malwares detection. Current detected malwares:
+   - ActionSpy
+   - WolfRat
 
-The second part:
-- check the system settings 
-- harden the system settings
 
 ## Requirement
 - Python3 
@@ -118,8 +118,11 @@ python amdh.py -sS
 python amdh.py -l
 ``` 
 ![Applications list](screenshots/uninstall_apps.png (Applications list and uninstalling))
-
 An error occured for the second app because it's a device admin app. Runing with flag '-rar' solved the problem.
+
+**Static Analysis**
+
+![Static Analyis](screenshots/Static_analysis.png (Embedded APK))
 
 
 ## Tests & CIS version
@@ -127,9 +130,8 @@ An error occured for the second app because it's a device admin app. Runing with
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
 - CIS version: 1.3.0
 
-
-## Malware detection
-AMDH v2.1 include malware detection based on most used permissions and combinations by malwares. 
+## Malware detection 
+AMDH include malware detection based on most used permissions and combinations by malwares. 
 
 It's based on more than 500 malwares samples uniques permissions that are never used by legitimate applications (based on more than 400 ligitimate applications).
 
@@ -143,12 +145,8 @@ Used malwares collections:
 
 
 ## Static Analysis
+- Find, dump and list dangerous permissions of packed APKs 
 
-- find and dump packed APKs
-- Current Malwares detection:
-  - ActionSpy
-
-![Static Analyis](screenshots/Static_analysis.png (Embedded APK))
 
 ## Roadmap
 | Feature        | status           | 
@@ -159,8 +157,7 @@ Used malwares collections:
 
 
 
-## Participate
-Ideas and pull requests are welcome. 
+## Participation and Ideas
+Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  
 
 Donation: [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url).
-

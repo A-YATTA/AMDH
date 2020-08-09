@@ -9,24 +9,24 @@ from argparse import RawTextHelpFormatter
 import time
 import sys
 import os
+from config import *
 
-adb_path = "/usr/bin/adb"
-settings_file = "config/settings.json"
 out = Out("Linux")
-adb_windows_path = "%LOCALAPPDATA%/Android/Sdk/platform-tools/adb"
-
-LIST_APPS_MAX_PRINT = 15
 
 
 def args_parse(print_help=False):
     parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan '
                                                  'the Android system and Apps without any modification',
                                      formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-sS', help='scan the system settings', action='store_true')
-    parser.add_argument('-sA', help='scan the installed applications', action='store_true')
+    parser.add_argument('-sS', help='Scan the system settings', action='store_true')
+
+    parser.add_argument('-sA', help='Scan the installed applications', action='store_true')
+
     parser.add_argument('-H', help='Harden system settings /!\ Developer Options and ADB will be disabled /!\ ',
                         action='store_true')
+
     parser.add_argument('-a', '--adb-path', help='Path to ADB binary', default='/usr/bin/adb', dest='adb_path')
+
     parser.add_argument('-t', choices=['e', 'd', '3', 's'], help='Type of applications:\n\te : enabled Apps\n\td : '
                                                                  'disabled Apps\n\t3 : Third party Apps\n\ts : System '
                                                                  'Apps',
@@ -34,17 +34,19 @@ def args_parse(print_help=False):
 
     parser.add_argument('-D', '--dump-apks', help='Dump APKs from device to APKS_DUMP_FOLDER directory',
                         dest='apks_dump_folder')
+
     parser.add_argument('-rar',
-                        help='remove admin receivers: Remove all admin receivers if the app is not a system App\n'
+                        help='Remove admin receivers: Remove all admin receivers if the app is not a system App\n'
                              'Scan application option "-sA" is required',
                         action='store_true')
+
     parser.add_argument('-R',
                         help='For each app revoke all dangerous permissions\n'
                              'Scan application option "-sA" is required',
                         action='store_true')
 
     parser.add_argument('-l',
-                        help='list numbered applications to disable or uninstall\n',
+                        help='list numbered applications to disable, uninstall or analyse\n',
                         action='store_true')
 
     args = parser.parse_args()
@@ -74,6 +76,7 @@ class Status(Enum):
 
 def device_choice(adb_instance):
     choice = 0
+
     while True:
         out.print_info("List of devices:")
         devices = adb_instance.list_devices()
@@ -158,12 +161,12 @@ def amdh():
     if arguments.sA:
         scan_applications = True
 
-    # Hardening param
+    #   Hardening param
     harden = False
     if arguments.H:
         harden = True
 
-    # list applications param
+    #   list applications param
     list_apps = False
     if arguments.l:
         list_apps = True
@@ -198,16 +201,15 @@ def amdh():
             if known_malware:
                 out.print_error("{} is known as malware".format(package))
             if scan_applications:
-
-                if dangerous_perms != None and dangerous_perms.items():
-                    out.print_warning_header("Package " + package + " has some dangerous permissions: ")
+                if dangerous_perms is not None and dangerous_perms.items():
+                    out.print_warning_header("Package {} has some dangerous permissions: ".format(package))
                     for perm, desc in dangerous_perms.items():
                         out.print_warning("\t " + perm + " : ")
                         out.print_warning("\t\t" + desc)
                     report_apps[package] = {"permissions": perms, "dangerous_perms": dangerous_perms}
 
                 else:
-                    out.print_info("Package " + package + " has no dangerous permissions")
+                    out.print_info("Package {} has no dangerous permissions".format(package))
 
                 if is_device_owner:
                     message = "/!\ \t" + package + " is device owner\t/!\ "
@@ -219,18 +221,20 @@ def amdh():
                     if arguments.rar:
                         removed, dpm = app.remove_device_admin_for_app()
                         if removed:
-                            out.print_info("Device admin receivers for " + app.package_name + " removed\n")
+                            out.print_info("Device admin receivers for {} removed\n".format(app.package_name))
                         else:
                             out.print_error("An error occured while removing the device admin " + dpm + " .")
 
                 # Revoke all Dangerous permissions
                 if arguments.R and app.dangerous_perms:
                     succeeded = app.revoke_dangerous_perms()
+
                     if succeeded:
                         out.print_info("Dangerous permissions revoked\n")
                     else:
                         out.print_error(
-                            "An error occured while revoking permission " + perm + " to package " + app.package_name)
+                            "An error occured while revoking permission {} to package {}".format(perm, app.package_name))
+
                 elif arguments.R and not app.dangerous_perms:
                     out.print_info("No dangerous permissions granted for this package\n")
 
@@ -245,6 +249,7 @@ def amdh():
 
                 print("************************************************************************")
                 time.sleep(0.5)
+
     if list_apps:
         print("************************************************************************")
         out.print_info("List of installed packages: ")
@@ -269,8 +274,8 @@ def amdh():
                         break
 
                     else:
-                        choosen_apps = choice.replace(" ", "").split(",")
-                        for c in choosen_apps:
+                        chosen_apps = choice.replace(" ", "").split(",")
+                        for c in chosen_apps:
                             if c.isdigit() and (0 < int(c) < len(packages) + 1):
                                 apps_choice_list = apps_choice_list + [c]
 
@@ -288,7 +293,7 @@ def amdh():
             out.print_info("choose an action")
             out.print_info("\td: disable selected apps")
             out.print_info("\tu: uninstall selected apps")
-            out.print_info("\tS: static analysis")
+            out.print_info("\tS: Static analysis")
             out.print_info("\ts: skip")
             print("")
 
@@ -318,18 +323,20 @@ def amdh():
                     out.print_error("An Error occurred while uninstalling " + packages[int(id_app) - 1])
 
             elif action == "S":
-                #try:
                 app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True, out_dir=apks_dump_folder)
                 out.print_info("Package {}".format(packages[int(id_app) - 1]))
                 package_info = app.static_analysis()
                 out.print_info("\tMalware identification")
+
                 for key, value in package_info["detected_malwares"].items():
                     out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
 
+                if package_info and package_info["packed_file"] and \
+                        package_info["packed_file"][packages[int(id_app) - 1]].keys():
 
-                if package_info and package_info["packed_file"] and package_info["packed_file"][packages[int(id_app) - 1]].keys() :
                     out.print_info("\tPacked files")
-                    out.print_error("The package {} has another Application (APK) inside".format(packages[int(id_app) - 1]))
+                    out.print_error(
+                        "The package {} has another Application (APK) inside".format(packages[int(id_app) - 1]))
 
                     for file in package_info["packed_file"][packages[int(id_app) - 1]]:
                         for perm in package_info["packed_file"][packages[int(id_app) - 1]][file]:

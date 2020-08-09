@@ -2,11 +2,8 @@ from enum import Enum
 import json
 import re
 import os
-
-
-# Status of the App
 from core.androhelper import AndroHelper
-
+from config import *
 
 class Status(Enum):
     ENABLED = 'e'
@@ -20,13 +17,6 @@ class AppAction(Enum):
     UNINSTALL = 'u'
     DISABLE = 'd'
     NONE = 'n'
-
-
-perms_combination_file = "perms_combination.json"
-permissions_file = "config/permissions.json"
-malwares_perms = "config/malwares_perms.json"
-malwares_packages_file = "config/malwares_packages.json"
-
 
 class App:
     def __init__(self, adb_instance, package_name, scan=True, dump_apk=False, out_dir="apks_dump", perms_list={}):
@@ -131,7 +121,6 @@ class App:
 
         self.score = sum_benign - sum_malware
 
-
     def static_analysis(self):
         if self.dump_apk:
             if not os.path.isdir(self.out_dir):
@@ -141,7 +130,7 @@ class App:
             self.adb_instance.dump_apk_from_device(self.package_name, out_file)
             # output directory for embedded files: "outdir/package_name"
             androhelper = AndroHelper(out_file, self.out_dir + "/" + self.package_name)
-            return androhelper.analyse()
+            return androhelper.analyse
 
     def known_malware(self):
         with open(malwares_packages_file) as json_file:

@@ -1,7 +1,7 @@
 from utils.out import *
 import json
 
-settings_file = "config/settings.json"
+from config import *
 
 class Settings:
 
@@ -27,9 +27,6 @@ class Settings:
         self.out.print_info("++++++++++++++++++++++++++++++++++++++++++++++++")
 
         self.loop_settings_check("global", settings)
-
-
-
 
     def loop_settings_check(self, section, settings):
         for a in settings[section]:

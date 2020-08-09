@@ -4,51 +4,33 @@ import json
 import os
 from core.malwares.actionSpy import ActionSpy
 from core.malwares.wolfRat import WolfRat
-
-permissions_file = "config/permissions.json"
-
-
-def check_header(header):
-    if header == "504b0304":
-        return "JAR"
-
-    if header == "7f454c46":
-        return "ELF"
-
-    return "UNKNOWN"
+from core.malwares.utils import check_header
+from config import *
 
 
 class AndroHelper:
 
     def __init__(self, apk_path, output_dir):
         self.apk_path = apk_path
-
         # output directory
-
         self.output_dir = output_dir + "/"
         self.packed_files = dict()
-
         self.a, self.d, self.dx = AnalyzeAPK(self.apk_path)
+        self.detected_malwares = dict()
 
+    @property
     def analyse(self):
         self.packed_files = dict()
-        detected_malwares = dict()
-
-        action_spy = ActionSpy(apk_path=self.apk_path, output_dir=self.output_dir)
-        succeeded_test = action_spy.check()
-        detected_malwares["actionspy"] = succeeded_test
-
-        wolf_rat = WolfRat(apk_path=self.apk_path, output_dir=self.output_dir)
-        succeeded_test = wolf_rat.check()
-        detected_malwares["wolfrat"] = succeeded_test
+        self.malware_detect()
 
         for file in self.a.get_files():
             file_type = check_header(self.a.get_file(file)[0:4].hex())
 
-            if not os.path.isdir(self.output_dir):
-                os.makedirs(self.output_dir)
-
             if file_type == "JAR":
+
+                if not os.path.isdir(self.output_dir):
+                    os.makedirs(self.output_dir)
+
                 f = open(self.output_dir + file.split("/")[-1], 'wb')
                 f.write(self.a.get_file(file))
                 f.close()
@@ -81,4 +63,15 @@ class AndroHelper:
 
                 self.packed_files[self.a.get_package()][file] = dangerous_perms
 
-        return {"packed_file": self.packed_files, "detected_malwares": detected_malwares}
+        return {"packed_file": self.packed_files, "detected_malwares": self.detected_malwares}
+
+
+    def malware_detect(self):
+        action_spy = ActionSpy(apk_path=self.apk_path, output_dir=self.output_dir)
+        succeeded_test = action_spy.check()
+        self.detected_malwares["actionspy"] = succeeded_test
+
+        wolf_rat = WolfRat(apk_path=self.apk_path, output_dir=self.output_dir)
+        succeeded_test = wolf_rat.check()
+        self.detected_malwares["wolfrat"] = succeeded_test
+

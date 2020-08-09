@@ -79,7 +79,7 @@ optional arguments:
 ```
 python amdh.py -sA
 ```
-![Malwares detection](screenshots/malwares_detect.png (Malwares detection))
+![Malwares detection](screenshots/scan_apps.png (Malwares detection))
 
 ```
 python amdh.py -sS
@@ -88,6 +88,7 @@ python amdh.py -sS
 
 
 **Harden**
+
 ```
 python amdh.py -sA -H 
 ```
@@ -99,13 +100,6 @@ python amdh.py -sS -H
 
 **Scan after hardening**
 
-All dangerous permissions have been revoked and admin receivers removed 
-```
-python amdh.py -sA
-```
-![Applications Scan](screenshots/scan_apps_after_hardening.png (Applications scan after hardening))
-
-
 ```
 python amdh.py -sS
 ```
@@ -115,7 +109,7 @@ python amdh.py -sS
 
 **Uninstall/disable apps**
 ```
-python amdh.py -l
+python amdh.py -l -D out
 ``` 
 ![Applications list](screenshots/uninstall_apps.png (Applications list and uninstalling))
 An error occured for the second app because it's a device admin app. Runing with flag '-rar' solved the problem.
@@ -145,7 +139,8 @@ Used malwares collections:
 
 
 ## Static Analysis
-- Find, dump and list dangerous permissions of packed APKs 
+- Find, dump and list dangerous permissions of packed APKs
+- Dump libraries
 
 
 ## Roadmap
@@ -155,6 +150,9 @@ Used malwares collections:
 | Static Analysis       | In Progress | 
 | Android application       | Waiting | 
 
+
+## Known Issues
+- The command "pm revoke" return exit success code but does not revoke the permissions for some malwares. (the bug is reported to Android team)
 
 
 ## Participation and Ideas

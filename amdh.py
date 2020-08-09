@@ -18,21 +18,32 @@ def args_parse(print_help=False):
     parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan '
                                                  'the Android system and Apps without any modification',
                                      formatter_class=RawTextHelpFormatter)
-    parser.add_argument('-sS', help='Scan the system settings', action='store_true')
-
-    parser.add_argument('-sA', help='Scan the installed applications', action='store_true')
-
-    parser.add_argument('-H', help='Harden system settings /!\ Developer Options and ADB will be disabled /!\ ',
+    parser.add_argument('-sS',
+                        help='Scan the system settings',
                         action='store_true')
 
-    parser.add_argument('-a', '--adb-path', help='Path to ADB binary', default='/usr/bin/adb', dest='adb_path')
+    parser.add_argument('-sA',
+                        help='Scan the installed applications',
+                        action='store_true')
 
-    parser.add_argument('-t', choices=['e', 'd', '3', 's'], help='Type of applications:\n\te : enabled Apps\n\td : '
-                                                                 'disabled Apps\n\t3 : Third party Apps\n\ts : System '
-                                                                 'Apps',
-                        default='3', dest='app_type')
+    parser.add_argument('-H',
+                        help='Harden system settings /!\ Developer Options and ADB will be disabled /!\ ',
+                        action='store_true')
 
-    parser.add_argument('-D', '--dump-apks', help='Dump APKs from device to APKS_DUMP_FOLDER directory',
+    parser.add_argument('-a', '--adb-path',
+                        help='Path to ADB binary',
+                        default='/usr/bin/adb',
+                        dest='adb_path')
+
+    parser.add_argument('-t',
+                        choices=['e', 'd', '3', 's'],
+                        help='Type of applications:\n\te : enabled Apps\n\td : disabled Apps\n\t3 : Third party Apps'
+                        '\n\ts : System Apps',
+                        default='3',
+                        dest='app_type')
+
+    parser.add_argument('-D', '--dump-apks',
+                        help='Dump APKs from device to APKS_DUMP_FOLDER directory',
                         dest='apks_dump_folder')
 
     parser.add_argument('-rar',
@@ -46,7 +57,11 @@ def args_parse(print_help=False):
                         action='store_true')
 
     parser.add_argument('-l',
-                        help='list numbered applications to disable, uninstall or analyse\n',
+                        help='List numbered applications to disable, uninstall or analyse\n',
+                        action='store_true')
+
+    parser.add_argument('-P',
+                        help='List current users processes',
                         action='store_true')
 
     args = parser.parse_args()
@@ -171,8 +186,14 @@ def amdh():
     if arguments.l:
         list_apps = True
 
+    #   list running users processes
+    list_processes = False
+    if arguments.P:
+        list_processes = True
+
     # Check if one of the operation are chosen
-    if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps:
+    if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \
+            not list_processes:
         out.print_error("Please choose an operation")
         args_parse(True)
         exit(1)
@@ -181,13 +202,18 @@ def amdh():
     device_id = device_choice(adb_instance)
     adb_instance = ADB(adb_path, device_id)
     settings_check = None
+    report_apps = {}
 
     packages = []
     if arguments.app_type:
         packages = adb_instance.list_installed_packages(arguments.app_type)
 
-    report_apps = {}
+    if adb_instance.check_pending_update():
+        out.print_warning("The system has a pending update!")
+
+
     if scan_applications or dump_apks or list_apps:
+        print(adb_instance.list_backgroud_apps())
         if arguments.app_type == 'e':
             out.print_info("Scanning system apps may takes a while ...")
         for package in packages:
@@ -352,6 +378,13 @@ def amdh():
 
     if scan_settings:
         settings_check.check()
+
+    if list_processes:
+        current_processes = adb_instance.list_backgroud_apps().split("\n")
+        print("")
+        out.print_info("Current running user processes:")
+        for i in range (0, len(current_processes)-1):
+            out.print_info("{}- {}".format(i+1, current_processes[i]))
 
 
 if __name__ == "__main__":

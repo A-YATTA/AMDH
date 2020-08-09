@@ -22,6 +22,8 @@ Features:
   - uninstall/disable App
   - revoke admins receivers
 - Dumps APKs of installed applications
+- List current users processes
+- Check if the system has pending updates
 - Extract packed APKs if exists
 - Static analysis for malwares detection. Current detected malwares:
    - ActionSpy
@@ -46,16 +48,15 @@ $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 > Warning: when using -l argument with enabled application '-t e', system apps will be listed. Uninstalling system Apps can break your Android system. The use of 'disable' instead of 'uninstall' is recommanded for system Apps.
 ```
 $ python amdh.py -h
-usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
-               [-l]
+usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R] [-l]
 
 Android Mobile Device Hardening
 By default the script will scan the Android system and Apps without any modification
 
 optional arguments:
   -h, --help            show this help message and exit
-  -sS                   scan the system settings
-  -sA                   scan the installed applications
+  -sS                   Scan the system settings
+  -sA                   Scan the installed applications
   -H                    Harden system settings /!\ Developer Options and ADB will be disabled /!\ 
   -a ADB_PATH, --adb-path ADB_PATH
                         Path to ADB binary
@@ -66,11 +67,11 @@ optional arguments:
                         	s : System Apps
   -D APKS_DUMP_FOLDER, --dump-apks APKS_DUMP_FOLDER
                         Dump APKs from device to APKS_DUMP_FOLDER directory
-  -rar                  remove admin receivers: Remove all admin receivers if the app is not a system App
-                        Scan option is required
+  -rar                  Remove admin receivers: Remove all admin receivers if the app is not a system App
+                        Scan application option "-sA" is required
   -R                    For each app revoke all dangerous permissions
-                        Scan option is required
-  -l                    list numbered applications to disable or uninstall
+                        Scan application option "-sA" is required
+  -l                    list numbered applications to disable, uninstall or analyse
 ```
 
 

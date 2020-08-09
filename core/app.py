@@ -12,12 +12,6 @@ class Status(Enum):
     SYSTEM = 's'
 
 
-# Actions
-class AppAction(Enum):
-    UNINSTALL = 'u'
-    DISABLE = 'd'
-    NONE = 'n'
-
 class App:
     def __init__(self, adb_instance, package_name, scan=True, dump_apk=False, out_dir="apks_dump", perms_list={}):
         self.adb_instance = adb_instance

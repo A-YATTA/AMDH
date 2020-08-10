@@ -15,8 +15,9 @@ Android Mobile Device Hardening is divided on two parts (at this time):
 
 Features:
 - Check and harden system's settings
+- List current users processes running in background and kill selected ones
 - Analyse current installed applications on the device:
-  - list dangerous permissions and revoke them
+  - list dangerous permissions and revokes them
   - compare with permissions used by malwares 
 - List applications:
   - uninstall/disable App
@@ -28,7 +29,6 @@ Features:
 - Static analysis for malwares detection. Current detected malwares:
    - ActionSpy
    - WolfRat
-
 
 ## Requirement
 - Python3 
@@ -43,12 +43,13 @@ $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 ```
 
 # Usage
-> Note: For Windows you have to specify the ADB path or edit the variable "adb_windows_path" in amdh.py
+> Note: For Windows you have to specify the ADB path or edit the variable "adb_windows_path" in config.py
 
 > Warning: when using -l argument with enabled application '-t e', system apps will be listed. Uninstalling system Apps can break your Android system. The use of 'disable' instead of 'uninstall' is recommanded for system Apps.
 ```
 $ python amdh.py -h
-usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R] [-l]
+usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
+               [-l] [-P]
 
 Android Mobile Device Hardening
 By default the script will scan the Android system and Apps without any modification
@@ -71,7 +72,8 @@ optional arguments:
                         Scan application option "-sA" is required
   -R                    For each app revoke all dangerous permissions
                         Scan application option "-sA" is required
-  -l                    list numbered applications to disable, uninstall or analyse
+  -l                    List numbered applications to disable, uninstall or analyse
+  -P                    List current users processes
 ```
 
 
@@ -145,15 +147,16 @@ Used malwares collections:
 
 
 ## Roadmap
-| Feature        | status           | 
-| ------------- |:-------------:| 
-| UI | Version 1.0 ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
-| Static Analysis       | In Progress | 
-| Android application       | Waiting | 
+| Feature            | status        | 
+| -----------------  |:-------------:| 
+| UI                 | Version 1.0 ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
+| Static Analysis    | In Progress   | 
+| Forensic mode      | Waiting       |
+| Android application| Waiting       | 
 
 
 ## Known Issues
-- The command "pm revoke" return exit success code but does not revoke the permissions for some malwares. (the bug is reported to Android team)
+- The command "pm revoke" return exit success code but does not revoke the permissions for some malwares.
 
 
 ## Participation and Ideas

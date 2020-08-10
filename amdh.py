@@ -176,17 +176,17 @@ def amdh():
     if arguments.sA:
         scan_applications = True
 
-    #   Hardening param
+    # Hardening param
     harden = False
     if arguments.H:
         harden = True
 
-    #   list applications param
+    # list applications param
     list_apps = False
     if arguments.l:
         list_apps = True
 
-    #   list running users processes
+    # list running users processes
     list_processes = False
     if arguments.P:
         list_processes = True
@@ -211,11 +211,11 @@ def amdh():
     if adb_instance.check_pending_update():
         out.print_warning("The system has a pending update!")
 
-
     if scan_applications or dump_apks or list_apps:
-        print(adb_instance.list_backgroud_apps())
+
         if arguments.app_type == 'e':
             out.print_info("Scanning system apps may takes a while ...")
+
         for package in packages:
             if not list_apps:
                 out.print_info(package)
@@ -224,14 +224,18 @@ def amdh():
             perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
             app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
             perms, dangerous_perms, is_device_owner, known_malware = app.check_app()
+
             if known_malware:
                 out.print_error("{} is known as malware".format(package))
+
             if scan_applications:
                 if dangerous_perms is not None and dangerous_perms.items():
                     out.print_warning_header("Package {} has some dangerous permissions: ".format(package))
+
                     for perm, desc in dangerous_perms.items():
                         out.print_warning("\t " + perm + " : ")
                         out.print_warning("\t\t" + desc)
+
                     report_apps[package] = {"permissions": perms, "dangerous_perms": dangerous_perms}
 
                 else:
@@ -380,11 +384,24 @@ def amdh():
         settings_check.check()
 
     if list_processes:
+        process_choice_list =[]
         current_processes = adb_instance.list_backgroud_apps().split("\n")
-        print("")
         out.print_info("Current running user processes:")
-        for i in range (0, len(current_processes)-1):
+
+        for i in range(0, len(current_processes)-1):
             out.print_info("{}- {}".format(i+1, current_processes[i]))
+
+        print("")
+        choice = input("Select process(es) to kill (separated by comma ','): ")
+        chosen_processes = choice.replace(" ", "").split(",")
+        for c in chosen_processes:
+            if c.isdigit() and (0 < int(c) < len(current_processes) + 1):
+                process_choice_list = process_choice_list + [c]
+            else:
+                out.print_error("option " + c + " does not exist")
+
+        for process in process_choice_list:
+            adb_instance.force_stop_app(current_processes[int(process) - 1])
 
 
 if __name__ == "__main__":

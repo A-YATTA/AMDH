@@ -175,3 +175,7 @@ class ADB:
         return self.adb_exec(["shell", "ps", "-A", "|", "grep", "-E", "-o", "'u[0-9]*_a(.*)*'",  "|", "tr", "-s", "' '"
                               "|", "cut", "-d", "' '", "-f", "9"])
 
+    def force_stop_app(self, package_name):
+        """This function stop background process of package_name"""
+        adb_force_stop_command = ["shell", "am", "force-stop", package_name]
+        self.adb_exec(adb_force_stop_command)

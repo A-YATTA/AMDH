@@ -4,6 +4,7 @@ import json
 import os
 from core.malwares.actionSpy import ActionSpy
 from core.malwares.wolfRat import WolfRat
+from core.malwares.anubis import Anubis
 from core.malwares.utils import check_header
 from config import *
 
@@ -74,4 +75,9 @@ class AndroHelper:
         wolf_rat = WolfRat(apk_path=self.apk_path, output_dir=self.output_dir)
         succeeded_test = wolf_rat.check()
         self.detected_malwares["wolfrat"] = succeeded_test
+
+        anubis = Anubis(apk_path=self.apk_path, output_dir=self.output_dir)
+        succeeded_test = anubis.check()
+        self.detected_malwares["anubis"] = succeeded_test
+
 

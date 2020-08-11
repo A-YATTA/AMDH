@@ -29,6 +29,7 @@ Features:
 - Static analysis for malwares detection. Current detected malwares:
    - ActionSpy
    - WolfRat
+   - Anubis (version 1)
 
 ## Requirement
 - Python3 

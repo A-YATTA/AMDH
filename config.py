@@ -1,5 +1,5 @@
-
-adb_path = "/usr/bin/adb"
+# by default, it will lock into the PATH env var for adb binary
+adb_path = "adb"
 settings_file = "config/settings.json"
 adb_windows_path = "%LOCALAPPDATA%/Android/Sdk/platform-tools/adb"
 LIST_APPS_MAX_PRINT = 15

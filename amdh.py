@@ -32,7 +32,7 @@ def args_parse(print_help=False):
 
     parser.add_argument('-a', '--adb-path',
                         help='Path to ADB binary',
-                        default='/usr/bin/adb',
+                        default='adb',
                         dest='adb_path')
 
     parser.add_argument('-t',
@@ -100,8 +100,16 @@ def device_choice(adb_instance):
             out.print_error("No device found")
             sys.exit(1)
         elif len(devices) == 1:
-            out.print_info("The device " + list(devices.keys())[0] + " will be used.\n")
-            return list(devices.keys())[0]
+            device_id = list(devices.keys())[0]
+            device_status = list(devices.values())[0]
+            out.print_info("The device " + device_id + " will be used.\n")
+            if "offline" in device_status or "unauthorized" in device_status \
+                    or "no permissions" in device_status:
+                out.print_error("You cannot use " + device_id + ", reason: " + device_status)
+                sys.exit(1)
+            else:
+                return list(devices.keys())[0]
+
 
         for device in devices:
             choice = choice + 1
@@ -122,9 +130,10 @@ def device_choice(adb_instance):
             continue
 
         chosen_device = str(keys[choice - 1])
-        if "offline" in devices[chosen_device] or "unauthorized" in devices[chosen_device]:
-            out.print_error("You cannot use " + chosen_device + ", reason: " + devices[device])
-            choice = -1
+        if "offline" in devices[chosen_device] or "unauthorized" in devices[chosen_device] \
+                or "no permissions" in devices[chosen_device]:
+            out.print_error("You cannot use " + chosen_device + ", reason: " + devices[chosen_device])
+            choice = 0
         else:
             break
 
@@ -392,7 +401,7 @@ def amdh():
             out.print_info("{}- {}".format(i+1, current_processes[i]))
 
         print("")
-        choice = input("Select process(es) to kill (separated by comma ','): ")
+        choice = input("Select id(s) of process(es) to kill (separated by comma ','): ")
         chosen_processes = choice.replace(" ", "").split(",")
         for c in chosen_processes:
             if c.isdigit() and (0 < int(c) < len(current_processes) + 1):

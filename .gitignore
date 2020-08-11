@@ -22,6 +22,8 @@ var/
 wheels/
 share/python-wheels/
 *.egg-info/
+
+
 .installed.cfg
 *.egg
 MANIFEST
@@ -142,3 +144,4 @@ core/__pycache__/*
 utils/__pycache__/*
 core/malwares/__pycache__/*
 core/malwares/__pycache__/*
+.idea/

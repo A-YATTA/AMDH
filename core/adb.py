@@ -108,7 +108,7 @@ class ADB:
 
     def get_install_perms_dumpsys_package(self, dumpsys_output):
         """This function return a list of granted install permissions from the output of the command
-                'dumpsys  package {package_name}' command given as parameter. """
+                'dumpsys  package {package_name}' given as parameter. """
         if "install permissions" in dumpsys_output:
 
             p = re.compile(r'(?<=install permissions:).+?(?=User [0-9]+:)')
@@ -179,3 +179,4 @@ class ADB:
         """This function stop background process of package_name"""
         adb_force_stop_command = ["shell", "am", "force-stop", package_name]
         self.adb_exec(adb_force_stop_command)
+

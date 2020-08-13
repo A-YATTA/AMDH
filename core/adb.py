@@ -102,7 +102,7 @@ class ADB:
         'dumpsys  package {package_name}' command given as parameter. """
         if "requested permissions" in dumpsys_output:
             granted_perms = re.findall(r"(.*): granted=true", dumpsys_output)
-            return [perm.strip(' ') for perm in granted_perms]#re.split(" +", perms_part_tmp)
+            return [perm.strip(' ') for perm in granted_perms]
 
         return []
 
@@ -118,8 +118,11 @@ class ADB:
 
         return []
 
+    def get_all_settings_section(self, settings_section):
+        command = ["shell", "settings", "list", settings_section]
+        return self.adb_exec(command)
 
-    def content_query(self, settings_section, key):
+    def content_query_settings(self, settings_section, key):
         """This function return the value of 'key' in the settings_section section.
         section can be one of:
             - secure
@@ -129,7 +132,7 @@ class ADB:
                    "--projection", "name:value", "--where", "'name=\"" + key + "\"'"]
         return self.adb_exec(command)
 
-    def content_delete(self, settings_section, key):
+    def content_delete_settings(self, settings_section, key):
         """This function delete the content of 'key' in the settings_section section.
                 section can be one of:
                     - secure
@@ -139,7 +142,7 @@ class ADB:
                    "--where", "'name=\"" + key + "\"'"]
         return self.adb_exec(command)
 
-    def content_insert(self, settings_section, key, expected_value, expected_value_type):
+    def content_insert_settings(self, settings_section, key, expected_value, expected_value_type):
         """This function insert the content of 'key' in the settings_section section and update of exist.
             section can be one of:
                 - secure
@@ -159,7 +162,8 @@ class ADB:
 
     def revoke_perm_pkg(self, package_name, permission):
         """This function revoke 'permission', given as parameter, for the package package_name"""
-        self.adb_exec(["shell", "pm", "revoke", package_name, permission])
+        command = ["shell", "pm", "revoke", package_name, permission]
+        self.adb_exec(command)
 
     def check_pending_update(self):
         """This function return True if there is a pending update"""
@@ -172,11 +176,35 @@ class ADB:
 
     def list_backgroud_apps(self):
         """This function return the current running applications in background"""
-        return self.adb_exec(["shell", "ps", "-A", "|", "grep", "-E", "-o", "'u[0-9]*_a(.*)*'",  "|", "tr", "-s", "' '"
-                              "|", "cut", "-d", "' '", "-f", "9"])
+        command = ["shell", "ps", "-A", "|", "grep", "-E", "-o", "'u[0-9]*_a(.*)*'",  "|", "tr", "-s", "' '"
+                              "|", "cut", "-d", "' '", "-f", "9"]
+        return self.adb_exec(command)
 
     def force_stop_app(self, package_name):
         """This function stop background process of package_name"""
         adb_force_stop_command = ["shell", "am", "force-stop", package_name]
         self.adb_exec(adb_force_stop_command)
+
+
+    def get_package_first_install_time(self, package_name):
+        dumpsys_args = ["package", package_name]
+        res = self.dumpsys(dumpsys_args)
+        first_install_time = re.search(r'(?<=firstInstallTime=).*', res).group(0)
+        return first_install_time
+
+    def get_package_last_update_time(self, package_name):
+        dumpsys_args = ["package", package_name]
+        res = self.dumpsys(dumpsys_args)
+        first_install_time = re.search(r'(?<=lastUpdateTime=).*', res).group(0)
+        return first_install_time
+
+    def get_content_sms(self):
+        command = ["shell", "content", "query", "--uri", "content://sms/"]
+        return self.adb_exec(command)
+
+    def get_content_contacts(self):
+        command = ["shell", "content", "query", "--uri", "content://com.android.contacts/data"]
+        return self.adb_exec(command)
+
+
 

@@ -10,6 +10,8 @@ import time
 import sys
 import os
 from config import *
+from core.snapshot import Snapshot
+import json
 
 out = Out("Linux")
 
@@ -63,6 +65,10 @@ def args_parse(print_help=False):
     parser.add_argument('-P',
                         help='List current users processes',
                         action='store_true')
+
+    parser.add_argument('-S', '--snapshot',
+                        help='Write the current state of the phone to a json file',
+                        dest='snapshot_file')
 
     args = parser.parse_args()
 
@@ -200,9 +206,16 @@ def amdh():
     if arguments.P:
         list_processes = True
 
+    # Related to APKs dump
+    snapshot = False
+    snapshot_file = ""
+    if arguments.snapshot_file:
+        snapshot = True
+        snapshot_file = arguments.snapshot_file
+
     # Check if one of the operation are chosen
     if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \
-            not list_processes:
+            not list_processes and not snapshot:
         out.print_error("Please choose an operation")
         args_parse(True)
         exit(1)
@@ -411,6 +424,15 @@ def amdh():
 
         for process in process_choice_list:
             adb_instance.force_stop_app(current_processes[int(process) - 1])
+
+    if snapshot :
+        out.print_info("Starting snapshot")
+        snapshot_obj = Snapshot(adb_instance)
+        report = snapshot_obj.get_report()
+        with open(snapshot_file, 'w') as fp:
+            json.dump(report, fp, indent=4)
+        out.print_info("Snapshot finished")
+
 
 
 if __name__ == "__main__":

@@ -75,6 +75,8 @@ optional arguments:
                         Scan application option "-sA" is required
   -l                    List numbered applications to disable, uninstall or analyse
   -P                    List current users processes
+  -S SNAPSHOT_FILE, --snapshot SNAPSHOT_FILE
+                        Snapshot the current state of the phone to a json file
 ```
 
 
@@ -113,12 +115,16 @@ python amdh.py -sS
 
 **Uninstall/disable apps**
 ```
-python amdh.py -l -D out
+python amdh.py -l
 ``` 
 ![Applications list](screenshots/uninstall_apps.png (Applications list and uninstalling))
+
 An error occured for the second app because it's a device admin app. Runing with flag '-rar' solved the problem.
 
 **Static Analysis**
+```
+python amdh.py -l -D out
+``` 
 
 ![Static Analyis](screenshots/Static_analysis.png (Embedded APK))
 

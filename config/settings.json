@@ -1,6 +1,18 @@
 {
     "secure": [
         {
+            "name": "privacy_mode_enabled",
+            "description": "Privacy mode is Enabled (MIUI)",
+            "expected": "1",
+            "type": "i"
+        },
+        {
+            "name": "upload_debug_log_pref",
+            "description": "Upload debug log preferences",
+            "expected": "0",
+            "type": "i"
+        },
+        {
             "name": "lock_screen_show_notifications",
             "description": "show notifications when screen is locked",
             "expected": "0",

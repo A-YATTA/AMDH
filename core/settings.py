@@ -30,7 +30,7 @@ class Settings:
 
     def loop_settings_check(self, section, settings):
         for a in settings[section]:
-            command_result = self.adb.content_query(section, a["name"])
+            command_result = self.adb.content_query_settings(section, a["name"])
 
             self.out.print_info("Checking : " + a["name"])
             self.out.print_info("\tDescription : " + a["description"])
@@ -47,8 +47,8 @@ class Settings:
 
             else:
                 if self.harden:
-                    self.adb.content_insert(section, a["name"], expected_value=a["expected"],
-                                            expected_value_type=a["type"])
+                    self.adb.content_insert_settings(section, a["name"], expected_value=a["expected"],
+                                                     expected_value_type=a["type"])
                     self.out.print_warning("\tCurrent value : " + str(command_result.split("value=")[1].strip()) + "\n")
                     self.out.print_success("\tValue changed to: " + a["expected"] + "\n")
                 else:

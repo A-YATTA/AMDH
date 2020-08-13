@@ -30,6 +30,14 @@ Features:
    - ActionSpy
    - WolfRat
    - Anubis (version 1)
+- Snapshot the current phone state to a json file:
+  - Applications (including system and disabled Apps):
+    - first install time
+    - last update time
+    - current permissons 
+    - is the app device admin
+  - SMS: current SMS messages
+  - Contacts: current list of contacts
 
 ## Requirement
 - Python3 
@@ -76,7 +84,7 @@ optional arguments:
   -l                    List numbered applications to disable, uninstall or analyse
   -P                    List current users processes
   -S SNAPSHOT_FILE, --snapshot SNAPSHOT_FILE
-                        Snapshot the current state of the phone to a json file
+                        Write the current state of the phone to a json file
 ```
 
 

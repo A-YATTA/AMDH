@@ -8,17 +8,12 @@ An Android Mobile Device Hardening written with python3
 ## Motivations
 AMDH was created to help automating and listing all applications installed devices and also to protect privacy in this "big" age of "data"
 
-## Concept 
-Android Mobile Device Hardening is divided on two parts (at this time):
-- The first part list the installed applications on the device that use one or more [permissions flagged as dangerous by Android itself](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions) and dump all the APKs
-- The second part is based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure)) 
-
-Features:
-- Check and harden system's settings
+## Features 
+- Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure)) 
 - List current users processes running in background and kill selected ones
 - Analyse current installed applications on the device:
-  - list dangerous permissions and revokes them
-  - compare with permissions used by malwares 
+  - list [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)  and revokes them
+  - compare with permissions used by malware 
 - List applications:
   - uninstall/disable App
   - revoke admins receivers
@@ -26,10 +21,10 @@ Features:
 - List current users processes
 - Check if the system has pending updates
 - Extract packed APKs if exists
-- Static analysis for malwares detection. Current detected malwares:
+- Static analysis for malware detection. Current detected malware:
    - ActionSpy
    - WolfRat
-   - Anubis (version 1)
+   - Anubis (version 1: More samples are needed)
 - Snapshot the current phone state to a json file:
   - Applications (including system and disabled Apps):
     - first install time
@@ -38,6 +33,7 @@ Features:
     - is the app device admin
   - SMS: current SMS messages
   - Contacts: current list of contacts
+  - Backup applications that has backup enabled
 
 ## Requirement
 - Python3 
@@ -47,7 +43,7 @@ Features:
 
 ## Installation 
 ```
-$ pip install androguard pwntools
+$ pip install androguard pwntools 
 $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 ```
 
@@ -84,16 +80,15 @@ optional arguments:
   -l                    List numbered applications to disable, uninstall or analyse
   -P                    List current users processes
   -S SNAPSHOT_FILE, --snapshot SNAPSHOT_FILE
-                        Write the current state of the phone to a json file
+                        Write the current state of the phone to a json file and backup application
 ```
-
 
 ## Screenshots
 **Scan**
 ```
 python amdh.py -sA
 ```
-![Malwares detection](screenshots/scan_apps.png (Malwares detection))
+![malware detection](screenshots/scan_apps.png (malware detection))
 
 ```
 python amdh.py -sS
@@ -111,15 +106,6 @@ python amdh.py -sA -H
 python amdh.py -sS -H 
 ```
 ![Hardening Settings](screenshots/settings_hardening.png (Settings Hardening))
-
-**Scan after hardening**
-
-```
-python amdh.py -sS
-```
-> ADB has been disabled and Developpement settings has disappeared from the settings menu.
-
-![Applications Scan](screenshots/scan_settings_after_hardening.png (Applications scan after hardening))
 
 **Uninstall/disable apps**
 ```
@@ -143,13 +129,13 @@ python amdh.py -l -D out
 - CIS version: 1.3.0
 
 ## Malware detection 
-AMDH include malware detection based on most used permissions and combinations by malwares. 
+AMDH include malware detection based on most used permissions and combinations by malware. 
 
-It's based on more than 500 malwares samples uniques permissions that are never used by legitimate applications (based on more than 400 ligitimate applications).
+It's based on more than 500 malware samples uniques permissions that are never used by legitimate applications (based on more than 400 ligitimate applications).
 
 > Note: Most system Apps will be flagged as "Malware" but can be ignored for this version. 
 
-Used malwares collections:
+Used malware collections:
 - [https://github.com/ashishb/android-malware](https://github.com/ashishb/android-malware)
 - [https://github.com/sk3ptre/AndroidMalware_2018](https://github.com/sk3ptre/AndroidMalware_2018)
 - [https://github.com/sk3ptre/AndroidMalware_2019](https://github.com/sk3ptre/AndroidMalware_2019)
@@ -164,14 +150,14 @@ Used malwares collections:
 ## Roadmap
 | Feature            | status        | 
 | -----------------  |:-------------:| 
-| UI                 | Version 1.0 ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
-| Static Analysis    | In Progress   | 
-| Forensic mode      | Waiting       |
+| UI                 | Version 2.0 in progress ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
+| Static Analysis    | Waiting       |
+| Forensic mode      | In Progress   |
 | Android application| Waiting       | 
 
 
 ## Known Issues
-- The command "pm revoke" return exit success code but does not revoke the permissions for some malwares.
+- The command "pm revoke" return exit success code but does not revoke the permissions for some malware.
 
 
 ## Participation and Ideas

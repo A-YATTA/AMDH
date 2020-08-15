@@ -5,6 +5,7 @@ import os
 from core.androhelper import AndroHelper
 from config import *
 
+
 class Status(Enum):
     ENABLED = 'e'
     DISABLED = 'd'
@@ -134,5 +135,3 @@ class App:
             return True
 
         return False
-
-

@@ -187,23 +187,35 @@ class ADB:
 
 
     def get_package_first_install_time(self, package_name):
+        """This function return the first install time of package_name"""
         dumpsys_args = ["package", package_name]
         res = self.dumpsys(dumpsys_args)
         first_install_time = re.search(r'(?<=firstInstallTime=).*', res).group(0)
         return first_install_time
 
     def get_package_last_update_time(self, package_name):
+        """This function return last update time of package_name"""
         dumpsys_args = ["package", package_name]
         res = self.dumpsys(dumpsys_args)
         first_install_time = re.search(r'(?<=lastUpdateTime=).*', res).group(0)
         return first_install_time
 
     def get_content_sms(self):
+        """This function return the content of SMSs"""
         command = ["shell", "content", "query", "--uri", "content://sms/"]
         return self.adb_exec(command)
 
     def get_content_contacts(self):
+        """This Function return the current contacts list"""
         command = ["shell", "content", "query", "--uri", "content://com.android.contacts/data"]
+        return self.adb_exec(command)
+
+    def backup(self, package, out_path):
+        command = ["backup", "-f", out_path, "-apk", package]
+        return self.adb_exec(command)
+
+    def send_keyevent(self, keyevent):
+        command = ["shell", "input", "keyevent", str(keyevent)]
         return self.adb_exec(command)
 
 

@@ -40,7 +40,7 @@ def args_parse(print_help=False):
     parser.add_argument('-t',
                         choices=['e', 'd', '3', 's'],
                         help='Type of applications:\n\te : enabled Apps\n\td : disabled Apps\n\t3 : Third party Apps'
-                        '\n\ts : System Apps',
+                             '\n\ts : System Apps',
                         default='3',
                         dest='app_type')
 
@@ -67,7 +67,7 @@ def args_parse(print_help=False):
                         action='store_true')
 
     parser.add_argument('-S', '--snapshot',
-                        help='Write the current state of the phone to a json file',
+                        help='Write the current state of the phone to a json file and backup application',
                         dest='snapshot_file')
 
     args = parser.parse_args()
@@ -115,7 +115,6 @@ def device_choice(adb_instance):
                 sys.exit(1)
             else:
                 return list(devices.keys())[0]
-
 
         for device in devices:
             choice = choice + 1
@@ -208,10 +207,10 @@ def amdh():
 
     # Related to APKs dump
     snapshot = False
-    snapshot_file = ""
+    snapshot_dir = ""
     if arguments.snapshot_file:
         snapshot = True
-        snapshot_file = arguments.snapshot_file
+        snapshot_dir = arguments.snapshot_file
 
     # Check if one of the operation are chosen
     if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \
@@ -227,8 +226,10 @@ def amdh():
     report_apps = {}
 
     packages = []
+    app_type = None
     if arguments.app_type:
         packages = adb_instance.list_installed_packages(arguments.app_type)
+        app_type = arguments.app_type
 
     if adb_instance.check_pending_update():
         out.print_warning("The system has a pending update!")
@@ -285,7 +286,8 @@ def amdh():
                         out.print_info("Dangerous permissions revoked\n")
                     else:
                         out.print_error(
-                            "An error occured while revoking permission {} to package {}".format(perm, app.package_name))
+                            "An error occured while revoking permission {} to package {}".format(perm,
+                                                                                                 app.package_name))
 
                 elif arguments.R and not app.dangerous_perms:
                     out.print_info("No dangerous permissions granted for this package\n")
@@ -406,12 +408,12 @@ def amdh():
         settings_check.check()
 
     if list_processes:
-        process_choice_list =[]
+        process_choice_list = []
         current_processes = adb_instance.list_backgroud_apps().split("\n")
         out.print_info("Current running user processes:")
 
-        for i in range(0, len(current_processes)-1):
-            out.print_info("{}- {}".format(i+1, current_processes[i]))
+        for i in range(0, len(current_processes) - 1):
+            out.print_info("{}- {}".format(i + 1, current_processes[i]))
 
         print("")
         choice = input("Select id(s) of process(es) to kill (separated by comma ','): ")
@@ -425,14 +427,27 @@ def amdh():
         for process in process_choice_list:
             adb_instance.force_stop_app(current_processes[int(process) - 1])
 
-    if snapshot :
-        out.print_info("Starting snapshot")
-        snapshot_obj = Snapshot(adb_instance)
-        report = snapshot_obj.get_report()
-        with open(snapshot_file, 'w') as fp:
-            json.dump(report, fp, indent=4)
-        out.print_info("Snapshot finished")
+    if snapshot:
+        input("Unlock your phone and press any key to continue")
+        # set stay_awake to 1
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
 
+        out.print_info("Starting snapshot")
+        if not os.path.isdir(snapshot_dir):
+            os.makedirs(snapshot_dir)
+
+        if app_type:
+            snapshot_obj = Snapshot(adb_instance, app_type)
+        else:
+            snapshot_obj = Snapshot(adb_instance)
+
+        report = snapshot_obj.get_report()
+
+        with open(snapshot_dir + "/" + "report.json", 'w') as fp:
+            json.dump(report, fp, indent=4)
+
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
+        out.print_info("Snapshot finished")
 
 
 if __name__ == "__main__":

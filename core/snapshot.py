@@ -65,7 +65,6 @@ class Snapshot:
         thread_backup = Thread(target=self.adb_instance.backup, args=(package, output))
         thread_backup.start()
         time.sleep(0.2)
-        print("sending")
         # password field
         self.adb_instance.send_keyevent(61)
         # DO NOT BACKUP

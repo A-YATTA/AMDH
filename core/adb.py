@@ -202,7 +202,13 @@ class ADB:
 
     def get_content_sms(self):
         """This function return the content of SMSs"""
-        command = ["shell", "content", "query", "--uri", "content://sms/"]
+        command = ["shell", "content", "query", "--uri", "content://sms/ "]
+        return self.adb_exec(command)
+
+    def get_content_sms_projection(self, projection, condition):
+
+        command = ["shell", "content", "query", "--uri", "content://sms/", "--projection", projection, "--where",
+                   condition]
         return self.adb_exec(command)
 
     def get_content_contacts(self):

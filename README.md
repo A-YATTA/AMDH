@@ -6,7 +6,7 @@
 An Android Mobile Device Hardening written with python3 
 
 ## Motivations
-AMDH was created to help automating and listing all applications installed devices and also to protect privacy in this "big" age of "data"
+AMDH was created to help automating and listing all applications installed devices and also to protect privacy in this "big" age of "data".
 
 ## Features 
 - Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure)) 
@@ -133,8 +133,6 @@ AMDH include malware detection based on most used permissions and combinations b
 
 It's based on more than 500 malware samples uniques permissions that are never used by legitimate applications (based on more than 400 ligitimate applications).
 
-> Note: Most system Apps will be flagged as "Malware" but can be ignored for this version. 
-
 Used malware collections:
 - [https://github.com/ashishb/android-malware](https://github.com/ashishb/android-malware)
 - [https://github.com/sk3ptre/AndroidMalware_2018](https://github.com/sk3ptre/AndroidMalware_2018)
@@ -145,6 +143,14 @@ Used malware collections:
 ## Static Analysis
 - Find, dump and list dangerous permissions of packed APKs
 - Dump libraries
+
+## Snapshot
+Snapshot can help to monitor the system state and backup the phone data:
+- applications and their permissions 
+- system settings 
+- Contacts
+- SMS 
+
 
 
 ## Roadmap

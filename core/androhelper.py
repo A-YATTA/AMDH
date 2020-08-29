@@ -2,10 +2,10 @@ from androguard.misc import AnalyzeAPK
 import re
 import json
 import os
-from core.malwares.actionSpy import ActionSpy
-from core.malwares.wolfRat import WolfRat
-from core.malwares.anubis import Anubis
-from core.malwares.utils import check_header
+from core.malware.actionSpy import ActionSpy
+from core.malware.wolfRat import WolfRat
+from core.malware.anubis import Anubis
+from core.malware.utils import check_header
 from config import *
 
 
@@ -17,7 +17,7 @@ class AndroHelper:
         self.output_dir = output_dir + "/"
         self.packed_files = dict()
         self.a, self.d, self.dx = AnalyzeAPK(self.apk_path)
-        self.detected_malwares = dict()
+        self.detected_malware = dict()
 
     @property
     def analyse(self):
@@ -64,20 +64,20 @@ class AndroHelper:
 
                 self.packed_files[self.a.get_package()][file] = dangerous_perms
 
-        return {"packed_file": self.packed_files, "detected_malwares": self.detected_malwares}
+        return {"packed_file": self.packed_files, "detected_malware": self.detected_malware}
 
 
     def malware_detect(self):
         action_spy = ActionSpy(apk_path=self.apk_path, output_dir=self.output_dir)
         succeeded_test = action_spy.check()
-        self.detected_malwares["actionspy"] = succeeded_test
+        self.detected_malware["actionspy"] = succeeded_test
 
         wolf_rat = WolfRat(apk_path=self.apk_path, output_dir=self.output_dir)
         succeeded_test = wolf_rat.check()
-        self.detected_malwares["wolfrat"] = succeeded_test
+        self.detected_malware["wolfrat"] = succeeded_test
 
         anubis = Anubis(apk_path=self.apk_path, output_dir=self.output_dir)
         succeeded_test = anubis.check()
-        self.detected_malwares["anubis"] = succeeded_test
+        self.detected_malware["anubis"] = succeeded_test
 
 

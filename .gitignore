@@ -142,6 +142,6 @@ cython_debug/
 
 core/__pycache__/*
 utils/__pycache__/*
-core/malwares/__pycache__/*
-core/malwares/__pycache__/*
+core/malware/__pycache__/*
+core/malware/__pycache__/*
 .idea/

@@ -108,3 +108,4 @@ class Snapshot:
     def __remove_row_projection__(self, string):
         return re.split("Row: [0-9]* ", string)[1].strip().split("=")[1]
 
+

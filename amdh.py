@@ -15,12 +15,14 @@ import json
 
 out = Out("Linux")
 
+
 # Status of the App
 class Status(Enum):
     ENABLED = 'e'
     DISABLED = 'd'
     THIRD_PARTY = '3'
     SYSTEM = 's'
+
 
 def args_parse(print_help=False):
     parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\n',
@@ -243,7 +245,7 @@ def amdh():
             dumpsys_out = adb_instance.dumpsys(["package", package])
             perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
             app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
-            perms, dangerous_perms, is_device_owner, known_malware = app.check_app()
+            perms, dangerous_perms, is_device_admin, known_malware = app.check_app()
 
             if known_malware:
                 out.print_error("{} is known as malware".format(package))
@@ -256,18 +258,20 @@ def amdh():
                         out.print_warning("\t " + perm + " : ")
                         out.print_warning("\t\t" + desc)
 
-                    report_apps[package] = {"permissions": perms, "dangerous_perms": dangerous_perms}
+                    report_apps[package]["permissions"] = dict()
+                    report_apps[package]["permissions"] = {"all_permissions": perms, "dangerous_perms": dangerous_perms}
 
                 else:
                     out.print_info("Package {} has no dangerous permissions".format(package))
 
-                if is_device_owner:
-                    message = "/!\ \t" + package + " is device owner\t/!\ "
+                if is_device_admin:
+                    message = "/!\ \t" + package + " is device admin\t/!\ "
                     padding = len(message)
                     out.print_warning("-" * padding)
                     out.print_warning(message)
                     out.print_warning("-" * padding)
 
+                    report_apps[package] = {"device_admin": is_device_admin}
                     if arguments.rar:
                         removed, dpm = app.remove_device_admin_for_app()
                         if removed:
@@ -289,14 +293,15 @@ def amdh():
                 elif arguments.R and not app.dangerous_perms:
                     out.print_info("No dangerous permissions granted for this package\n")
 
-                if app.malware_confidence > 0:
+                if app.malware_confidence > 0 or app.score < 0:
                     out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
-                    out.print_high_warning("The application uses some permissions used also by malwares")
-                    out.print_high_warning(str(app.malware_confidence) + " permissions combinations used also by "
-                                                                         "malwares")
+                    out.print_high_warning("The application uses some permissions used also by malware")
+                    if app.malware_confidence > 0:
+                        out.print_high_warning(str(app.malware_confidence) + " permissions combinations used also by "
+                                                                             "malware")
 
                 if app.score < 0:
-                    out.print_high_warning("The application uses frequent malwares permissions ")
+                    out.print_high_warning("The application uses frequent malware permissions ")
 
                 print("************************************************************************")
                 time.sleep(0.5)
@@ -379,7 +384,7 @@ def amdh():
                 package_info = app.static_analysis()
                 out.print_info("\tMalware identification")
 
-                for key, value in package_info["detected_malwares"].items():
+                for key, value in package_info["detected_malware"].items():
                     out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
 
                 if package_info and package_info["packed_file"] and \

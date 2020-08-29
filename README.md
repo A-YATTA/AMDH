@@ -9,7 +9,7 @@ An Android Mobile Device Hardening written with python3
 AMDH was created to help automating and listing all applications installed devices and also to protect privacy in this "big" age of "data".
 
 ## Features 
-- Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure)) 
+- Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
 - List current users processes running in background and kill selected ones
 - Analyse current installed applications on the device:
   - list [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)  and revokes them
@@ -24,7 +24,7 @@ AMDH was created to help automating and listing all applications installed devic
 - Static analysis for malware detection. Current detected malware:
    - ActionSpy
    - WolfRat
-   - Anubis (version 1: More samples are needed)
+   - Anubis
 - Snapshot the current phone state to a json file:
   - Applications (including system and disabled Apps):
     - first install time
@@ -150,17 +150,6 @@ Snapshot can help to monitor the system state and backup the phone data:
 - system settings 
 - Contacts
 - SMS 
-
-
-
-## Roadmap
-| Feature            | status        | 
-| -----------------  |:-------------:| 
-| UI                 | Version 2.0 in progress ([AMDH-UI](https://github.com/SecTheTech/AMDH-UI)) |
-| Static Analysis    | Waiting       |
-| Forensic mode      | In Progress   |
-| Android application| Waiting       | 
-
 
 ## Known Issues
 - The command "pm revoke" return exit success code but does not revoke the permissions for some malware.

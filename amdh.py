@@ -15,10 +15,15 @@ import json
 
 out = Out("Linux")
 
+# Status of the App
+class Status(Enum):
+    ENABLED = 'e'
+    DISABLED = 'd'
+    THIRD_PARTY = '3'
+    SYSTEM = 's'
 
 def args_parse(print_help=False):
-    parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\nBy default the script will scan '
-                                                 'the Android system and Apps without any modification',
+    parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\n',
                                      formatter_class=RawTextHelpFormatter)
     parser.add_argument('-sS',
                         help='Scan the system settings',
@@ -67,7 +72,7 @@ def args_parse(print_help=False):
                         action='store_true')
 
     parser.add_argument('-S', '--snapshot',
-                        help='Write the current state of the phone to a json file and backup application',
+                        help='Write the current state of the phone to a json file and backup applications',
                         dest='snapshot_file')
 
     args = parser.parse_args()
@@ -85,14 +90,6 @@ def args_parse(print_help=False):
         return
 
     return args
-
-
-# Status of the App
-class Status(Enum):
-    ENABLED = 'e'
-    DISABLED = 'd'
-    THIRD_PARTY = '3'
-    SYSTEM = 's'
 
 
 def device_choice(adb_instance):
@@ -428,7 +425,7 @@ def amdh():
             adb_instance.force_stop_app(current_processes[int(process) - 1])
 
     if snapshot:
-        input("Unlock your phone and press any key to continue")
+        input("Unlock your phone and press ENTER key to continue")
         # set stay_awake to 1
         adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
 
@@ -437,9 +434,9 @@ def amdh():
             os.makedirs(snapshot_dir)
 
         if app_type:
-            snapshot_obj = Snapshot(adb_instance, app_type)
+            snapshot_obj = Snapshot(adb_instance, app_type, out_dir=snapshot_dir)
         else:
-            snapshot_obj = Snapshot(adb_instance)
+            snapshot_obj = Snapshot(adb_instance, out_dir=snapshot_dir)
 
         report = snapshot_obj.get_report()
 

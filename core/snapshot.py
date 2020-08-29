@@ -1,9 +1,9 @@
 from core.app import Status
 
 import re
-import os
 from threading import Thread
 import time
+
 
 class Snapshot:
 
@@ -21,7 +21,8 @@ class Snapshot:
             self.report[package] = dict()
             self.report[package]["firstInstallTime"] = self.adb_instance.get_package_first_install_time(package)
             self.report[package]["lastUpdateTime"] = self.adb_instance.get_package_last_update_time(package)
-            self.report[package]["grantedPermissions"] = self.adb_instance.get_req_perms_dumpsys_package(dumpsys_package)
+            self.report[package]["grantedPermissions"] = self.adb_instance.get_req_perms_dumpsys_package(
+                dumpsys_package)
 
             if package in self.adb_instance.dumpsys(["device_policy"]):
                 self.report[package]["deviceAdmin"] = True
@@ -33,7 +34,7 @@ class Snapshot:
                 # TODO: backup password
                 output = self.out_dir + "/" + package + ".ab"
                 self.__backup__(package, output)
-                self.report[package]["backup"] = output
+                self.report[package]["backup"] = package + ".ab"
 
     def snapshot_settings(self):
         self.report["settings"] = dict()
@@ -47,10 +48,39 @@ class Snapshot:
         self.report["settings"]["system"] = dict(x.split("=", 1) for x in system_settings.split("\n") if x.strip())
 
     def snapshot_sms(self):
-        self.report["sms"] = self.adb_instance.get_content_sms()
+        sms_ids = self.adb_instance.get_content_sms_projection("_id", "1=1")
+        self.report["sms"] = dict()
+        if not sms_ids:
+            return
+
+        for sms_id in sms_ids.split("\n"):
+            if not sms_id:
+                break
+            sms_id = self.__remove_row_projection__(sms_id)
+
+            self.report["sms"][sms_id] = dict()
+
+            address = self.__remove_row_projection__(self.adb_instance.get_content_sms_projection(
+                                                                                "address", "'_id=" + sms_id + "'"))
+            date = self.__remove_row_projection__(self.adb_instance.get_content_sms_projection(
+                                                                                "date", "'_id=" + sms_id + "'"))
+            date_sent = self.__remove_row_projection__(self.adb_instance.get_content_sms_projection(
+                                                                                "date_sent", "'_id=" + sms_id + "'"))
+            body = self.__remove_row_projection__(self.adb_instance.get_content_sms_projection(
+                                                                                "body", "'_id=" + sms_id + "'"))
+            seen = self.__remove_row_projection__(self.adb_instance.get_content_sms_projection(
+                                                                                "seen", "'_id=" + sms_id + "'"))
+
+            self.report["sms"][sms_id] = {"address": address, "date": date, "date_sent": date_sent, "body": body,
+                                          "seen": seen}
 
     def snapshot_contacts(self):
-        self.report["contacts"] = self.adb_instance.get_content_contacts()
+        contatcts_result = self.adb_instance.get_content_contacts()
+        self.report["contacts"] = dict()
+        id = 1
+        for contact in re.split("Row: [0-9]* ", contatcts_result):
+            self.report["contacts"][str(id)] = dict(map(str.strip, sub.split('=', 1)) for sub in contact.strip().split(', ') if '=' in sub)
+            id += 1
 
     def get_report(self):
         self.report = dict()
@@ -64,7 +94,7 @@ class Snapshot:
     def __backup__(self, package, output):
         thread_backup = Thread(target=self.adb_instance.backup, args=(package, output))
         thread_backup.start()
-        time.sleep(0.2)
+        time.sleep(0.5)
         # password field
         self.adb_instance.send_keyevent(61)
         # DO NOT BACKUP
@@ -75,9 +105,6 @@ class Snapshot:
         self.adb_instance.send_keyevent(66)
         thread_backup.join()
 
-
-
-
-
-
+    def __remove_row_projection__(self, string):
+        return re.split("Row: [0-9]* ", string)[1].strip().split("=")[1]
 

@@ -1,7 +1,6 @@
 from core.app import Status
 
 import re
-import os
 from threading import Thread
 import time
 
@@ -76,7 +75,12 @@ class Snapshot:
                                           "seen": seen}
 
     def snapshot_contacts(self):
-        self.report["contacts"] = self.adb_instance.get_content_contacts()
+        contatcts_result = self.adb_instance.get_content_contacts()
+        self.report["contacts"] = dict()
+        id = 1
+        for contact in re.split("Row: [0-9]* ", contatcts_result):
+            self.report["contacts"][str(id)] = dict(map(str.strip, sub.split('=', 1)) for sub in contact.strip().split(', ') if '=' in sub)
+            id += 1
 
     def get_report(self):
         self.report = dict()
@@ -90,7 +94,7 @@ class Snapshot:
     def __backup__(self, package, output):
         thread_backup = Thread(target=self.adb_instance.backup, args=(package, output))
         thread_backup.start()
-        time.sleep(0.2)
+        time.sleep(0.5)
         # password field
         self.adb_instance.send_keyevent(61)
         # DO NOT BACKUP

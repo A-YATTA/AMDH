@@ -434,9 +434,9 @@ def amdh():
             os.makedirs(snapshot_dir)
 
         if app_type:
-            snapshot_obj = Snapshot(adb_instance, app_type, snapshot_dir)
+            snapshot_obj = Snapshot(adb_instance, app_type, out_dir=snapshot_dir)
         else:
-            snapshot_obj = Snapshot(adb_instance)
+            snapshot_obj = Snapshot(adb_instance, out_dir=snapshot_dir)
 
         report = snapshot_obj.get_report()
 

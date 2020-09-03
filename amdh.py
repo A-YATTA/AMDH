@@ -222,7 +222,7 @@ def amdh():
     device_id = device_choice(adb_instance)
     adb_instance = ADB(adb_path, device_id)
     settings_check = None
-    report_apps = {}
+    report_apps = dict()
 
     packages = []
     app_type = None
@@ -242,12 +242,15 @@ def amdh():
             if not list_apps:
                 out.print_info(package)
 
+            report_apps[package] = dict()
+
             dumpsys_out = adb_instance.dumpsys(["package", package])
             perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
             app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
             perms, dangerous_perms, is_device_admin, known_malware = app.check_app()
 
             if known_malware:
+                report_apps[package]["malware"] = True
                 out.print_error("{} is known as malware".format(package))
 
             if scan_applications:
@@ -259,19 +262,21 @@ def amdh():
                         out.print_warning("\t\t" + desc)
 
                     report_apps[package]["permissions"] = dict()
-                    report_apps[package]["permissions"] = {"all_permissions": perms, "dangerous_perms": dangerous_perms}
+                    report_apps[package]["permissions"] = {"all_permissions": list(perms.keys()),
+                                                           "dangerous_perms": dangerous_perms}
 
                 else:
                     out.print_info("Package {} has no dangerous permissions".format(package))
 
                 if is_device_admin:
-                    message = "/!\ \t" + package + " is device admin\t/!\ "
+                    message = f"/!\ t {package} is device admin \t /!\ "
                     padding = len(message)
                     out.print_warning("-" * padding)
                     out.print_warning(message)
                     out.print_warning("-" * padding)
 
                     report_apps[package] = {"device_admin": is_device_admin}
+
                     if arguments.rar:
                         removed, dpm = app.remove_device_admin_for_app()
                         if removed:
@@ -287,8 +292,7 @@ def amdh():
                         out.print_info("Dangerous permissions revoked\n")
                     else:
                         out.print_error(
-                            "An error occured while revoking permission {} to package {}".format(perm,
-                                                                                                 app.package_name))
+                            f"An error occured while revoking permission {perm} to package {app.package_name}")
 
                 elif arguments.R and not app.dangerous_perms:
                     out.print_info("No dangerous permissions granted for this package\n")
@@ -304,7 +308,13 @@ def amdh():
                     out.print_high_warning("The application uses frequent malware permissions ")
 
                 print("************************************************************************")
-                time.sleep(0.5)
+                time.sleep(1)
+
+        if scan_applications:
+            with open("report_apps.json", 'w') as fp:
+                json.dump(report_apps, fp, indent=4)
+
+            out.print_info("Report generated: report_apps.json")
 
     if list_apps:
         print("************************************************************************")

@@ -74,8 +74,9 @@ def args_parse(print_help=False):
                         action='store_true')
 
     parser.add_argument('-S', '--snapshot',
-                        help='Write the current state of the phone to a json file and backup applications',
-                        dest='snapshot_file')
+                        help='Snapshot the current state of the phone to a json file and backup applications into '
+                             'SNAPSHOT_DIR',
+                        dest='snapshot_dir')
 
     args = parser.parse_args()
 
@@ -207,9 +208,9 @@ def amdh():
     # Related to APKs dump
     snapshot = False
     snapshot_dir = ""
-    if arguments.snapshot_file:
+    if arguments.snapshot_dir:
         snapshot = True
-        snapshot_dir = arguments.snapshot_file
+        snapshot_dir = arguments.snapshot_dir
 
     # Check if one of the operation are chosen
     if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \
@@ -369,7 +370,6 @@ def amdh():
             if action == 'd' or action == 'u' or action == 's' or action == 'S':
                 break
             else:
-                print("action " + action + " this")
                 out.print_error("Invalid action")
                 continue
 

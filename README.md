@@ -2,7 +2,6 @@
 <div align="center">
 <img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
 </div>
-
 An Android Mobile Device Hardening written with python3
 
 ## Motivations
@@ -14,6 +13,7 @@ AMDH was created to help automating and listing all applications installed devic
 - [x] Analyse current installed applications on the device:
   - [x] list [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)  and revokes them
   - [x] compare with permissions used by malware 
+  - [x] generate report.json
 - [x] List applications:
   - [x] uninstall/disable App
   - [x] revoke admins receivers
@@ -24,7 +24,7 @@ AMDH was created to help automating and listing all applications installed devic
 - [x] Static analysis for malware detection. Current detected malware:
    - [x] ActionSpy
    - [x] WolfRat
-   - [x] Anubis (version 1)
+   - [x] Anubis
 - [x] Snapshot the current phone state to a json file:
   - [x] Applications (including system and disabled Apps):
     - [x] first install time
@@ -82,8 +82,8 @@ optional arguments:
                         Scan application option "-sA" is required
   -l                    List numbered applications to disable, uninstall or analyse
   -P                    List current users processes
-  -S SNAPSHOT_FILE, --snapshot SNAPSHOT_FILE
-                        Write the current state of the phone to a json file and backup application
+  -S SNAPSHOT_DIR, --snapshot SNAPSHOT_DIR
+                        Snapshot the current state of the phone to a json file and backup applications into SNAPSHOT_DIR
 ```
 
 # Documentation & Help
@@ -101,7 +101,6 @@ Used malware collections:
 - [https://github.com/sk3ptre/AndroidMalware_2018](https://github.com/sk3ptre/AndroidMalware_2018)
 - [https://github.com/sk3ptre/AndroidMalware_2019](https://github.com/sk3ptre/AndroidMalware_2019)
 - [https://github.com/sk3ptre/AndroidMalware_2020](https://github.com/sk3ptre/AndroidMalware_2020)
-
 
 ## Static Analysis
 - Find, dump and list dangerous permissions of packed APKs using androguard
@@ -129,11 +128,9 @@ python amdh.py -sS
 ```
 ![Scan Settings](screenshots/scan_settings.png (Settings scan))
 
-
 **Harden**
-
 ```
-python amdh.py -sA -H 
+python amdh.py -sA -R -rar
 ```
 ![Hardening Applications Permissions](screenshots/apps_hardening_permissions.png (Revoking dangerous permissions and removing device admin receiver))
 ```
@@ -141,20 +138,12 @@ python amdh.py -sS -H
 ```
 ![Hardening Settings](screenshots/settings_hardening.png (Settings Hardening))
 
-**Uninstall/disable apps**
-```
-python amdh.py -l
-``` 
-![Applications list](screenshots/uninstall_apps.png (Applications list and uninstalling))
-
-An error occured for the second app because it's a device admin app. Runing with flag '-rar' solved the problem.
-
 **Static Analysis**
 ```
 python amdh.py -l -D out
 ``` 
 
-![Static Analyis](screenshots/Static_analysis.png (Embedded APK))
+![Static Analyis](screenshots/static_analysis.png (Embedded APK))
 
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  

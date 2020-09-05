@@ -6,7 +6,7 @@ from core.malware.actionSpy import ActionSpy
 from core.malware.wolfRat import WolfRat
 from core.malware.anubis import Anubis
 from core.malware.utils import check_header
-from config import *
+from config.main import *
 
 
 class AndroHelper:
@@ -45,7 +45,7 @@ class AndroHelper:
                 except Exception as e:  # not apk file
                     continue
 
-                with open(permissions_file) as json_file:
+                with open(PERMISSIONS_FILE) as json_file:
                     permissions = json.load(json_file)
                 perms_desc = {}
                 dangerous_perms = {}

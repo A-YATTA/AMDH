@@ -9,7 +9,7 @@ from argparse import RawTextHelpFormatter
 import time
 import sys
 import os
-from config import *
+from config.main import *
 from core.snapshot import Snapshot
 import json
 
@@ -168,7 +168,7 @@ def amdh():
                 args_parse(True)
                 sys.exit(1)
         else:  # Windows
-            if not os.path.isfile(adb_windows_path):
+            if not os.path.isfile(ADB_WINDOWS_PATH):
                 out.print_error("adb not found please use '-d' to specify the path")
                 sys.exit(1)
 
@@ -270,7 +270,7 @@ def amdh():
                     out.print_info("Package {} has no dangerous permissions".format(package))
 
                 if is_device_admin:
-                    message = f"/!\ t {package} is device admin \t /!\ "
+                    message = f"/!\ \t {package} is device admin \t /!\ "
                     padding = len(message)
                     out.print_warning("-" * padding)
                     out.print_warning(message)
@@ -412,9 +412,9 @@ def amdh():
                 break
 
     if harden:
-        settings_check = Settings(settings_file, adb_instance, True, out=out)
+        settings_check = Settings(SETTINGS_FILE, adb_instance, True, out=out)
     else:
-        settings_check = Settings(settings_file, adb_instance, out=out)
+        settings_check = Settings(SETTINGS_FILE, adb_instance, out=out)
 
     if scan_settings:
         settings_check.check()

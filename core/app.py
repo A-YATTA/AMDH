@@ -3,7 +3,7 @@ import json
 import re
 import os
 from core.androhelper import AndroHelper
-import config
+from config import main
 
 
 class Status(Enum):
@@ -45,7 +45,7 @@ class App:
         return None, None, None, self.known_malware()
 
     def check_perms(self):
-        with open(config.permissions_file) as json_file:
+        with open(main.PERMISSIONS_FILE) as json_file:
             permissions = json.load(json_file)
         perms_desc = {}
         self.dangerous_perms = {}
@@ -87,7 +87,7 @@ class App:
         return True
 
     def malware_perms_detect(self, perms):
-        with open(config.malware_perms) as json_file:
+        with open(main.MALWARE_PERMS) as json_file:
             malware_perms = json.load(json_file)
 
         if not perms:
@@ -129,7 +129,7 @@ class App:
             return androhelper.analyse
 
     def known_malware(self):
-        with open(config.malware_packages_file) as json_file:
+        with open(main.MALWARE_PACKAGES_FILE) as json_file:
             malware_packages = json.load(json_file)
 
         if self.package_name in malware_packages["packages"]:

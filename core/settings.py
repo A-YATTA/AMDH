@@ -1,7 +1,6 @@
-from utils.out import *
 import json
 
-from config import *
+from config.main import *
 
 class Settings:
 
@@ -13,7 +12,7 @@ class Settings:
         self.out = out
 
     def check(self):
-        with open(settings_file) as settingsFile:
+        with open(SETTINGS_FILE) as settingsFile:
             settings = json.load(settingsFile)
 
         self.out.print_info("++++++++++++++++++++++++++++++++++++++++++++++++")

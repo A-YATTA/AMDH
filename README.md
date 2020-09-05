@@ -51,7 +51,7 @@ $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
 ```
 
 # Usage
-> Note: For Windows you have to specify the ADB path or edit the variable "adb_windows_path" in config.py
+> Note: For Windows you have to specify the ADB path or edit the variable "adb_windows_path" in "config/main.py".
 
 > Warning: when using -l argument with enabled application '-t e', system apps will be listed. Uninstalling system Apps can break your Android system. The use of 'disable' instead of 'uninstall' is recommanded for system Apps.
 ```

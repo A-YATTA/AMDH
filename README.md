@@ -84,6 +84,8 @@ optional arguments:
   -P                    List current users processes
   -S SNAPSHOT_DIR, --snapshot SNAPSHOT_DIR
                         Snapshot the current state of the phone to a json file and backup applications into SNAPSHOT_DIR
+  -cS SNAPSHOT_REPORT, --cmp-snapshot SNAPSHOT_REPORT
+                        Compare SNAPSHOT_REPORT with the current phone state
 ```
 
 # Documentation & Help
@@ -148,8 +150,5 @@ python amdh.py -l -D out
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  
 
-Donation: 
-
-[Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url)
-
+## support: 
 [![Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/secthetech)

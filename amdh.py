@@ -78,6 +78,10 @@ def args_parse(print_help=False):
                              'SNAPSHOT_DIR',
                         dest='snapshot_dir')
 
+    parser.add_argument('-cS', '--cmp-snapshot',
+                        help='Compare SNAPSHOT_REPORT with the current phone state',
+                        dest='snapshot_report')
+
     args = parser.parse_args()
 
     if (args.rar or args.R) and not args.sA:
@@ -212,9 +216,16 @@ def amdh():
         snapshot = True
         snapshot_dir = arguments.snapshot_dir
 
+    cmp_snap = False
+    snapshot_report = ""
+    if arguments.snapshot_report:
+        cmp_snap = True
+        backup = False
+        snapshot_report = arguments.snapshot_report
+
     # Check if one of the operation are chosen
     if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \
-            not list_processes and not snapshot:
+            not list_processes and not snapshot and not cmp_snap:
         out.print_error("Please choose an operation")
         args_parse(True)
         exit(1)
@@ -460,6 +471,19 @@ def amdh():
 
         adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
         out.print_info("Snapshot finished")
+
+    if cmp_snap:
+        cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
+
+        out.print_info("Installed Apps after snapshot was taken")
+        print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
+        out.print_info("Apps exists in snapshot")
+        print(json.dumps(cmp_report["apps"]["apps_exist_in_snap"], indent=4))
+        out.print_info("Uninstalled after snapshot was taken")
+        print(json.dumps(cmp_report["apps"]["uninstalled_apps"], indent=4))
+
+        out.print_info("Changed settings after snapshot was taken")
+        print(json.dumps(cmp_report["settings"], indent=4))
 
 
 if __name__ == "__main__":

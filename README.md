@@ -34,7 +34,9 @@ AMDH was created to help automating and listing all applications installed devic
   - [x] SMS: current SMS messages
   - [x] Contacts: current list of contacts
   - [x] Backup applications that has backup enabled
-- [ ] Snapshots comparison
+- [x] Snapshots comparison with the current phone state
+  - [x] Applications
+  - [x] Settings
 - [ ] Restore Snapshot
 - [ ] HTML report
 
@@ -84,10 +86,11 @@ optional arguments:
   -P                    List current users processes
   -S SNAPSHOT_DIR, --snapshot SNAPSHOT_DIR
                         Snapshot the current state of the phone to a json file and backup applications into SNAPSHOT_DIR
+  -cS SNAPSHOT_REPORT, --cmp-snapshot SNAPSHOT_REPORT
+                        Compare SNAPSHOT_REPORT with the current phone state
 ```
 
 # Documentation & Help
-
 ## Tests & CIS version
 - Tested on Android 8, 9 and 10
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
@@ -114,7 +117,7 @@ Snapshot can help to monitor the system state and backup the phone data:
 - SMS 
 
 ## Known Issues
-- The command "pm revoke" return exit success code but does not revoke the permissions for some malware.
+- The command "pm revoke" return exit success code but does not revoke permissions for some malware.
 
 # Screenshots
 **Scan**
@@ -148,8 +151,5 @@ python amdh.py -l -D out
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  
 
-Donation: 
-
-[Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NVWQM4EGVLKLU&source=url)
-
+## support: 
 [![Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/secthetech)

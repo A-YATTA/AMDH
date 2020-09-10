@@ -148,6 +148,128 @@ python amdh.py -l -D out
 
 ![Static Analyis](screenshots/static_analysis.png (Embedded APK))
 
+**Snapshot**
+```
+python amdh.py -S out
+```
+![Snapshot](screenshots/snapshot.png (Snapshot))
+
+**Snapshot Comparison**
+```
+$ python amdh.py -cS out/report.json
+[-] INFO: List of devices:
+[-] INFO: The device emulator-5554 will be used.
+
+[-] INFO: Installed Apps after snapshot was taken
+{}
+[-] INFO: Apps exists in snapshot
+{
+    "com.whatsapp": {
+        "firstInstallTime": "2020-07-06 18:53:07",
+        "lastUpdateTime": "2020-07-06 18:53:07",
+        "grantedPermissions": [
+            "com.google.android.c2dm.permission.RECEIVE",
+            "android.permission.USE_CREDENTIALS",
+            "android.permission.MODIFY_AUDIO_SETTINGS",
+            "com.google.android.providers.gsf.permission.READ_GSERVICES",
+            "android.permission.MANAGE_ACCOUNTS",
+            "android.permission.NFC",
+            "android.permission.CHANGE_NETWORK_STATE",
+            "android.permission.FOREGROUND_SERVICE",
+            "android.permission.WRITE_SYNC_SETTINGS",
+            "android.permission.RECEIVE_BOOT_COMPLETED",
+            "com.whatsapp.permission.BROADCAST",
+            "com.android.launcher.permission.UNINSTALL_SHORTCUT",
+            "android.permission.READ_PROFILE",
+            "android.permission.BLUETOOTH",
+            "android.permission.GET_TASKS",
+            "android.permission.AUTHENTICATE_ACCOUNTS",
+            "android.permission.INTERNET",
+            "android.permission.USE_FULL_SCREEN_INTENT",
+            "android.permission.BROADCAST_STICKY",
+            "com.whatsapp.permission.REGISTRATION",
+            "android.permission.CHANGE_WIFI_STATE",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "android.permission.USE_FINGERPRINT",
+            "android.permission.READ_SYNC_STATS",
+            "android.permission.MANAGE_OWN_CALLS",
+            "android.permission.READ_SYNC_SETTINGS",
+            "com.whatsapp.sticker.READ",
+            "android.permission.VIBRATE",
+            "com.whatsapp.permission.MAPS_RECEIVE",
+            "android.permission.ACCESS_WIFI_STATE",
+            "android.permission.USE_BIOMETRIC",
+            "com.android.launcher.permission.INSTALL_SHORTCUT",
+            "android.permission.WAKE_LOCK"
+        ],
+        "deviceAdmin": false
+    },
+    "com.poby.hardroid": {
+        "firstInstallTime": "2020-07-18 09:32:53",
+        "lastUpdateTime": "2020-07-18 09:53:03",
+        "grantedPermissions": [],
+        "deviceAdmin": false
+    },
+    "org.thoughtcrime.securesms": {
+        "firstInstallTime": "2020-07-10 23:57:53",
+        "lastUpdateTime": "2020-07-10 23:57:53",
+        "grantedPermissions": [
+            "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
+            "com.google.android.c2dm.permission.RECEIVE",
+            "android.permission.USE_CREDENTIALS",
+            "android.permission.MODIFY_AUDIO_SETTINGS",
+            "org.thoughtcrime.securesms.ACCESS_SECRETS",
+            "android.permission.ACCESS_NOTIFICATION_POLICY",
+            "android.permission.CHANGE_NETWORK_STATE",
+            "android.permission.FOREGROUND_SERVICE",
+            "android.permission.WRITE_SYNC_SETTINGS",
+            "android.permission.RECEIVE_BOOT_COMPLETED",
+            "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+            "android.permission.READ_PROFILE",
+            "android.permission.BLUETOOTH",
+            "android.permission.AUTHENTICATE_ACCOUNTS",
+            "android.permission.INTERNET",
+            "android.permission.WRITE_PROFILE",
+            "android.permission.USE_FULL_SCREEN_INTENT",
+            "android.permission.BROADCAST_STICKY",
+            "android.permission.WRITE_SMS",
+            "android.permission.CHANGE_WIFI_STATE",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "android.permission.DISABLE_KEYGUARD",
+            "android.permission.SET_WALLPAPER",
+            "android.permission.USE_FINGERPRINT",
+            "android.permission.READ_SYNC_SETTINGS",
+            "android.permission.VIBRATE",
+            "android.permission.ACCESS_WIFI_STATE",
+            "com.android.launcher.permission.INSTALL_SHORTCUT",
+            "android.permission.WAKE_LOCK"
+        ],
+        "deviceAdmin": false
+    }
+}
+[-] INFO: Uninstalled after snapshot was taken
+{
+    "com.diy_room_decor.dev3": {
+        "firstInstallTime": "2020-07-18 07:56:44",
+        "lastUpdateTime": "2020-07-18 07:56:44",
+        "grantedPermissions": [
+            "android.permission.INTERNET",
+            "android.permission.ACCESS_NETWORK_STATE"
+        ],
+        "deviceAdmin": false,
+        "backup": "com.diy_room_decor.dev3.ab"
+    }
+}
+[-] INFO: Changed settings after snapshot was taken
+{
+    "global": [
+        "stay_on_while_plugged_in"
+    ],
+    "secure": [],
+    "system": []
+}
+```
+
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  
 

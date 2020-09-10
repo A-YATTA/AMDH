@@ -34,7 +34,9 @@ AMDH was created to help automating and listing all applications installed devic
   - [x] SMS: current SMS messages
   - [x] Contacts: current list of contacts
   - [x] Backup applications that has backup enabled
-- [ ] Snapshots comparison
+- [x] Snapshots comparison with the current phone state
+  - [x] Applications
+  - [x] Settings
 - [ ] Restore Snapshot
 - [ ] HTML report
 
@@ -89,7 +91,6 @@ optional arguments:
 ```
 
 # Documentation & Help
-
 ## Tests & CIS version
 - Tested on Android 8, 9 and 10
 - Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
@@ -116,7 +117,7 @@ Snapshot can help to monitor the system state and backup the phone data:
 - SMS 
 
 ## Known Issues
-- The command "pm revoke" return exit success code but does not revoke the permissions for some malware.
+- The command "pm revoke" return exit success code but does not revoke permissions for some malware.
 
 # Screenshots
 **Scan**

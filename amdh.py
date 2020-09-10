@@ -473,14 +473,17 @@ def amdh():
         out.print_info("Snapshot finished")
 
     if cmp_snap:
-        new_installed_apps, apps_exist_in_snap, uninstalled_apps = Snapshot(adb_instance, snapshot_file=snapshot_report,
-                                                                            backup=backup).snapshot_compare()
+        cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
+
         out.print_info("Installed Apps after snapshot was taken")
-        print(json.dumps(new_installed_apps, indent=4))
-        out.print_info("Apps already exists already in snapshot")
-        print(json.dumps(apps_exist_in_snap, indent=4))
+        print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
+        out.print_info("Apps exists in snapshot")
+        print(json.dumps(cmp_report["apps"]["apps_exist_in_snap"], indent=4))
         out.print_info("Uninstalled after snapshot was taken")
-        print(json.dumps(uninstalled_apps, indent=4))
+        print(json.dumps(cmp_report["apps"]["uninstalled_apps"], indent=4))
+
+        out.print_info("Changed settings after snapshot was taken")
+        print(json.dumps(cmp_report["settings"], indent=4))
 
 
 if __name__ == "__main__":

@@ -127,7 +127,7 @@ class Snapshot:
         return re.split("Row: [0-9]* ", string)[1].strip().split("=")[1]
 
     def snapshot_compare(self):
-        return self.cmp_snapshot_apps()
+        return {"apps": self.cmp_snapshot_apps(), "settings": self.cmp_snapshot_settings()}
 
     def cmp_snapshot_apps(self):
         with open(self.snapshot_file) as json_file:
@@ -143,13 +143,63 @@ class Snapshot:
             if installed_app in snap_apps:
                 apps_exist_in_snap.update({installed_app: current_apps[installed_app]})
             else:
-                new_installed_apps.update(installed_app)
+                new_installed_apps.update({installed_app: current_apps[installed_app]})
 
         if len(snap_apps) > len(current_apps):
             uninstalled_apps.update({app: snap_apps[app] for app in set(snap_apps) - set(current_apps)})
         else:
             uninstalled_apps.update({app: current_apps[app] for app in set(current_apps) - set(snap_apps)})
 
-        return new_installed_apps, apps_exist_in_snap, uninstalled_apps
+        report = dict()
+        report["new_installed_apps"] = new_installed_apps
+        report["apps_exist_in_snap"] = apps_exist_in_snap
+        report["uninstalled_apps"] = uninstalled_apps
+        return report
+
+    def cmp_snapshot_settings(self):
+        changed_keys = dict()
+
+        with open(self.snapshot_file) as json_file:
+            snap_settings = json.load(json_file)["settings"]
+
+        current_global_settings = dict(x.split("=", 1) for x in
+                                       self.adb_instance.get_all_settings_section("global").split("\n") if x.strip())
+        current_secure_settings = dict(x.split("=", 1) for x in
+                                       self.adb_instance.get_all_settings_section("secure").split("\n") if x.strip())
+        current_system_settings = dict(x.split("=", 1) for x in
+                                       self.adb_instance.get_all_settings_section("system").split("\n") if x.strip())
+
+
+
+        # Global settings
+        changed_keys["global"] = []
+
+        for key in snap_settings["global"].keys():
+            if key in current_global_settings:
+                current_value = current_global_settings[key]
+
+                if current_value != snap_settings["global"][key]:
+                    changed_keys["global"].append(key)
+
+        # Secure settings
+        changed_keys["secure"] = []
+        for key in snap_settings["secure"]:
+            if key in current_secure_settings:
+                current_value = current_secure_settings[key]
+
+                if current_value != snap_settings["secure"][key]:
+                    changed_keys["secure"].append(key)
+
+        # System settings
+        changed_keys["system"] = []
+        for key in snap_settings["system"]:
+            if key in current_system_settings:
+                current_value = current_system_settings[key]
+
+                if current_value != snap_settings["system"][key]:
+                    changed_keys["system"].append(key)
+
+        return changed_keys
+
 
 

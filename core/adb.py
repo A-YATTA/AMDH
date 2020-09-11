@@ -9,7 +9,6 @@ class ADB:
         self.adb_path = adb_path
         self.device_id = device_id
 
-
     def adb_exec(self, commands_array):
         """This function return the output of the command 'adb commands_array[0] commands_array[1] ...'"""
 
@@ -28,7 +27,6 @@ class ADB:
 
         return result.stdout
 
-    
     def list_devices(self):
         """This function return a list of the connected devices"""
         devices = {}
@@ -38,7 +36,6 @@ class ADB:
                 temp = line.split("\t")
                 devices.update({temp[0].strip(): temp[1].strip()})
         return devices
-
 
     # exceptions => apps not available
     # status => Enum in application.py
@@ -53,7 +50,6 @@ class ADB:
             list_installed_apps.append(line.split(":")[1])
 
         return list_installed_apps
-
 
     def dump_apk_from_device(self, package_name, output_file="base.apk"):
         """This function dump the apk of package_name package as output_file. if output file
@@ -155,7 +151,6 @@ class ADB:
                    "--bind", "name:s:" + key, "--bind value:" + expected_value_type + ":" + expected_value]
         return self.adb_exec(command)
 
-
     def remove_dpm(self, dpm_receiver):
         """This function remove dpm_receiver from active admins list"""
         self.adb_exec(["shell", "dpm", "remove-active-admin", dpm_receiver])
@@ -185,7 +180,6 @@ class ADB:
         adb_force_stop_command = ["shell", "am", "force-stop", package_name]
         self.adb_exec(adb_force_stop_command)
 
-
     def get_package_first_install_time(self, package_name):
         """This function return the first install time of package_name"""
         dumpsys_args = ["package", package_name]
@@ -206,7 +200,7 @@ class ADB:
         return self.adb_exec(command)
 
     def get_content_sms_projection(self, projection, condition):
-
+        """This function return the projection of SMS table if the condition is satisfied"""
         command = ["shell", "content", "query", "--uri", "content://sms/", "--projection", projection, "--where",
                    condition]
         return self.adb_exec(command)
@@ -217,10 +211,12 @@ class ADB:
         return self.adb_exec(command)
 
     def backup(self, package, out_path):
+        """this function backup package to the output (out_path)"""
         command = ["backup", "-f", out_path, "-apk", package]
         return self.adb_exec(command)
 
     def send_keyevent(self, keyevent):
+        """This function send a keyevent and return exit code"""
         command = ["shell", "input", "keyevent", str(keyevent)]
         return self.adb_exec(command)
 

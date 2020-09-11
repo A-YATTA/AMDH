@@ -19,7 +19,6 @@ class AndroHelper:
         self.a, self.d, self.dx = AnalyzeAPK(self.apk_path)
         self.detected_malware = dict()
 
-    @property
     def analyse(self):
         self.packed_files = dict()
         self.malware_detect()
@@ -42,11 +41,13 @@ class AndroHelper:
                         self.packed_files[self.a.get_package()] = {file: {}}
                     else:
                         continue
-                except Exception as e:  # not apk file
+                except Exception as e:
+                    # not an APK file
                     continue
 
                 with open(PERMISSIONS_FILE) as json_file:
                     permissions = json.load(json_file)
+
                 perms_desc = {}
                 dangerous_perms = {}
 
@@ -65,7 +66,6 @@ class AndroHelper:
                 self.packed_files[self.a.get_package()][file] = dangerous_perms
 
         return {"packed_file": self.packed_files, "detected_malware": self.detected_malware}
-
 
     def malware_detect(self):
         action_spy = ActionSpy(apk_path=self.apk_path, output_dir=self.output_dir)

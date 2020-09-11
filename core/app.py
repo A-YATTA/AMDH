@@ -13,7 +13,6 @@ class Status(Enum):
     SYSTEM = 's'
 
 
-
 class App:
     def __init__(self, adb_instance, package_name, scan=True, dump_apk=False, out_dir="apks_dump", perms_list={}):
         self.adb_instance = adb_instance
@@ -28,7 +27,6 @@ class App:
         self.score = 0
 
     def check_app(self):
-        packages = self.adb_instance.list_installed_packages(Status.THIRD_PARTY.value)
         if self.dump_apk:
             if not os.path.isdir(self.out_dir):
                 os.mkdir(self.out_dir)
@@ -47,6 +45,7 @@ class App:
     def check_perms(self):
         with open(main.PERMISSIONS_FILE) as json_file:
             permissions = json.load(json_file)
+
         perms_desc = {}
         self.dangerous_perms = {}
         self.malware_perms_detect(self.perms_list)
@@ -124,8 +123,10 @@ class App:
 
             out_file = self.out_dir + "/" + self.package_name + ".apk"
             self.adb_instance.dump_apk_from_device(self.package_name, out_file)
-            # output directory for embedded files: "outdir/package_name"
+
+            # output directory for embedded files: "out_dir/package_name/"
             androhelper = AndroHelper(out_file, self.out_dir + "/" + self.package_name)
+
             return androhelper.analyse
 
     def known_malware(self):

@@ -66,7 +66,7 @@ def args_parse(print_help=False):
                         action='store_true')
 
     parser.add_argument('-l',
-                        help='List numbered applications to disable, uninstall or analyse\n',
+                        help='List numbered applications to disable, uninstall or analyze\n',
                         action='store_true')
 
     parser.add_argument('-P',

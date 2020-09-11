@@ -9,8 +9,8 @@ AMDH was created to help automating and listing all applications installed devic
 
 ## Features 
 - [x] Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
-- [x] List current users processes running in background and kill selected ones
-- [x] Analyse current installed applications on the device:
+- [x] List current users processes and kill selected ones
+- [x] Analyze current installed applications on the device:
   - [x] list [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)  and revokes them
   - [x] compare with permissions used by malware 
   - [x] generate report.json
@@ -18,7 +18,6 @@ AMDH was created to help automating and listing all applications installed devic
   - [x] uninstall/disable App
   - [x] revoke admins receivers
 - [x] Dumps APKs of installed applications
-- [x] List current users processes
 - [x] Check if the system has pending updates
 - [x] Extract packed APKs if exists
 - [x] Static analysis for malware detection. Current detected malware:
@@ -82,7 +81,7 @@ optional arguments:
                         Scan application option "-sA" is required
   -R                    For each app revoke all dangerous permissions
                         Scan application option "-sA" is required
-  -l                    List numbered applications to disable, uninstall or analyse
+  -l                    List numbered applications to disable, uninstall or analyze
   -P                    List current users processes
   -S SNAPSHOT_DIR, --snapshot SNAPSHOT_DIR
                         Snapshot the current state of the phone to a json file and backup applications into SNAPSHOT_DIR
@@ -114,12 +113,12 @@ Snapshot can help to monitor the system state and backup the phone data:
 - applications and their permissions 
 - system settings 
 - Contacts
-- SMS 
+- SMS
 
 ## Known Issues
 - The command "pm revoke" return exit success code but does not revoke permissions for some malware.
 
-# Screenshots
+# Screenshots & examples
 **Scan**
 ```
 python amdh.py -sA

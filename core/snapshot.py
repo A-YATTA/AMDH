@@ -83,17 +83,17 @@ class Snapshot:
         return self.report["sms"]
 
     def snapshot_contacts(self):
-        contatcts_result = self.adb_instance.get_content_contacts()
+        contacts_result = self.adb_instance.get_content_contacts()
         self.report["contacts"] = dict()
 
-        if not contatcts_result or "No result found." in contatcts_result:
+        if not contacts_result or "No result found." in contacts_result:
             return self.report["contacts"]
 
-        id = 1
-        for contact in re.split("Row: [0-9]* ", contatcts_result):
-            self.report["contacts"][str(id)] = \
+        id_contact = 1
+        for contact in re.split("Row: [0-9]* ", contacts_result):
+            self.report["contacts"][str(id_contact)] = \
                 dict(map(str.strip, sub.split('=', 1)) for sub in contact.strip().split(', ') if '=' in sub)
-            id += 1
+            id_contact += 1
 
         return self.report["contacts"]
 
@@ -168,8 +168,6 @@ class Snapshot:
                                        self.adb_instance.get_all_settings_section("secure").split("\n") if x.strip())
         current_system_settings = dict(x.split("=", 1) for x in
                                        self.adb_instance.get_all_settings_section("system").split("\n") if x.strip())
-
-
 
         # Global settings
         changed_keys["global"] = []

@@ -222,10 +222,11 @@ class Snapshot:
 
         self.restore_report["apps"] = dict()
         self.restore_apps(snapshot_path, snap_apps)
-        print(self.restore_report)
 
         self.restore_report["settings"] = dict()
         self.restore_settings(snap_settings)
+
+        return self.restore_report
 
     def __restore__(self, backup):
         thread_restore = Thread(target=self.adb_instance.restore, args=(backup,))

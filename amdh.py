@@ -501,8 +501,8 @@ def amdh():
 
     if restore_snap:
         restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
-        restore_snap = True
-        snap_to_restore = arguments.snapshot_to_restore
+        out.print_info("Restore report")
+        print(json.dumps(restore_report["apps"], indent=4))
 
 
 if __name__ == "__main__":

@@ -500,7 +500,15 @@ def amdh():
         print(json.dumps(cmp_report["settings"], indent=4))
 
     if restore_snap:
+        input("Unlock your phone and press ENTER key to continue")
+
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
+        out.print_info("Starting restore")
         restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
+
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
+        out.print_info("Restore finished")
+
         out.print_info("Restore report")
         print(json.dumps(restore_report, indent=4))
 

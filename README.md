@@ -274,6 +274,48 @@ $ python amdh.py -cS out/report.json
     "system": []
 }
 ```
+**Snapshot Restore : Apps**
+```
+$ python amdh.py -rS out/report.json
+[-] INFO: List of devices:
+[-] INFO: The device emulator-5554 will be used.
+
+Unlock your phone and press ENTER key to continue
+[-] INFO: Starting restore
+[-] INFO: Restore finished
+[-] INFO: Restore report
+{
+    "apps": {
+        {
+            "enthusiast.io.accesspointproximity": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "com.my.app": {
+                "install": "success",
+                "backup": "NOT FOUND"
+            },
+            "rikka.appops": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "com.idea.backup.smscontacts": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "net.chobin.android.psdxlite": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "com.poby.h": {
+                "install": "Failed: Command '['adb', '-s', 'emulator-5556', 'install', 'out/com.poby.h.apk']' returned non-zero exit status 1.",
+                "backup": "restored"
+            }
+        }
+    }
+}
+```
+
 
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  

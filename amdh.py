@@ -82,6 +82,10 @@ def args_parse(print_help=False):
                         help='Compare SNAPSHOT_REPORT with the current phone state',
                         dest='snapshot_report')
 
+    parser.add_argument('-rS', '--restore-snapshot',
+                        help='Restore SNAPSHOT_TO_RESTORE',
+                        dest='snapshot_to_restore')
+
     args = parser.parse_args()
 
     if (args.rar or args.R) and not args.sA:
@@ -209,13 +213,14 @@ def amdh():
     if arguments.P:
         list_processes = True
 
-    # Related to APKs dump
+    # Related to snapshot
     snapshot = False
     snapshot_dir = ""
     if arguments.snapshot_dir:
         snapshot = True
         snapshot_dir = arguments.snapshot_dir
 
+    # Snapshot comparison
     cmp_snap = False
     snapshot_report = ""
     if arguments.snapshot_report:
@@ -223,9 +228,17 @@ def amdh():
         backup = False
         snapshot_report = arguments.snapshot_report
 
+    # Snapshot restore
+    restore_snap = False
+    snap_to_restore = ""
+    if arguments.snapshot_to_restore:
+        restore_snap = True
+        snap_to_restore = arguments.snapshot_to_restore
+
+
     # Check if one of the operation are chosen
     if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \
-            not list_processes and not snapshot and not cmp_snap:
+            not list_processes and not snapshot and not cmp_snap and not restore_snap:
         out.print_error("Please choose an operation")
         args_parse(True)
         exit(1)
@@ -473,6 +486,7 @@ def amdh():
         out.print_info("Snapshot finished")
 
     if cmp_snap:
+
         cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
 
         out.print_info("Installed Apps after snapshot was taken")
@@ -484,6 +498,19 @@ def amdh():
 
         out.print_info("Changed settings after snapshot was taken")
         print(json.dumps(cmp_report["settings"], indent=4))
+
+    if restore_snap:
+        input("Unlock your phone and press ENTER key to continue")
+
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
+        out.print_info("Starting restore")
+        restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
+
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
+        out.print_info("Restore finished")
+
+        out.print_info("Restore report")
+        print(json.dumps(restore_report, indent=4))
 
 
 if __name__ == "__main__":

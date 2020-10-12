@@ -5,7 +5,7 @@
 An Android Mobile Device Hardening written with python3
 
 ## Motivations
-AMDH was created to help automating and listing all applications installed devices and also to protect privacy in this "big" age of "data".
+AMDH was created to help automating and listing all applications installed on devices and also to protect privacy in this "big" age of "data".
 
 ## Features 
 - [x] Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
@@ -25,7 +25,8 @@ AMDH was created to help automating and listing all applications installed devic
    - [x] WolfRat
    - [x] Anubis
 - [x] Snapshot the current phone state to a json file:
-  - [x] Applications (including system and disabled Apps):
+  - [x] Applications:
+    - [x] APK
     - [x] first install time
     - [x] last update time
     - [x] current permissions 
@@ -37,6 +38,9 @@ AMDH was created to help automating and listing all applications installed devic
   - [x] Applications
   - [x] Settings
 - [ ] Restore Snapshot
+  - [x] Applications
+  - [ ] Settings
+  - [ ] Contacts
 - [ ] HTML report
 
 ## Requirement
@@ -87,6 +91,8 @@ optional arguments:
                         Snapshot the current state of the phone to a json file and backup applications into SNAPSHOT_DIR
   -cS SNAPSHOT_REPORT, --cmp-snapshot SNAPSHOT_REPORT
                         Compare SNAPSHOT_REPORT with the current phone state
+  -rS SNAPSHOT_TO_RESTORE, --restore-snapshot SNAPSHOT_TO_RESTORE
+                        Restore SNAPSHOT_TO_RESTORE
 ```
 
 # Documentation & Help
@@ -268,6 +274,48 @@ $ python amdh.py -cS out/report.json
     "system": []
 }
 ```
+**Snapshot Restore : Apps**
+```
+$ python amdh.py -rS out/report.json
+[-] INFO: List of devices:
+[-] INFO: The device emulator-5554 will be used.
+
+Unlock your phone and press ENTER key to continue
+[-] INFO: Starting restore
+[-] INFO: Restore finished
+[-] INFO: Restore report
+{
+    "apps": {
+        {
+            "enthusiast.io.accesspointproximity": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "com.my.app": {
+                "install": "success",
+                "backup": "NOT FOUND"
+            },
+            "rikka.appops": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "com.idea.backup.smscontacts": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "net.chobin.android.psdxlite": {
+                "install": "success",
+                "backup": "restored"
+            },
+            "com.poby.h": {
+                "install": "Failed: Command '['adb', '-s', 'emulator-5556', 'install', 'out/com.poby.h.apk']' returned non-zero exit status 1.",
+                "backup": "restored"
+            }
+        }
+    }
+}
+```
+
 
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  

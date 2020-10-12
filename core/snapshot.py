@@ -2,6 +2,7 @@ import re
 from threading import Thread
 import time
 import json
+from pathlib import Path
 
 from core.app import Status
 
@@ -16,6 +17,7 @@ class Snapshot:
         self.report = dict()
         self.snapshot_file = snapshot_file
         self.backup = backup
+        self.restore_report = dict()
 
     def snapshot_packages(self):
         packages = self.adb_instance.list_installed_packages(self.app_type)
@@ -39,6 +41,14 @@ class Snapshot:
                 output = self.out_dir + "/" + package + ".ab"
                 self.__backup__(package, output)
                 self.report["apps"][package]["backup"] = package + ".ab"
+
+            # Dump apk
+            try:
+                self.adb_instance.dump_apk_from_device(package, self.out_dir + "/" + package + ".apk")
+                self.report["apps"][package]["apk"] = package + ".apk"
+            except Exception as e:
+                # cannot dump APK file
+                continue
 
         return self.report["apps"]
 
@@ -130,6 +140,7 @@ class Snapshot:
         return {"apps": self.cmp_snapshot_apps(), "settings": self.cmp_snapshot_settings()}
 
     def cmp_snapshot_apps(self):
+
         with open(self.snapshot_file) as json_file:
             snap_apps = json.load(json_file)["apps"]
 
@@ -199,5 +210,63 @@ class Snapshot:
 
         return changed_keys
 
+    def snapshot_restore(self):
+
+        with open(self.snapshot_file) as json_report:
+            snap_apps = json.load(json_report)["apps"]
+
+        with open(self.snapshot_file) as json_report:
+            snap_settings = json.load(json_report)["settings"]
+
+        snapshot_path = Path(self.snapshot_file).parent
+
+        self.restore_report["apps"] = dict()
+        self.restore_apps(snapshot_path, snap_apps)
+
+        self.restore_report["settings"] = dict()
+        self.restore_settings(snap_settings)
+
+        return self.restore_report
+
+    def __restore__(self, backup):
+        thread_restore = Thread(target=self.adb_instance.restore, args=(backup,))
+        thread_restore.start()
+        time.sleep(0.5)
+        # password field
+        self.adb_instance.send_keyevent(61)
+        # DO NOT RESTORE
+        self.adb_instance.send_keyevent(61)
+        # RESTORE MY DATA
+        self.adb_instance.send_keyevent(61)
+        # Confirm
+        self.adb_instance.send_keyevent(66)
+        thread_restore.join()
+
+    def restore_apps(self, snapshot_path, dict_apps):
+        for app in dict_apps:
+            self.restore_report["apps"][app] = dict()
+            if "apk" in dict_apps[app].keys():
+                try:
+                    self.adb_instance.install_app(str(snapshot_path) + "/" + dict_apps[app]['apk'])
+                    self.restore_report["apps"][app]["install"] = "success"
+                except Exception as e:
+                    self.restore_report["apps"][app]["install"] = "Failed: " + str(e)
+
+            if "backup" in dict_apps[app].keys():
+                try:
+                    self.__restore__(str(snapshot_path) + "/" + dict_apps[app]['backup'])
+                    self.restore_report["apps"][app]["backup"] = "restored"
+                except Exception as e:
+                    self.restore_report["apps"][app]["backup"] = "Failed :" + str(e)
+            else:
+                self.restore_report["apps"][app]["backup"] = "NOT FOUND"
+
+        return self.restore_report
+
+    def restore_settings(self, dict_settings):
+        return
+
+    def restore_contacts(self, contacts):
+        return
 
 

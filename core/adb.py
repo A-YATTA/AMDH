@@ -65,6 +65,16 @@ class ADB:
 
         return False
 
+    def install_app(self, apk_file):
+        """This function install apk_file."""
+        adb_install_command = ["install", apk_file]
+        output_install_command = self.adb_exec(adb_install_command)
+
+        if "Success" in output_install_command:
+            return True
+
+        return False
+
     def uninstall_app(self, package_name):
         """This function uninstall package_name using user 0 privileges."""
         adb_uninstall_command = ["shell", "pm", "uninstall", "--user", "0", package_name]
@@ -220,5 +230,7 @@ class ADB:
         command = ["shell", "input", "keyevent", str(keyevent)]
         return self.adb_exec(command)
 
-
-
+    def restore(self, backup):
+        """this function restore the backup file"""
+        command = ["restore", backup]
+        return self.adb_exec(command)

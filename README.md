@@ -5,7 +5,7 @@
 An Android Mobile Device Hardening written with python3
 
 ## Motivations
-AMDH was created to help automating and listing all applications installed devices and also to protect privacy in this "big" age of "data".
+AMDH was created to help automating and listing all applications installed on devices and also to protect privacy in this "big" age of "data".
 
 ## Features 
 - [x] Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
@@ -25,7 +25,8 @@ AMDH was created to help automating and listing all applications installed devic
    - [x] WolfRat
    - [x] Anubis
 - [x] Snapshot the current phone state to a json file:
-  - [x] Applications (including system and disabled Apps):
+  - [x] Applications:
+    - [x] APK
     - [x] first install time
     - [x] last update time
     - [x] current permissions 
@@ -37,6 +38,9 @@ AMDH was created to help automating and listing all applications installed devic
   - [x] Applications
   - [x] Settings
 - [ ] Restore Snapshot
+  - [x] Applications
+  - [ ] Settings
+  - [ ] Contacts
 - [ ] HTML report
 
 ## Requirement
@@ -87,6 +91,8 @@ optional arguments:
                         Snapshot the current state of the phone to a json file and backup applications into SNAPSHOT_DIR
   -cS SNAPSHOT_REPORT, --cmp-snapshot SNAPSHOT_REPORT
                         Compare SNAPSHOT_REPORT with the current phone state
+  -rS SNAPSHOT_TO_RESTORE, --restore-snapshot SNAPSHOT_TO_RESTORE
+                        Restore SNAPSHOT_TO_RESTORE
 ```
 
 # Documentation & Help

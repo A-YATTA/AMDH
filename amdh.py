@@ -12,6 +12,7 @@ import os
 from config.main import *
 from core.snapshot import Snapshot
 import json
+from shutil import which
 
 out = Out("Linux")
 
@@ -171,13 +172,13 @@ def amdh():
         adb_path = arguments.adb_path
     else:
         if platform == "linux" or platform == "linux2" or platform == "Darwin":
-            if not os.path.isfile(adb_path):
-                out.print_error("adb not found please use '-d' to specify the path")
+            if which("adb") is None and not os.path.isfile(ADB_BINARY):
+                out.print_error("adb not found please use '-a' to specify the path")
                 args_parse(True)
                 sys.exit(1)
         else:  # Windows
-            if not os.path.isfile(ADB_WINDOWS_PATH):
-                out.print_error("adb not found please use '-d' to specify the path")
+            if which("adb") is None and not os.path.isfile(ADB_WINDOWS_PATH):
+                out.print_error("adb not found please use '-a' to specify the path")
                 sys.exit(1)
 
     # Related to APKs dump
@@ -234,7 +235,6 @@ def amdh():
     if arguments.snapshot_to_restore:
         restore_snap = True
         snap_to_restore = arguments.snapshot_to_restore
-
 
     # Check if one of the operation are chosen
     if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \

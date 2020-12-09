@@ -419,7 +419,10 @@ def amdh():
                 out.print_info("\tMalware identification")
 
                 for key, value in package_info["detected_malware"].items():
-                    out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
+                    if value > 0:
+                        out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
+                    else:
+                        out.print_info("\t\t " + key + ": " + str(value) + " positive test")
 
                 if package_info and package_info["packed_file"] and \
                         package_info["packed_file"][packages[int(id_app) - 1]].keys():

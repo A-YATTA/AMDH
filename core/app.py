@@ -127,7 +127,7 @@ class App:
             # output directory for embedded files: "out_dir/package_name/"
             androhelper = AndroHelper(out_file, self.out_dir + "/" + self.package_name)
 
-            return androhelper.analyse
+            return androhelper.analyse()
 
     def known_malware(self):
         with open(main.MALWARE_PACKAGES_FILE) as json_file:

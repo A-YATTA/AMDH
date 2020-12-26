@@ -5,7 +5,6 @@ from enum import Enum
 from sys import platform
 import argparse
 from core.app import App
-from argparse import RawTextHelpFormatter
 import time
 import sys
 import os
@@ -27,7 +26,7 @@ class Status(Enum):
 
 def args_parse(print_help=False):
     parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\n',
-                                     formatter_class=RawTextHelpFormatter)
+                                     formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-sS',
                         help='Scan the system settings',
                         action='store_true')

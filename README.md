@@ -1,8 +1,14 @@
-# AMDH
+# AMDH [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SecTheTech/AMDH/context:python)
 <div align="center">
 <img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
 </div>
 An Android Mobile Device Hardening written with python3
+
+### Android version:
+[PoBY-A](https://github.com/SecTheTech/PObY-A)  (Still in development)
+
+## UI
+[AMDH-UI](https://github.com/SecTheTech/AMDH-UI)
 
 ## Motivations
 AMDH was created to help automating and listing all applications installed on devices and also to protect privacy in this "big" age of "data".

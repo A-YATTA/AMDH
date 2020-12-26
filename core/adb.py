@@ -12,7 +12,7 @@ class ADB:
     def adb_exec(self, commands_array):
         """This function return the output of the command 'adb commands_array[0] commands_array[1] ...'"""
 
-        if not self.device_id :
+        if not self.device_id:
             commands_array.insert(0, self.adb_path)
             result = run(commands_array,
                          stdout=PIPE, stderr=PIPE, check=True,
@@ -41,7 +41,7 @@ class ADB:
     # status => Enum in application.py
     def list_installed_packages(self, status):
         """This function return a list of the installed packages. """
-        adb_command = ["shell", "pm", "list", "packages", "-"+status]
+        adb_command = ["shell", "pm", "list", "packages", "-" + status]
         output_command = self.adb_exec(adb_command)
         list_installed_apps = []
         for line in output_command.split("\n"):
@@ -116,7 +116,6 @@ class ADB:
         """This function return a list of granted install permissions from the output of the command
                 'dumpsys  package {package_name}' given as parameter. """
         if "install permissions" in dumpsys_output:
-
             p = re.compile(r'(?<=install permissions:).+?(?=User [0-9]+:)')
             perms_part = re.search(p, dumpsys_output.replace("\n", " "))
             perms_part_tmp = perms_part.group(0).strip().replace(": granted=true", "")
@@ -181,8 +180,9 @@ class ADB:
 
     def list_backgroud_apps(self):
         """This function return the current running applications in background"""
-        command = ["shell", "ps", "-A", "|", "grep", "-E", "-o", "'u[0-9]*_a(.*)*'",  "|", "tr", "-s", "' '"
-                              "|", "cut", "-d", "' '", "-f", "9"]
+        command = ["shell", "ps", "-A", "|", "grep", "-E", "-o", "'u[0-9]*_a(.*)*'", "|", "tr", "-s", "' '",
+                                                                                                      "|", "cut", "-d",
+                   "' '", "-f", "9"]
         return self.adb_exec(command)
 
     def force_stop_app(self, package_name):

@@ -28,7 +28,7 @@ class Snapshot:
             self.report["apps"][package]["firstInstallTime"] = self.adb_instance.get_package_first_install_time(package)
             self.report["apps"][package]["lastUpdateTime"] = self.adb_instance.get_package_last_update_time(package)
             self.report["apps"][package]["grantedPermissions"] = self.adb_instance.get_req_perms_dumpsys_package(
-                dumpsys_package)
+                                                                                                        dumpsys_package)
 
             if package in self.adb_instance.dumpsys(["device_policy"]):
                 self.report["apps"][package]["deviceAdmin"] = True
@@ -262,9 +262,6 @@ class Snapshot:
                 self.restore_report["apps"][app]["backup"] = "NOT FOUND"
 
         return self.restore_report
-
-    def restore_settings(self, dict_settings):
-        return
 
     def restore_contacts(self, contacts):
         return

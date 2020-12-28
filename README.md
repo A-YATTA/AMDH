@@ -47,6 +47,7 @@ AMDH was created to help automating and listing all applications installed on de
   - [x] Applications
   - [ ] Settings
   - [ ] Contacts
+- [x] Manage multiple device at once (in progress)
 - [ ] HTML report
 
 ## Requirement

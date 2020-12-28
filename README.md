@@ -1,4 +1,5 @@
-# AMDH [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SecTheTech/AMDH/context:python)
+# AMDH [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SecTheTech/AMDH/context:python)[![Coffee](https://img.shields.io/badge/patreon-donate-green.svg)](https://img.shields.io/badge/patreon-donate-green.svg))
+
 <div align="center">
 <img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
 </div>
@@ -7,8 +8,12 @@ An Android Mobile Device Hardening written with python3
 ### Android version:
 [PoBY-A](https://github.com/SecTheTech/PObY-A)  (Still in development)
 
-## UI
+### UI
 [AMDH-UI](https://github.com/SecTheTech/AMDH-UI)
+
+## Support 
+<a href="https://www.buymeacoffee.com/secthetech"><img src="https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
+[![Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/secthetech)
 
 ## Motivations
 AMDH was created to help automating and listing all applications installed on devices and also to protect privacy in this "big" age of "data".
@@ -48,6 +53,7 @@ AMDH was created to help automating and listing all applications installed on de
   - [ ] Settings
   - [ ] Contacts
 - [x] Manage multiple device at once (snapshot comparison and restore are not supported yet)
+  - For each device a new thread is created
 - [ ] HTML report
 
 ## Requirement
@@ -323,9 +329,11 @@ Unlock your phone and press ENTER key to continue
 }
 ```
 
-
 # Participation and Ideas
-Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues in this project or send a pull request.  
+Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues or send a pull request.  
 
-## support: 
-[![Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/secthetech)
+
+
+
+
+

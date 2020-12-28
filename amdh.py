@@ -494,24 +494,26 @@ def process(device_id):
         settings_check.check()
 
     if list_processes:
-        process_choice_list = []
-        current_processes = adb_instance.list_backgroud_apps().split("\n")
-        out.print_info("Current running user processes:")
+        with lock:
+            process_choice_list = []
+            current_processes = adb_instance.list_backgroud_apps().split("\n")
+            print("Current running user processes on the device %s" % device_id)
 
-        for i in range(0, len(current_processes) - 1):
-            out.print_info("{}- {}".format(i + 1, current_processes[i]))
+            for i in range(0, len(current_processes) - 1):
+                print("   {}- {}".format(i + 1, current_processes[i]))
 
-        print("")
-        choice = input("Select id(s) of process(es) to kill (separated by comma ','): ")
-        chosen_processes = choice.replace(" ", "").split(",")
-        for c in chosen_processes:
-            if c.isdigit() and (0 < int(c) < len(current_processes) + 1):
-                process_choice_list = process_choice_list + [c]
-            else:
-                out.print_error("option " + c + " does not exist")
+            print("")
+            choice = input("Select id(s) of process(es) to kill (separated by comma ','): ")
+            chosen_processes = choice.replace(" ", "").split(",")
+            for c in chosen_processes:
+                if c.isdigit() and (0 < int(c) < len(current_processes) + 1):
+                    process_choice_list = process_choice_list + [c]
+                else:
+                    print("[X] ERROR: process does not exist")
+                    print("Exiting device %s" % device_id)
 
-        for process in process_choice_list:
-            adb_instance.force_stop_app(current_processes[int(process) - 1])
+            for process in process_choice_list:
+                adb_instance.force_stop_app(current_processes[int(process) - 1])
 
     if snapshot:
         with lock:

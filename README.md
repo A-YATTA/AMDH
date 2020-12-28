@@ -1,5 +1,5 @@
 # AMDH 
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SecTheTech/AMDH/context:python)[![Coffee](https://img.shields.io/badge/patreon-donate-green.svg)](https://www.patreon.com/secthetech))
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SecTheTech/AMDH/context:python)
 [![Patreon](https://img.shields.io/badge/patreon-donate-blue.svg)](https://www.patreon.com/secthetech)
 
 <div align="center">
@@ -16,7 +16,7 @@ An Android Mobile Device Hardening written with python3
 ## Support 
 
 [![Coffee](https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00)](https://www.buymeacoffee.com/secthetech)
-
+[![Patreon](https://img.shields.io/badge/patreon-donate-blue.svg)](https://www.patreon.com/secthetech)
 ## Motivations
 AMDH was created to help automating and listing all applications installed on devices and also to protect privacy in this "big" age of "data".
 

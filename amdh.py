@@ -289,6 +289,32 @@ def amdh():
     adb_instance = ADB(adb_path)
     devices = devices_choice(adb_instance)
 
+    if cmp_snap:
+        cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
+
+        out.print_info("Installed Apps after snapshot was taken")
+        print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
+        out.print_info("Apps exists in snapshot")
+        print(json.dumps(cmp_report["apps"]["apps_exist_in_snap"], indent=4))
+        out.print_info("Uninstalled after snapshot was taken")
+        print(json.dumps(cmp_report["apps"]["uninstalled_apps"], indent=4))
+
+        out.print_info("Changed settings after snapshot was taken")
+        print(json.dumps(cmp_report["settings"], indent=4))
+
+    if restore_snap:
+        input("Unlock your phone and press ENTER key to continue")
+
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
+        out.print_info("Starting restore")
+        restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
+
+        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
+        out.print_info("Restore finished")
+
+        out.print_info("Restore report")
+        print(json.dumps(restore_report, indent=4))
+
     with ThreadPoolExecutor(max_workers=len(devices)) as executor:
         results = {executor.submit(process, device): device for device in devices}
         as_completed(results)
@@ -541,32 +567,6 @@ def process(device_id):
 
         adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
         out.print_info("Snapshot finished")
-
-    if cmp_snap:
-        cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
-
-        out.print_info("Installed Apps after snapshot was taken")
-        print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
-        out.print_info("Apps exists in snapshot")
-        print(json.dumps(cmp_report["apps"]["apps_exist_in_snap"], indent=4))
-        out.print_info("Uninstalled after snapshot was taken")
-        print(json.dumps(cmp_report["apps"]["uninstalled_apps"], indent=4))
-
-        out.print_info("Changed settings after snapshot was taken")
-        print(json.dumps(cmp_report["settings"], indent=4))
-
-    if restore_snap:
-        input("Unlock your phone and press ENTER key to continue")
-
-        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
-        out.print_info("Starting restore")
-        restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
-
-        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
-        out.print_info("Restore finished")
-
-        out.print_info("Restore report")
-        print(json.dumps(restore_report, indent=4))
 
 
 if __name__ == "__main__":

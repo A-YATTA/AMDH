@@ -47,6 +47,7 @@ AMDH was created to help automating and listing all applications installed on de
   - [x] Applications
   - [ ] Settings
   - [ ] Contacts
+- [x] Manage multiple device at once (snapshot comparison and restore are not supported yet)
 - [ ] HTML report
 
 ## Requirement
@@ -55,7 +56,7 @@ AMDH was created to help automating and listing all applications installed on de
 - androguard
 - pwntools
 
-## Installation 
+## Installation
 ```
 $ pip install androguard pwntools 
 $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH

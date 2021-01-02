@@ -1,21 +1,22 @@
 # AMDH 
-
-<p align="center">
-<a href="https://lgtm.com/projects/g/SecTheTech/AMDH/context:python" > <img src="https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18" /></a>
-<a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-green.svg" /></a>
-<a href="https://github.com/secthetech/AMDH"><img src="https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg" /></a>
-<a href="https://www.patreon.com/secthetech"><img src="https://img.shields.io/badge/patreon-donate-green.svg" /></a>
-
-</p>
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SecTheTech/AMDH/context:python)
+[![Patreon](https://img.shields.io/badge/patreon-donate-blue.svg)](https://www.patreon.com/secthetech)
 
 <div align="center">
 <img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
 </div>
 An Android Mobile Device Hardening written with python3
 
+### Android version:
+[PoBY-A](https://github.com/SecTheTech/PObY-A)  (Still in development)
+
 ### UI
 [AMDH-UI](https://github.com/SecTheTech/AMDH-UI)
 
+## Support 
+
+[![Coffee](https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00)](https://www.buymeacoffee.com/secthetech)
+[![Patreon](https://img.shields.io/badge/patreon-donate-blue.svg)](https://www.patreon.com/secthetech)
 ## Motivations
 AMDH was created to help automating and listing all applications installed on devices and also to protect privacy in this "big" age of "data".
 
@@ -333,8 +334,6 @@ Unlock your phone and press ENTER key to continue
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues or send a pull request.  
 
-## Support 
-<a href="https://www.buymeacoffee.com/secthetech"><img src="https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
 
 
 

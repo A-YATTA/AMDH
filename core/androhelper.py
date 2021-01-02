@@ -27,6 +27,7 @@ class AndroHelper:
             file_type = check_header(self.a.get_file(file)[0:4].hex())
 
             if file_type == "JAR":
+
                 if not os.path.isdir(self.output_dir):
                     os.makedirs(self.output_dir)
 
@@ -58,6 +59,7 @@ class AndroHelper:
                             if any(re.findall(r'dangerous', mapped[0]["protection_lvl"], re.IGNORECASE)):
                                 # Permission is flagged as dangerous
                                 dangerous_perms[mapped[0]["permission"]] = mapped[0]["desc"]
+
                         except Exception as e:
                             continue
 

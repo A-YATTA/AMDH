@@ -127,7 +127,7 @@ def devices_choice(adb_instance):
                 out.print_error("You cannot use " + device_id + ", reason: " + device_status)
                 sys.exit(1)
             else:
-                return list(devices.keys())[0]
+                return devices
 
         counter = 0
         for device in devices:
@@ -322,7 +322,6 @@ def amdh():
 
 def process(device_id):
     adb_instance = ADB(adb_path, device_id)
-    settings_check = None
     report_apps = dict()
     out = Out(filename=device_id+".log")
 
@@ -405,7 +404,7 @@ def process(device_id):
                     out.print_high_warning("The application uses frequent malware permissions ")
 
                 #print_info("************************************************************************")
-                time.sleep(1)
+                #time.sleep(1)
 
         if scan_applications:
             with open(device_id + "_report_apps.json", 'w') as fp:

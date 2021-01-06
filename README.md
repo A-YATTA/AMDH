@@ -1,24 +1,20 @@
 # AMDH 
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SecTheTech/AMDH/context:python)
-[![Patreon](https://img.shields.io/badge/patreon-donate-blue.svg)](https://www.patreon.com/secthetech)
+
+<p align="center">
+<a href="https://lgtm.com/projects/g/SecTheTech/AMDH/context:python" > <img src="https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18" /></a>
+<a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-green.svg" /></a>
+<a href="https://github.com/secthetech/AMDH"><img src="https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg" /></a>
+<a href="https://www.patreon.com/secthetech"><img src="https://img.shields.io/badge/patreon-donate-green.svg" /></a>
+
+</p>
 
 <div align="center">
 <img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
 </div>
 An Android Mobile Device Hardening written with python3
 
-### Android version:
-[PoBY-A](https://github.com/SecTheTech/PObY-A)  (Still in development)
-
 ### UI
 [AMDH-UI](https://github.com/SecTheTech/AMDH-UI)
-
-## Support 
-
-[![Coffee](https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00)](https://www.buymeacoffee.com/secthetech)
-[![Patreon](https://img.shields.io/badge/patreon-donate-blue.svg)](https://www.patreon.com/secthetech)
-## Motivations
-AMDH was created to help automating and listing all applications installed on devices and also to protect privacy in this "big" age of "data".
 
 ## Features 
 - [x] Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
@@ -66,8 +62,10 @@ AMDH was created to help automating and listing all applications installed on de
 
 ## Installation
 ```
-$ pip install androguard pwntools 
 $ git clone https://github.com/SecTheTech/AMDH.git; cd AMDH
+$ python3 -m venv amdh
+$ source amdh/bin/activate
+(amdh) $ pip install -r requirement.txt
 ```
 
 # Usage
@@ -112,8 +110,14 @@ optional arguments:
 
 # Documentation & Help
 ## Tests & CIS version
-- Tested on Android 8, 9 and 10
-- Devices: Nokia, LG, Honor, Xiaomi, OnePlus, AVD
+- Tested on Android 7.1.1, 8, 9 and 10
+- Devices: 
+  - Nokia 2.2
+  - LG G6
+  - Honor 7
+  - Xiaomi Mi 1
+  - OnePlus 6
+  - Galaxy Tab A (thanks to donators)
 - CIS version: 1.3.0
 
 ## Malware detection 
@@ -140,43 +144,94 @@ Snapshot can help to monitor the system state and backup the phone data:
 - The command "pm revoke" return exit success code but does not revoke permissions for some malware.
 
 # Screenshots & examples
-**Scan**
-```
-python amdh.py -sA
-```
-![malware detection](screenshots/scan_apps.png (malware detection))
 
+**Scan**
+- Scan applications
 ```
-python amdh.py -sS
+(amdh)$ python amdh.py -sA
 ```
+
+Two files are generated for each device : 
+- DEVICE_ID.log: contains the console output 
+- DEVICE_ID_report_apps.json: json file that contains for each app its granted permissions, and those that are considered as dangerous.
+  Each entry is as follows:
+```
+{
+    "com.package.name": {
+        "permissions": {
+            "all_permissions": [
+                "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
+                "com.google.android.c2dm.permission.RECEIVE",
+                "com.google.android.providers.gsf.permission.READ_GSERVICES",
+                "android.permission.WRITE_SYNC_SETTINGS",
+                "android.permission.RECEIVE_BOOT_COMPLETED",
+                "android.permission.AUTHENTICATE_ACCOUNTS",
+                "android.permission.INTERNET",
+                "android.permission.ACCESS_NETWORK_STATE",
+                "android.permission.USE_FINGERPRINT",
+                "android.permission.READ_SYNC_STATS",
+                "android.permission.READ_SYNC_SETTINGS",
+                "android.permission.VIBRATE",
+                "android.permission.WAKE_LOCK",
+                "android.permission.ACCESS_FINE_LOCATION",
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.ACCESS_COARSE_LOCATION",
+                "android.permission.CAMERA",
+                "android.permission.WRITE_EXTERNAL_STORAGE"
+            ],
+            "dangerous_perms": {
+                "android.permission.ACCESS_FINE_LOCATION": "This app can get your location based on GPS or network location sources such as cell towers and Wi-Fi networks. These location services must be turned on and available on your phone for the app to be able to use them. This may increase battery consumption.",
+                "android.permission.READ_EXTERNAL_STORAGE": "Allows the app to read the contents of your SD card.",
+                "android.permission.ACCESS_COARSE_LOCATION": "This app can get your location based on network sources such as cell towers and Wi-Fi networks. These location services must be turned on and available on your phone for the app to be able to use them.",
+                "android.permission.CAMERA": "This app can take pictures and record videos using the camera at any time.",
+                "android.permission.WRITE_EXTERNAL_STORAGE": "Allows the app to write to the SD card."
+            },
+            "is_device_admin": false,
+        }
+    }
+}
+```
+- Scan settings
+```
+(amdh)$ python amdh.py -sS
+```
+The result of the command is a log file that contains the settings with their current and expected values:
+
 ![Scan Settings](screenshots/scan_settings.png (Settings scan))
 
+
 **Harden**
+- applications hardening
 ```
-python amdh.py -sA -R -rar
+(amdh)$ python amdh.py -sA -R -rar
 ```
-![Hardening Applications Permissions](screenshots/apps_hardening_permissions.png (Revoking dangerous permissions and removing device admin receiver))
+Same report as scan in addition of theses two keys:
 ```
-python amdh.py -sS -H 
+   "is_device_admin_revoked": true,
+   "revoked_dangerous_pemissions": "succeeded"
+```
+> The key `is_device_admin_revoked` will not be in the result if the app is not device admin 
+
+- settings hardening
+```
+(amdh)$ python amdh.py -sS -H 
 ```
 ![Hardening Settings](screenshots/settings_hardening.png (Settings Hardening))
 
 **Static Analysis**
 ```
-python amdh.py -l -D out
-``` 
-
-![Static Analyis](screenshots/static_analysis.png (Embedded APK))
+(amdh)$ python amdh.py -l
+```
 
 **Snapshot**
 ```
-python amdh.py -S out
+(amdh)$ python amdh.py -S out
 ```
 ![Snapshot](screenshots/snapshot.png (Snapshot))
 
 **Snapshot Comparison**
 ```
-$ python amdh.py -cS out/report.json
+(amdh)$ python amdh.py -cS out/report.json
 [-] INFO: List of devices:
 [-] INFO: The device emulator-5554 will be used.
 
@@ -291,7 +346,7 @@ $ python amdh.py -cS out/report.json
 ```
 **Snapshot Restore : Apps**
 ```
-$ python amdh.py -rS out/report.json
+(amdh)$ python amdh.py -rS out/report.json
 [-] INFO: List of devices:
 [-] INFO: The device emulator-5554 will be used.
 
@@ -330,10 +385,16 @@ Unlock your phone and press ENTER key to continue
     }
 }
 ```
+# Credits
+- [sk3ptre](https://github.com/sk3ptre)
+
+- [ashishb](https://github.com/ashishb)
 
 # Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues or send a pull request.  
 
+## Support & encouragement
+<a href="https://www.buymeacoffee.com/secthetech"><img src="https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
 
 
 

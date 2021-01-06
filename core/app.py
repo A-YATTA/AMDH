@@ -67,6 +67,7 @@ class App:
     def is_app_device_owner(self):
         if self.package_name in self.device_policy_out:
             return True
+        return False
 
     def remove_device_admin_for_app(self):
         device_admin_receivers = re.findall(r"(" + self.package_name + ".*):", self.device_policy_out)

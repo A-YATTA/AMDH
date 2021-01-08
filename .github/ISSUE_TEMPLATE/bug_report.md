@@ -18,13 +18,13 @@ A clear and concise description of what you expected to happen.
 
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS]
+ - OS: [e.g. Linux]
  - Python [e.g. 3.6]
 
 **Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Version [e.g. 22]
+ - Device: [e.g. Samsung]
+ - OS: [e.g. Galaxy S9]
+ - Android version [e.g. 22]
 
 **Additional context**
 Add any other context about the problem here.

@@ -13,9 +13,6 @@
 </div>
 An Android Mobile Device Hardening written with python3
 
-### UI
-[AMDH-UI](https://github.com/SecTheTech/AMDH-UI)
-
 ## Features 
 - [x] Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
 - [x] List current users processes and kill selected ones
@@ -48,7 +45,6 @@ An Android Mobile Device Hardening written with python3
   - [x] Settings
 - [ ] Restore Snapshot
   - [x] Applications
-  - [ ] Settings
   - [ ] Contacts
 - [x] Manage multiple device at once (snapshot comparison and restore are not supported yet)
   - For each device a new thread is created

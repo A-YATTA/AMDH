@@ -139,6 +139,30 @@
             "description": "Voice interaction assistance",
             "expected": "",
             "type": "s"
+        },
+        {
+            "name": "voice_recognition_service",
+            "description": "Voice recognition assistance",
+            "expected": "",
+            "type": "s"
+        },
+        {
+            "name": "enabled_notification_assistant",
+            "description": "Notification assistant",
+            "expected": "",
+            "type": "s"
+        },
+        {
+            "name": "web_autofill_query_url",
+            "description": "Autofill server address",
+            "expected": "",
+            "type": "s"
+        },
+        {
+            "name": "input_methods_subtype_history",
+            "description": "Setting to record the history of input method subtype",
+            "expected": "",
+            "type": "s"
         }
     ],
     "global": [

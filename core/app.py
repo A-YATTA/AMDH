@@ -14,17 +14,18 @@ class Status(Enum):
 
 
 class App:
-    def __init__(self, adb_instance, package_name, scan=True, dump_apk=False, out_dir="apks_dump", perms_list={}):
+    def __init__(self, adb_instance, package_name, scan=True, dump_apk=False, out_dir="apks_dump"):
         self.adb_instance = adb_instance
         self.package_name = package_name
         self.out_dir = out_dir
-        self.perms_list = perms_list
         self.dump_apk = dump_apk
         self.device_policy_out = self.adb_instance.dumpsys(["device_policy"])
-        self.dangerous_perms = None
+        self.dangerous_perms = {}
         self.scan = scan
         self.malware_confidence = 0
         self.score = 0
+        dumpsys_out = adb_instance.dumpsys(["package", package_name])
+        self.perms_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
 
     def check_app(self):
         if self.dump_apk:
@@ -51,12 +52,13 @@ class App:
         self.malware_perms_detect(self.perms_list)
 
         for perm in self.perms_list:
+
             try:
-                mapped = list(filter(lambda x: x["permission"] == perm, permissions))
-                perms_desc[perm] = {"desc": mapped[0]["desc"], "level": mapped[0]["protection_lvl"]}
-                if any(re.findall(r'dangerous', mapped[0]["protection_lvl"], re.IGNORECASE)):
+                perms_desc[perm] = {"description": permissions[perm]["description"],
+                                    "level": permissions[perm]["protection_lvl"]}
+                if any(re.findall(r'dangerous', permissions[perm]["protection_lvl"], re.IGNORECASE)):
                     # Permission is flagged as dangerous
-                    self.dangerous_perms[mapped[0]["permission"]] = mapped[0]["desc"]
+                    self.dangerous_perms[perm] = permissions[perm]["description"]
 
             except Exception as e:
                 continue
@@ -128,7 +130,7 @@ class App:
             # output directory for embedded files: "out_dir/package_name/"
             androhelper = AndroHelper(out_file, self.out_dir + "/" + self.package_name)
 
-            return androhelper.analyse()
+            return androhelper.analyze()
 
     def known_malware(self):
         with open(main.MALWARE_PACKAGES_FILE) as json_file:

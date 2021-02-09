@@ -1,7 +1,6 @@
-# AMDH 
-
 <p align="center">
-<a href="https://lgtm.com/projects/g/SecTheTech/AMDH/context:python" > <img src="https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18" /></a>
+<a href="https://lgtm.com/projects/g/SecTheTech/AMDH/context:python" >
+<img src="https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18" /></a>
 <a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-green.svg" /></a>
 <a href="https://github.com/secthetech/AMDH"><img src="https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg" /></a>
 <a href="https://www.patreon.com/secthetech"><img src="https://img.shields.io/badge/patreon-donate-green.svg" /></a>
@@ -9,17 +8,27 @@
 </p>
 
 <div align="center">
-<img src="screenshots/AMDH_800x400.png" title="Android Mobile Device Hardening">
+<img src="images/AMDH_800x400.png" title="Android Mobile Device Hardening">
 </div>
-An Android Mobile Device Hardening written with python3
+
+# AMDH
+Android Mobile Device Hardening written with python3.
+
+## Motivations
+AMDH was created to help automate scanning installed applications on Android devices, detect some known malware
+and also to protect privacy.
 
 ## Features 
-- [x] Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android devices and Android master's branch settings documentation ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
+- [x] Check and harden system's settings based on some CIS (Center of Internet Security) benchmark checks for Android 
+  devices and Android master's branch settings documentation 
+  ([Global settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Global) and 
+  [Secure settings](https://developer.android.com/reference/kotlin/android/provider/Settings.Secure))
 - [x] List current users processes and kill selected ones
 - [x] Analyze current installed applications on the device:
-  - [x] list [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)  and revokes them
+  - [x] list [dangerous permissions](https://developer.android.com/guide/topics/permissions/overview#dangerous_permissions)  
+    and revokes them
   - [x] compare with permissions used by malware 
-  - [x] generate report.json
+  - [x] generate report in JSON format
 - [x] List applications:
   - [x] uninstall/disable App
   - [x] revoke admins receivers
@@ -30,7 +39,7 @@ An Android Mobile Device Hardening written with python3
    - [x] ActionSpy
    - [x] WolfRat
    - [x] Anubis
-- [x] Snapshot the current phone state to a json file:
+- [x] Snapshot the current phone state to a JSON file:
   - [x] Applications:
     - [x] APK
     - [x] first install time
@@ -51,7 +60,7 @@ An Android Mobile Device Hardening written with python3
 - [ ] HTML report
 
 ## Requirement
-- Python3 
+- Python3
 - Android Debug Bridge (ADB) installed
 - androguard
 - pwntools
@@ -67,27 +76,29 @@ $ source amdh/bin/activate
 # Usage
 > Note: For Windows you have to specify the ADB path or edit the variable "adb_windows_path" in "config/main.py".
 
-> Warning: when using -l argument with enabled application '-t e', system apps will be listed. Uninstalling system Apps can break your Android system. The use of 'disable' instead of 'uninstall' is recommanded for system Apps.
+> Warning: when using -l argument with enabled application '-t e', system apps will be listed. Uninstalling system Apps 
+> can break your Android system. The use of 'disable' instead of 'uninstall' is recommended for system Apps.
 ```
 $ python amdh.py -h
-usage: amdh.py [-h] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] [-rar] [-R]
-               [-l] [-P]
+usage: amdh.py [-h] [-d DEVICES] [-sS] [-sA] [-H] [-a ADB_PATH] [-t {e,d,3,s}] [-D APKS_DUMP_FOLDER] 
+          [-rar] [-R] [-l] [-P] [-S SNAPSHOT_DIR] [-cS SNAPSHOT_REPORT] [-rS SNAPSHOT_TO_RESTORE] [-o OUTPUT_DIR]
 
 Android Mobile Device Hardening
-By default the script will scan the Android system and Apps without any modification
 
 optional arguments:
   -h, --help            show this help message and exit
+  -d DEVICES, --devices DEVICES
+                        list of devices separated by comma or "ALL" for all connected devices
   -sS                   Scan the system settings
   -sA                   Scan the installed applications
   -H                    Harden system settings /!\ Developer Options and ADB will be disabled /!\ 
   -a ADB_PATH, --adb-path ADB_PATH
                         Path to ADB binary
   -t {e,d,3,s}          Type of applications:
-                        	e : enabled Apps
-                        	d : disabled Apps
-                        	3 : Third party Apps
-                        	s : System Apps
+                                e: enabled Apps
+                                d: disabled Apps
+                                3: Third party Apps
+                                s: System Apps
   -D APKS_DUMP_FOLDER, --dump-apks APKS_DUMP_FOLDER
                         Dump APKs from device to APKS_DUMP_FOLDER directory
   -rar                  Remove admin receivers: Remove all admin receivers if the app is not a system App
@@ -102,28 +113,38 @@ optional arguments:
                         Compare SNAPSHOT_REPORT with the current phone state
   -rS SNAPSHOT_TO_RESTORE, --restore-snapshot SNAPSHOT_TO_RESTORE
                         Restore SNAPSHOT_TO_RESTORE
+  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
+                        Output directory for reports and logs. Default: out
 ```
 
 # Documentation & Help
 ## Tests & CIS version
 - Tested on Android 7.1.1, 8, 9 and 10
-- Devices: 
-  - Nokia 2.2
-  - LG G6
-  - Honor 7
-  - Xiaomi Mi 1
-  - OnePlus 6
-  - Galaxy Tab A (thanks to donators)
 - CIS version: 1.3.0
 
-## Malware detection 
-Malware detection is based on most used permissions and combinations by malware and known malware packages names. Arround 500 malware samples uniques permissions that are never used by legitimate applications (based on more than 400 ligitimate applications). 
+## Malware detection
+Compare the granted permissions with the permissions described in the file 
+<a href="https://github.com/SecTheTech/AMDH/blob/master/config/malware_perms.json">malware_perms.json</a>. 
+The file contains three nodes:
+- malware_only: permissions used by malware only
+- all: permissions used by malware and legitimate apps
+- combinations: permissions combinations used mostly by malware
 
-Used malware collections:
-- [https://github.com/ashishb/android-malware](https://github.com/ashishb/android-malware)
-- [https://github.com/sk3ptre/AndroidMalware_2018](https://github.com/sk3ptre/AndroidMalware_2018)
-- [https://github.com/sk3ptre/AndroidMalware_2019](https://github.com/sk3ptre/AndroidMalware_2019)
-- [https://github.com/sk3ptre/AndroidMalware_2020](https://github.com/sk3ptre/AndroidMalware_2020)
+### malware only permissions
+malware only permissions are those used only by malware. The malware analyzed are the ones from the repositories:
+- <a href="https://github.com/ashishb/android-malware">https://github.com/ashishb/android-malware</a>
+- <a href="https://github.com/sk3ptre/AndroidMalware_2018">https://github.com/sk3ptre/AndroidMalware_2018</a>
+- <a href="https://github.com/sk3ptre/AndroidMalware_2019">https://github.com/sk3ptre/AndroidMalware_2019</a>
+- <a href="https://github.com/sk3ptre/AndroidMalware_2019">https://github.com/sk3ptre/AndroidMalware_2020</a>
+
+The command "aapt" was used to dump the permissions. The second part was to dump permissions of legitimate Apps 
+(around 400 Apps).
+malware only permissions are the permissions that are used by malware and never appear in legitimate applications 
+analyzed.
+
+### All permissions
+All permissions are used by both malware and legitimate applications. The values are percentage of how much 
+malware used these permissions comparing to legitimate Apps.
 
 ## Static Analysis
 - Find, dump and list dangerous permissions of packed APKs using androguard
@@ -139,21 +160,21 @@ Snapshot can help to monitor the system state and backup the phone data:
 ## Known Issues
 - The command "pm revoke" return exit success code but does not revoke permissions for some malware.
 
-# Screenshots & examples
-
+# Examples
 **Scan**
 - Scan applications
 ```
-(amdh)$ python amdh.py -sA
+(amdh)$ python amdh.py -d SERIAL1,SERIAL2,SERIAL3 -sA -o reports
 ```
 
-Two files are generated for each device : 
-- DEVICE_ID.log: contains the console output 
-- DEVICE_ID_report_apps.json: json file that contains for each app its granted permissions, and those that are considered as dangerous.
+Two files are generated for each device in the folder "reports": 
+- SERIAL.log
+- SERIAL_report_apps.json: JSON file that contains for each app its granted permissions, and those that are considered as dangerous.
   Each entry is as follows:
 ```
 {
     "com.package.name": {
+        "malware": true,
         "permissions": {
             "all_permissions": [
                 "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
@@ -161,19 +182,7 @@ Two files are generated for each device :
                 "com.google.android.providers.gsf.permission.READ_GSERVICES",
                 "android.permission.WRITE_SYNC_SETTINGS",
                 "android.permission.RECEIVE_BOOT_COMPLETED",
-                "android.permission.AUTHENTICATE_ACCOUNTS",
-                "android.permission.INTERNET",
-                "android.permission.ACCESS_NETWORK_STATE",
-                "android.permission.USE_FINGERPRINT",
-                "android.permission.READ_SYNC_STATS",
-                "android.permission.READ_SYNC_SETTINGS",
-                "android.permission.VIBRATE",
-                "android.permission.WAKE_LOCK",
-                "android.permission.ACCESS_FINE_LOCATION",
-                "android.permission.READ_EXTERNAL_STORAGE",
-                "android.permission.ACCESS_COARSE_LOCATION",
-                "android.permission.CAMERA",
-                "android.permission.WRITE_EXTERNAL_STORAGE"
+                "android.permission.AUTHENTICATE_ACCOUNTS"
             ],
             "dangerous_perms": {
                 "android.permission.ACCESS_FINE_LOCATION": "This app can get your location based on GPS or network location sources such as cell towers and Wi-Fi networks. These location services must be turned on and available on your phone for the app to be able to use them. This may increase battery consumption.",
@@ -191,9 +200,7 @@ Two files are generated for each device :
 ```
 (amdh)$ python amdh.py -sS
 ```
-The result of the command is a log file that contains the settings with their current and expected values:
-
-![Scan Settings](screenshots/scan_settings.png (Settings scan))
+A report is generated with the name "SERIAL_report_settings.json" in the folder "out" (default output folder).
 
 
 **Harden**
@@ -201,41 +208,48 @@ The result of the command is a log file that contains the settings with their cu
 ```
 (amdh)$ python amdh.py -sA -R -rar
 ```
-Same report as scan in addition of theses two keys:
+Same report as scan Apps with addition of these two keys:
 ```
    "is_device_admin_revoked": true,
    "revoked_dangerous_pemissions": "succeeded"
 ```
-> The key `is_device_admin_revoked` will not be in the result if the app is not device admin 
+> The key `is_device_admin_revoked` will not be in the result if the app is not device admin
 
 - settings hardening
 ```
-(amdh)$ python amdh.py -sS -H 
+(amdh)$ python amdh.py -sS -H -o reports
 ```
-![Hardening Settings](screenshots/settings_hardening.png (Settings Hardening))
+A report and log file are generated in "reports" directory.
 
-**Static Analysis**
+**Static Analysis and multiple Apps uninstall/disable (interactive)**
 ```
 (amdh)$ python amdh.py -l
+```
+
+**List current running user processes**
+```
+(amdh)$ python amdh.py -P -d SERIAL1,SERIAL2 
 ```
 
 **Snapshot**
 ```
 (amdh)$ python amdh.py -S out
+[-] INFO: Start ...
+Unlock device SERIAL and press ENTER key to continue
+[-] INFO: Finished
 ```
-![Snapshot](screenshots/snapshot.png (Snapshot))
+The folder "out" will contains a subfolder "SERIAL_DATE-TIME". Where DATE-TIME is in the format "YYYY-MM-DD-hh:mm:ss".
 
 **Snapshot Comparison**
 ```
 (amdh)$ python amdh.py -cS out/report.json
-[-] INFO: List of devices:
-[-] INFO: The device emulator-5554 will be used.
+[-] INFO: Start ...
 
 [-] INFO: Installed Apps after snapshot was taken
 {}
 [-] INFO: Apps exists in snapshot
 {
-    "com.whatsapp": {
+    "com.package.name1": {
         "firstInstallTime": "2020-07-06 18:53:07",
         "lastUpdateTime": "2020-07-06 18:53:07",
         "grantedPermissions": [
@@ -244,44 +258,12 @@ Same report as scan in addition of theses two keys:
             "android.permission.MODIFY_AUDIO_SETTINGS",
             "com.google.android.providers.gsf.permission.READ_GSERVICES",
             "android.permission.MANAGE_ACCOUNTS",
-            "android.permission.NFC",
-            "android.permission.CHANGE_NETWORK_STATE",
-            "android.permission.FOREGROUND_SERVICE",
-            "android.permission.WRITE_SYNC_SETTINGS",
-            "android.permission.RECEIVE_BOOT_COMPLETED",
-            "com.whatsapp.permission.BROADCAST",
-            "com.android.launcher.permission.UNINSTALL_SHORTCUT",
-            "android.permission.READ_PROFILE",
-            "android.permission.BLUETOOTH",
-            "android.permission.GET_TASKS",
-            "android.permission.AUTHENTICATE_ACCOUNTS",
-            "android.permission.INTERNET",
-            "android.permission.USE_FULL_SCREEN_INTENT",
-            "android.permission.BROADCAST_STICKY",
-            "com.whatsapp.permission.REGISTRATION",
-            "android.permission.CHANGE_WIFI_STATE",
-            "android.permission.ACCESS_NETWORK_STATE",
-            "android.permission.USE_FINGERPRINT",
-            "android.permission.READ_SYNC_STATS",
-            "android.permission.MANAGE_OWN_CALLS",
-            "android.permission.READ_SYNC_SETTINGS",
-            "com.whatsapp.sticker.READ",
-            "android.permission.VIBRATE",
-            "com.whatsapp.permission.MAPS_RECEIVE",
-            "android.permission.ACCESS_WIFI_STATE",
-            "android.permission.USE_BIOMETRIC",
-            "com.android.launcher.permission.INSTALL_SHORTCUT",
-            "android.permission.WAKE_LOCK"
+            "android.permission.NFC"
         ],
-        "deviceAdmin": false
+        "deviceAdmin": false,
+        "apk": "com.package.name1.apk"
     },
-    "com.poby.hardroid": {
-        "firstInstallTime": "2020-07-18 09:32:53",
-        "lastUpdateTime": "2020-07-18 09:53:03",
-        "grantedPermissions": [],
-        "deviceAdmin": false
-    },
-    "org.thoughtcrime.securesms": {
+    "com.package.name2": {
         "firstInstallTime": "2020-07-10 23:57:53",
         "lastUpdateTime": "2020-07-10 23:57:53",
         "grantedPermissions": [
@@ -293,34 +275,16 @@ Same report as scan in addition of theses two keys:
             "android.permission.ACCESS_NOTIFICATION_POLICY",
             "android.permission.CHANGE_NETWORK_STATE",
             "android.permission.FOREGROUND_SERVICE",
-            "android.permission.WRITE_SYNC_SETTINGS",
-            "android.permission.RECEIVE_BOOT_COMPLETED",
-            "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
-            "android.permission.READ_PROFILE",
-            "android.permission.BLUETOOTH",
-            "android.permission.AUTHENTICATE_ACCOUNTS",
-            "android.permission.INTERNET",
-            "android.permission.WRITE_PROFILE",
-            "android.permission.USE_FULL_SCREEN_INTENT",
-            "android.permission.BROADCAST_STICKY",
-            "android.permission.WRITE_SMS",
-            "android.permission.CHANGE_WIFI_STATE",
-            "android.permission.ACCESS_NETWORK_STATE",
-            "android.permission.DISABLE_KEYGUARD",
-            "android.permission.SET_WALLPAPER",
-            "android.permission.USE_FINGERPRINT",
-            "android.permission.READ_SYNC_SETTINGS",
-            "android.permission.VIBRATE",
-            "android.permission.ACCESS_WIFI_STATE",
-            "com.android.launcher.permission.INSTALL_SHORTCUT",
-            "android.permission.WAKE_LOCK"
+            "android.permission.WRITE_SYNC_SETTINGS"
         ],
-        "deviceAdmin": false
+        "deviceAdmin": false,
+        "backup": "com.package.name2.ab",
+        "apk": "com.package.name2.apk"
     }
 }
 [-] INFO: Uninstalled after snapshot was taken
 {
-    "com.diy_room_decor.dev3": {
+    "com.package.name3": {
         "firstInstallTime": "2020-07-18 07:56:44",
         "lastUpdateTime": "2020-07-18 07:56:44",
         "grantedPermissions": [
@@ -328,7 +292,8 @@ Same report as scan in addition of theses two keys:
             "android.permission.ACCESS_NETWORK_STATE"
         ],
         "deviceAdmin": false,
-        "backup": "com.diy_room_decor.dev3.ab"
+        "backup": "com.package.name3.ab",
+        "apk": "com.package.name3.apk"
     }
 }
 [-] INFO: Changed settings after snapshot was taken
@@ -340,56 +305,39 @@ Same report as scan in addition of theses two keys:
     "system": []
 }
 ```
+
 **Snapshot Restore : Apps**
 ```
-(amdh)$ python amdh.py -rS out/report.json
-[-] INFO: List of devices:
-[-] INFO: The device emulator-5554 will be used.
-
-Unlock your phone and press ENTER key to continue
+(amdh)$ python amdh.py -d SERIAL -rS out/report.json
+[-] INFO: Start ...
+Unlock device SERIAL and press ENTER key to continue
 [-] INFO: Starting restore
 [-] INFO: Restore finished
 [-] INFO: Restore report
 {
     "apps": {
         {
-            "enthusiast.io.accesspointproximity": {
+            "com.package.name1": {
                 "install": "success",
                 "backup": "restored"
             },
-            "com.my.app": {
+            "com.package.name2": {
                 "install": "success",
                 "backup": "NOT FOUND"
             },
-            "rikka.appops": {
+            "com.package.name3": {
                 "install": "success",
-                "backup": "restored"
-            },
-            "com.idea.backup.smscontacts": {
-                "install": "success",
-                "backup": "restored"
-            },
-            "net.chobin.android.psdxlite": {
-                "install": "success",
-                "backup": "restored"
-            },
-            "com.poby.h": {
-                "install": "Failed: Command '['adb', '-s', 'emulator-5556', 'install', 'out/com.poby.h.apk']' returned non-zero exit status 1.",
                 "backup": "restored"
             }
         }
     }
 }
 ```
-# Credits
-- [sk3ptre](https://github.com/sk3ptre)
 
-- [ashishb](https://github.com/ashishb)
+## Participation and Ideas
+Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issue or send a pull request.  
 
-# Participation and Ideas
-Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issues or send a pull request.  
-
-## Support & encouragement
+### Support & encouragement
 <a href="https://www.buymeacoffee.com/secthetech"><img src="https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
 
 

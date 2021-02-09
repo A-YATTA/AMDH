@@ -17,6 +17,13 @@ class Out:
         if filename:
             self.log = open(filename, "w")
 
+    def print(self, message):
+        if self.log:
+            self.log.write(f"{message}\n")
+            return
+
+        print(f"{message}\n")
+
     def print_info(self, message):
         if self.log:
             self.log.write("[-] INFO: %s\n" % message)

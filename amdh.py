@@ -16,9 +16,6 @@ from config.main import *
 from core.snapshot import Snapshot
 from core.app import App
 
-out = Out("Linux")
-lock = threading.Lock()
-
 
 # Status of the App
 class Status(Enum):
@@ -28,9 +25,39 @@ class Status(Enum):
     SYSTEM = 's'
 
 
+# variables
+out = Out("Linux")
+devices = []
+dump_apks = False
+apks_dump_folder = "out"
+scan_settings = False
+scan_applications = False
+harden = False
+list_apps = False
+list_processes = False
+snapshot = False
+snapshot_dir = "snap_out"
+cmp_snap = False
+snapshot_report = "snap_repot.json"
+backup = False
+restore_snap = False
+snap_to_restore = snapshot_report
+app_type = Status.THIRD_PARTY
+revoke = False
+rm_admin_recv = False
+lock = threading.Lock()
+adb_path = ""
+output_dir = "out"
+
+
 def args_parse(print_help=False):
     parser = argparse.ArgumentParser(description='Android Mobile Device Hardening\n',
                                      formatter_class=argparse.RawTextHelpFormatter)
+
+    parser.add_argument('-d', '--devices',
+                        help='list of devices separated by comma or "ALL" for all connected devices',
+                        dest='devices')
+
     parser.add_argument('-sS',
                         help='Scan the system settings',
                         action='store_true')
@@ -60,7 +87,7 @@ def args_parse(print_help=False):
                         dest='apks_dump_folder')
 
     parser.add_argument('-rar',
-                        help='Remove admin receivers: Remove all admin receivers if the app is not a system App\n' 
+                        help='Remove admin receivers: Remove all admin receivers if the app is not a system App\n'
                              'Scan application option "-sA" is required',
                         action='store_true')
 
@@ -90,6 +117,10 @@ def args_parse(print_help=False):
                         help='Restore SNAPSHOT_TO_RESTORE',
                         dest='snapshot_to_restore')
 
+    parser.add_argument('-o', '--output-dir',
+                        help='Output directory for reports and logs. Default: out',
+                        dest='output_dir')
+
     args = parser.parse_args()
 
     if (args.rar or args.R) and not args.sA:
@@ -107,61 +138,8 @@ def args_parse(print_help=False):
     return args
 
 
-def devices_choice(adb_instance):
-    selected_devices = []
-    while True:
-        out.print_info("List of devices:")
-        devices = adb_instance.list_devices()
-
-        if not len(devices):
-            out.print_error("No device found")
-            sys.exit(1)
-        elif len(devices) == 1:
-            device_id = list(devices.keys())[0]
-            device_status = list(devices.values())[0]
-            out.print_info("The device " + device_id + " will be used.\n")
-            if "offline" in device_status or "unauthorized" in device_status \
-                    or "no permissions" in device_status:
-                out.print_error("You cannot use " + device_id + ", reason: " + device_status)
-                sys.exit(1)
-            else:
-                return devices
-
-        counter = 0
-        for device in devices:
-            counter = counter + 1
-            print(str(counter) + " - " + device + ": " + devices[device])
-
-        keys = list(devices)
-
-        try:
-            user_input = input("Select devices in list:")
-            choices = [int(i) for i in user_input.strip().split(",")]
-        except Exception as e:
-            out.print_error("Choose devices in the list")
-            break
-
-        for choice in choices:
-            if choice < 1 or choice > len(devices):
-                out.print_error("Choose devices in the list")
-                continue
-
-            status_device = devices[keys[choice - 1]]
-            if "offline" in status_device or "unauthorized" in status_device \
-                    or "no permissions" in status_device:
-                out.print_error("You cannot use " + keys[choice - 1] + ", reason: " + devices[keys[choice - 1]])
-                continue
-            else:
-                selected_devices.append(keys[choice - 1])
-        if len(selected_devices) > 0:
-            return selected_devices
-
-    return []
-
-
-def amdh():
-    global adb_path
-
+def set_output_std():
+    global out
     if platform == "linux" or platform == "linux2":
         out = Out("Linux")
     elif platform == "darwin":
@@ -169,9 +147,20 @@ def amdh():
     elif platform == "win32":
         out = Out("Windows")
 
-    arguments = args_parse()
 
-    # ADB binary path
+def init_vars(arguments):
+    set_output_std()
+
+    global output_dir
+    if arguments.output_dir:
+        output_dir = arguments.output_dir
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+    else:
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+
+    global adb_path
     if arguments.adb_path:
         adb_path = arguments.adb_path
     else:
@@ -185,11 +174,23 @@ def amdh():
                 out.print_error("adb not found please use '-a' to specify the path")
                 sys.exit(1)
 
+    global devices
+    if arguments.devices:
+        if ',' in arguments.devices:
+            devices = arguments.devices.split(',')
+        elif arguments.devices == "ALL":
+            devices = ADB(adb_path).list_devices()
+        else:
+            devices.append(arguments.devices)
+
+    elif not ADB(adb_path).list_devices():
+        out.print_error("No device found")
+        sys.exit(1)
+
     # Related to APKs dump
     global dump_apks
-    dump_apks = False
     global apks_dump_folder
-    apks_dump_folder = "out"
+
     if arguments.apks_dump_folder:
         dump_apks = True
         apks_dump_folder = arguments.apks_dump_folder
@@ -267,7 +268,7 @@ def amdh():
         try:
             app_type = Status(arguments.app_type)
         except Exception as e:
-            print("Application app invalid")
+            print("Application type invalid")
 
     global revoke
     revoke = False
@@ -282,287 +283,373 @@ def amdh():
     if app_type.value == 'e':
         out.print_info("Scanning system apps may takes a while ...")
 
-    adb_instance = ADB(adb_path)
-    devices = devices_choice(adb_instance)
 
-    if cmp_snap:
-        cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
+def process_settings(adb_instance, device_id):
+    if harden:
+        settings_check = Settings(SETTINGS_FILE, adb_instance, True, out)
+    else:
+        settings_check = Settings(SETTINGS_FILE, adb_instance, out=out)
 
-        out.print_info("Installed Apps after snapshot was taken")
-        print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
-        out.print_info("Apps exists in snapshot")
-        print(json.dumps(cmp_report["apps"]["apps_exist_in_snap"], indent=4))
-        out.print_info("Uninstalled after snapshot was taken")
-        print(json.dumps(cmp_report["apps"]["uninstalled_apps"], indent=4))
+    if scan_settings:
 
-        out.print_info("Changed settings after snapshot was taken")
-        print(json.dumps(cmp_report["settings"], indent=4))
+        with open(f"{output_dir}/{device_id}_report_settings.json", 'w') as fp:
+            json.dump(settings_check.check(), fp, indent=4)
+
+        out.print_info("Report generated: %s_report_settings.json" % device_id)
+
+
+def process_applications(adb_instance, device_id):
+    packages = []
+    report_apps = {}
+
+    if app_type:
+        packages = adb_instance.list_installed_packages(app_type.value)
+
+    for package in packages:
+        if not list_apps:
+            out.print_info(package)
+
+        report_apps[package] = dict()
+
+        app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder)
+        perms, dangerous_perms, is_device_admin, known_malware = app.check_app()
+
+        if known_malware:
+            out.print_error(f"{package} is known as malware")
+            report_apps[package]["malware"] = True
+
+        if scan_applications:
+            if dangerous_perms and dangerous_perms.items():
+                out.print_warning_header("Package {} has some dangerous permissions: ".format(package))
+
+                for perm, desc in dangerous_perms.items():
+                    out.print_warning("\t " + perm + ": ")
+                    out.print_warning("\t\t" + desc)
+
+                report_apps[package]["permissions"] = dict()
+                report_apps[package]["permissions"] = {"all_permissions": list(perms.keys()),
+                                                       "dangerous_perms": dangerous_perms}
+                report_apps[package]["is_device_admin"] = is_device_admin
+
+            else:
+                out.print_info("Package {} has no dangerous permissions".format(package))
+
+            if is_device_admin:
+                message = f"/!\ \t {package} is device admin \t /!\ "
+                padding = len(message)
+                out.print_warning("-" * padding)
+                out.print_warning(message)
+                out.print_warning("-" * padding)
+
+                report_apps[package] = {"device_admin": is_device_admin}
+
+                if rm_admin_recv:
+                    removed, dpm = app.remove_device_admin_for_app()
+                    if removed:
+                        report_apps[package] = {"device_admin_revoked": True}
+                        out.print_info("Device admin receivers for {} removed\n".format(app.package_name))
+                    else:
+                        out.print_error("An error occured while removing the device admin " + dpm + " .")
+
+            # Revoke all Dangerous permissions
+            if revoke and app.dangerous_perms:
+
+                succeeded = app.revoke_dangerous_perms()
+
+                if succeeded:
+                    report_apps[package]["revoked_dangerous_pemissions"] = "succeeded"
+                    out.print_info("Dangerous permissions revoked\n")
+                else:
+                    out.print_error(f"An error occured while revoking"
+                                    "permission {perm} to package {app.package_name}")
+
+            elif revoke and not app.dangerous_perms:
+                out.print_info("No dangerous permissions granted for this package\n")
+
+            if app.malware_confidence > 0 or app.score < 0:
+                out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
+                out.print_high_warning("The application uses some permissions used also by malware")
+                if app.malware_confidence > 0:
+                    out.print_high_warning(str(app.malware_confidence) + " permissions combinations used also by "
+                                                                         "malware")
+
+            if app.score < 0:
+                out.print_high_warning("The application uses frequent malware permissions ")
+
+    if scan_applications:
+        with open(f"{output_dir}/{device_id}_report_apps.json", 'w') as fp:
+            json.dump(report_apps, fp, indent=4)
+
+        out.print_info("Report generated: %s_report_apps.json" % device_id)
+
+    return report_apps
+
+
+def process_snapshot(adb_instance, device_id):
+    with lock:
+        input("Unlock device %s and press ENTER key to continue" % device_id)
+
+        # set stay_awake to 1
+    adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
+
+    out.print_info("Starting snapshot")
+    if not os.path.isdir(snapshot_dir):
+        os.makedirs(snapshot_dir)
+
+    snapshot_path = snapshot_dir + "/" + device_id + "_" + datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+
+    if not os.path.isdir(snapshot_path):
+        os.makedirs(snapshot_path)
+
+    if app_type:
+        snapshot_obj = Snapshot(adb_instance, app_type.value, out_dir=snapshot_path)
+    else:
+        snapshot_obj = Snapshot(adb_instance, out_dir=snapshot_path)
+    report = snapshot_obj.get_report()
+
+    with open(snapshot_path + "/snapshot.json", 'w') as fp:
+        json.dump(report, fp, indent=4)
+
+    adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
+    out.print_info("Snapshot finished")
+
+
+def process_snapshot_cmp(adb_instance):
+    cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
+
+    out.print_info("Installed Apps after snapshot was taken")
+    out.print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
+    out.print_info("Apps exists in snapshot")
+    print(json.dumps(cmp_report["apps"]["apps_exist_in_snap"], indent=4))
+    out.print_info("Uninstalled after snapshot was taken")
+    print(json.dumps(cmp_report["apps"]["uninstalled_apps"], indent=4))
+
+    out.print_info("Changed settings after snapshot was taken")
+    print(json.dumps(cmp_report["settings"], indent=4))
+
+
+def process_snapshot_restore(adb_instance):
+    input("Unlock your phone and press ENTER key to continue")
+
+    adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
+    out.print_info("Starting restore")
+    restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
+
+    adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
+    out.print_info("Restore finished")
+
+    out.print_info("Restore report")
+    print(json.dumps(restore_report, indent=4))
+
+
+def interactive_list_processes(adb_instance, device_id):
+    lock.acquire()
+    process_choice_list = []
+    current_processes = adb_instance.list_backgroud_apps().split("\n")
+    print("Current running user processes on the device %s" % device_id)
+
+    for i in range(0, len(current_processes) - 1):
+        print("   {}- {}".format(i + 1, current_processes[i]))
+
+    print("")
+    choice = input("Select id(s) of process(es) to kill (separated by comma ','): ")
+    chosen_processes = choice.replace(" ", "").split(",")
+    for c in chosen_processes:
+        if c.isdigit() and (0 < int(c) < len(current_processes) + 1):
+            process_choice_list = process_choice_list + [c]
+            lock.release()
+        else:
+            print("[X] ERROR: process does not exist")
+            print("Exiting device %s" % device_id)
+            lock.release()
+            return
+
+    for proc in process_choice_list:
+        adb_instance.force_stop_app(current_processes[int(proc) - 1])
+
+
+def interactive_list_apps(adb_instance, device_id):
+    lock.acquire()
+    if app_type:
+        packages = adb_instance.list_installed_packages(app_type.value)
+        if app_type.value == 'e':
+            print("Uninstalling or disabling system Apps can break your system")
+
+    print("List of installed packages on device %s: " % device_id)
+    nbr_listed_apps = 0
+    apps_choice_list = []
+    for package in packages:
+        if nbr_listed_apps < LIST_APPS_MAX_PRINT and \
+                packages.index(package) < (len(packages) - 1):
+            print("\t[" + str(packages.index(package) + 1) + "] " + package)
+            nbr_listed_apps = nbr_listed_apps + 1
+        else:
+            choice = ''
+            if packages.index(package) == (len(packages) - 1):
+                print("\t[" + str(packages.index(package) + 1) + "] " + package)
+            while True:
+                choice = input("Select application(s) (separated by comma ','), 'c' to continue"
+                               " listing apps and 'A' for actions menu: ")
+                if choice == 'c':
+                    nbr_listed_apps = 1
+                    break
+
+                if choice == 'A':
+                    break
+
+                else:
+                    chosen_apps = choice.replace(" ", "").split(",")
+                    for c in chosen_apps:
+                        if c.isdigit() and (0 < int(c) < len(packages) + 1):
+                            apps_choice_list = apps_choice_list + [c]
+
+                        else:
+                            print(f"option {c} does not exist")
+
+            if choice == 'A':
+                break
+
+    if not len(apps_choice_list):
+        print("No application selected")
+        return
+
+    while True:
+        print("choose an action")
+        print("\td: disable selected apps")
+        print("\tu: uninstall selected apps")
+        print("\ts: static analysis")
+        print("\te: exit")
+        print("")
+
+        action = input("Action: ")
+        action = action.replace(" ", "")
+
+        if action == 'd' or action == 'u' or action == 's' or action == 'e':
+            lock.release()
+            break
+        else:
+            print("ERROR: Invalid action")
+            continue
+
+    for id_app in apps_choice_list:
+        if action == 'd':
+            try:
+                adb_instance.disable_app(packages[int(id_app) - 1])
+                out.print_success(packages[int(id_app) - 1] + " disabled")
+
+            except Exception as e:
+                out.print_error("An Error occurred while disabling " + packages[int(id_app) - 1])
+
+        elif action == 'u':
+            try:
+                adb_instance.uninstall_app(packages[int(id_app) - 1])
+                out.print_success(packages[int(id_app) - 1] + " uninstalled")
+
+            except Exception as e:
+                out.print_error("An Error occurred while uninstalling " + packages[int(id_app) - 1])
+
+        elif action == 's':
+            app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True, out_dir=apks_dump_folder)
+            out.print_info(f"Package {packages[int(id_app) - 1]}")
+            package_info = app.static_analysis()
+            print(package_info)
+            out.print_info("\tMalware identification")
+
+            for key, value in package_info["detected_malware"].items():
+                if value > 0:
+                    out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
+                else:
+                    out.print_info("\t\t " + key + ": " + str(value) + " positive test")
+
+            if package_info and package_info["packed_file"] and \
+                    package_info["packed_file"][packages[int(id_app) - 1]].keys():
+
+                out.print_info("\tPacked files")
+                out.print_error(f"The package {packages[int(id_app) - 1]} has another Application (APK) inside")
+
+                for file in package_info["packed_file"][packages[int(id_app) - 1]]:
+                    for perm in package_info["packed_file"][packages[int(id_app) - 1]][file]:
+                        out.print_error("\tDangerous Permission: " + perm)
+
+        elif action == 'e':
+            break
+
+
+def process(device_id):
+    global out
+    adb_instance = ADB(adb_path, device_id)
+    out = Out(filename=f"{output_dir}/{device_id}.log")
+
+    if adb_instance.check_pending_update():
+        lock.acquire()
+        out.print_warning("%s: The system has a pending updates!" % device_id)
+        lock.release()
+
+    if scan_applications or dump_apks or list_apps:
+        process_applications(adb_instance, device_id)
+
+    if scan_settings:
+        process_settings(adb_instance, device_id)
+
+    if list_apps:
+        interactive_list_apps(adb_instance, device_id)
+
+    if list_processes:
+        interactive_list_processes(adb_instance, device_id)
+
+    if snapshot:
+        process_snapshot(adb_instance, device_id)
 
     if restore_snap:
-        input("Unlock your phone and press ENTER key to continue")
+        set_output_std()
+        process_snapshot_restore(adb_instance)
 
-        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
-        out.print_info("Starting restore")
-        restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
+    if cmp_snap:
+        set_output_std()
+        process_snapshot_cmp(adb_instance)
 
-        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
-        out.print_info("Restore finished")
 
-        out.print_info("Restore report")
-        print(json.dumps(restore_report, indent=4))
+def check_device_up():
+    connected_devices = ADB(adb_path).list_devices()
+    for device in devices:
+        if device not in connected_devices.keys():
+            out.print_error(f"{device} not found")
+            sys.exit(1)
+
+        device_status = connected_devices[device]
+        if "offline" in device_status or "unauthorized" in device_status \
+                or "no permissions" in device_status:
+            out.print_error(f"The device {device} cannot be used. Reason: {connected_devices[device]}")
+            sys.exit(1)
+
+
+def amdh():
+    arguments = args_parse()
+    connected_devices = ADB(ADB_BINARY).list_devices()
+    init_vars(arguments)
+
+    if not devices:
+        if len(connected_devices) == 0:
+            out.print_error("No device founded")
+        elif len(connected_devices) > 1:
+            out.print_error("Please use -d to specify the devices to use")
+            out.print_info("Current connected devices")
+            for device in connected_devices:
+                print(device)
+            sys.exit(1)
+        else:
+            devices.append(list(connected_devices.keys())[0])
+
+    check_device_up()
+
+    out.print_info("Start ...")
 
     with ThreadPoolExecutor(max_workers=len(devices)) as executor:
         results = {executor.submit(process, device): device for device in devices}
         as_completed(results)
 
-
-def process(device_id):
-    adb_instance = ADB(adb_path, device_id)
-    report_apps = dict()
-    out = Out(filename=device_id+".log")
-
-    packages = []
-
-    if app_type:
-        packages = adb_instance.list_installed_packages(app_type.value)
-
-    if adb_instance.check_pending_update():
-        out.print_warning("%s: The system has a pending update!" % device_id)
-
-    if scan_applications or dump_apks or list_apps:
-        for package in packages:
-            if not list_apps:
-                out.print_info(package)
-
-            report_apps[package] = dict()
-
-            dumpsys_out = adb_instance.dumpsys(["package", package])
-            perm_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
-            app = App(adb_instance, package, scan_applications, dump_apks, apks_dump_folder, perm_list)
-            perms, dangerous_perms, is_device_admin, known_malware = app.check_app()
-
-            if known_malware:
-                report_apps[package]["malware"] = True
-                out.print_error("{} is known as malware".format(package))
-
-            if scan_applications:
-                if dangerous_perms is not None and dangerous_perms.items():
-                    out.print_warning_header("Package {} has some dangerous permissions: ".format(package))
-
-                    for perm, desc in dangerous_perms.items():
-                        out.print_warning("\t " + perm + ": ")
-                        out.print_warning("\t\t" + desc)
-
-                    report_apps[package]["permissions"] = dict()
-                    report_apps[package]["permissions"] = {"all_permissions": list(perms.keys()),
-                                                           "dangerous_perms": dangerous_perms}
-                    report_apps[package]["is_device_admin"] = is_device_admin
-
-                else:
-                    out.print_info("Package {} has no dangerous permissions".format(package))
-
-                if is_device_admin:
-                    message = f"/!\ \t {package} is device admin \t /!\ "
-                    padding = len(message)
-                    out.print_warning("-" * padding)
-                    out.print_warning(message)
-                    out.print_warning("-" * padding)
-
-                    report_apps[package] = {"device_admin": is_device_admin}
-
-                    if rm_admin_recv:
-                        removed, dpm = app.remove_device_admin_for_app()
-                        if removed:
-                            report_apps[package] = {"device_admin_revoked": True}
-                            out.print_info("Device admin receivers for {} removed\n".format(app.package_name))
-                        else:
-                            out.print_error("An error occured while removing the device admin " + dpm + " .")
-
-                # Revoke all Dangerous permissions
-                if revoke and app.dangerous_perms:
-
-                    succeeded = app.revoke_dangerous_perms()
-
-                    if succeeded:
-                        report_apps[package]["revoked_dangerous_pemissions"] = "succeeded"
-                        out.print_info("Dangerous permissions revoked\n")
-                    else:
-                        out.print_error(
-                            f"An error occured while revoking permission {perm} to package {app.package_name}")
-
-                elif revoke and not app.dangerous_perms:
-                    out.print_info("No dangerous permissions granted for this package\n")
-
-                if app.malware_confidence > 0 or app.score < 0:
-                    out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
-                    out.print_high_warning("The application uses some permissions used also by malware")
-                    if app.malware_confidence > 0:
-                        out.print_high_warning(str(app.malware_confidence) + " permissions combinations used also by "
-                                                                             "malware")
-
-                if app.score < 0:
-                    out.print_high_warning("The application uses frequent malware permissions ")
-
-        if scan_applications:
-            with open(device_id + "_report_apps.json", 'w') as fp:
-                json.dump(report_apps, fp, indent=4)
-
-            out.print_info("Report generated: %s_report_apps.json" % device_id)
-
-    if list_apps:
-        lock.acquire()
-        print("List of installed packages on device %s: " % device_id)
-        nbr_listed_apps = 0
-        apps_choice_list = []
-        for package in packages:
-            if nbr_listed_apps < LIST_APPS_MAX_PRINT and packages.index(package) < (len(packages) - 1):
-                print("\t[" + str(packages.index(package) + 1) + "] " + package)
-                nbr_listed_apps = nbr_listed_apps + 1
-            else:
-                choice = ''
-                if packages.index(package) == (len(packages) - 1):
-                    print("\t[" + str(packages.index(package) + 1) + "] " + package)
-                while True:
-                    choice = input("Select application(s) (separated by comma ','), 'c' to continue"
-                                   " listing apps and 'A' for actions menu: ")
-                    if choice == 'c':
-                        nbr_listed_apps = 1
-                        break
-
-                    if choice == 'A':
-                        break
-
-                    else:
-                        chosen_apps = choice.replace(" ", "").split(",")
-                        for c in chosen_apps:
-                            if c.isdigit() and (0 < int(c) < len(packages) + 1):
-                                apps_choice_list = apps_choice_list + [c]
-
-                            else:
-                                print("option " + c + " does not exist")
-
-                if choice == 'A':
-                    break
-
-        if app_type.value == 'e':
-            print("Uninstalling or disabling system Apps can break your system")
-
-        while True:
-            print("choose an action")
-            print("\td: disable selected apps")
-            print("\tu: uninstall selected apps")
-            print("\tS: Static analysis")
-            print("\ts: skip")
-            print("")
-
-            action = input("Action: ")
-            action = action.replace(" ", "")
-
-            if action == 'd' or action == 'u' or action == 's' or action == 'S':
-                lock.release()
-                break
-            else:
-                print("ERROR: Invalid action")
-                continue
-
-        for id_app in apps_choice_list:
-            if action == 'd':
-                try:
-                    adb_instance.disable_app(packages[int(id_app) - 1])
-                    out.print_success(packages[int(id_app) - 1] + " disabled")
-                except Exception as e:
-                    out.print_error("An Error occurred while disabling " + packages[int(id_app) - 1])
-
-            elif action == 'u':
-                try:
-                    adb_instance.uninstall_app(packages[int(id_app) - 1])
-                    out.print_success(packages[int(id_app) - 1] + " uninstalled")
-                except Exception as e:
-                    out.print_error("An Error occurred while uninstalling " + packages[int(id_app) - 1])
-
-            elif action == "S":
-                app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True, out_dir=apks_dump_folder)
-                out.print_info("Package {}".format(packages[int(id_app) - 1]))
-                package_info = app.static_analysis()
-                out.print_info("\tMalware identification")
-
-                for key, value in package_info["detected_malware"].items():
-                    if value > 0:
-                        out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
-                    else:
-                        out.print_info("\t\t " + key + ": " + str(value) + " positive test")
-
-                if package_info and package_info["packed_file"] and \
-                        package_info["packed_file"][packages[int(id_app) - 1]].keys():
-
-                    out.print_info("\tPacked files")
-                    out.print_error(
-                        "The package {} has another Application (APK) inside".format(packages[int(id_app) - 1]))
-
-                    for file in package_info["packed_file"][packages[int(id_app) - 1]]:
-                        for perm in package_info["packed_file"][packages[int(id_app) - 1]][file]:
-                            out.print_error("\tDangerous Permission: " + perm)
-
-            elif action == 's':
-                break
-
-    if harden:
-        settings_check = Settings(SETTINGS_FILE, adb_instance, True, out=out)
-    else:
-        settings_check = Settings(SETTINGS_FILE, adb_instance, out=out)
-
-    if scan_settings:
-        settings_check.check()
-
-    if list_processes:
-        lock.acquire()
-        process_choice_list = []
-        current_processes = adb_instance.list_backgroud_apps().split("\n")
-        print("Current running user processes on the device %s" % device_id)
-
-        for i in range(0, len(current_processes) - 1):
-            print("   {}- {}".format(i + 1, current_processes[i]))
-
-        print("")
-        choice = input("Select id(s) of process(es) to kill (separated by comma ','): ")
-        chosen_processes = choice.replace(" ", "").split(",")
-        for c in chosen_processes:
-            if c.isdigit() and (0 < int(c) < len(current_processes) + 1):
-                process_choice_list = process_choice_list + [c]
-                lock.release()
-            else:
-                print("[X] ERROR: process does not exist")
-                print("Exiting device %s" % device_id)
-
-        for process in process_choice_list:
-            adb_instance.force_stop_app(current_processes[int(process) - 1])
-
-    if snapshot:
-        with lock:
-            input("Unlock device %s and press ENTER key to continue" % device_id)
-
-        # set stay_awake to 1
-        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
-
-        out.print_info("Starting snapshot")
-        if not os.path.isdir(snapshot_dir):
-            os.makedirs(snapshot_dir)
-
-        snapshot_path = snapshot_dir + "/" + device_id + str(datetime.now()).replace(" ", "_")
-        if not os.path.isdir(snapshot_path):
-            os.makedirs(snapshot_path)
-
-        if app_type:
-            snapshot_obj = Snapshot(adb_instance, app_type.value, out_dir=snapshot_path)
-        else:
-            snapshot_obj = Snapshot(adb_instance, out_dir=snapshot_path)
-        report = snapshot_obj.get_report()
-
-        with open(snapshot_path + "/snapshot.json", 'w') as fp:
-            json.dump(report, fp, indent=4)
-
-        adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
-        out.print_info("Snapshot finished")
+    set_output_std()
+    out.print_info("Finished")
 
 
 if __name__ == "__main__":

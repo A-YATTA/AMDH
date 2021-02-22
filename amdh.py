@@ -631,6 +631,7 @@ def amdh():
     if not devices:
         if len(connected_devices) == 0:
             out.print_error("No device founded")
+            sys.exit(1)
         elif len(connected_devices) > 1:
             out.print_error("Please use -d to specify the devices to use")
             out.print_info("Current connected devices")

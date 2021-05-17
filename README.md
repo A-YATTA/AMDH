@@ -14,6 +14,9 @@
 # AMDH
 Android Mobile Device Hardening written with python3.
 
+### Android App
+[PObY-A](https://github.com/ICTrust/PObY-A)
+
 ## Motivations
 AMDH was created to help automate scanning installed applications on Android devices, detect some known malware
 and also to protect privacy.
@@ -336,10 +339,6 @@ Unlock device SERIAL and press ENTER key to continue
 
 ## Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issue or send a pull request.  
-
-### Support & encouragement
-<a href="https://www.buymeacoffee.com/secthetech"><img src="https://img.buymeacoffee.com/button-api/?text=Support&emoji=&slug=secthetech&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
-
 
 
 

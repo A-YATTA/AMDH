@@ -41,7 +41,7 @@ class ADB:
     # status => Enum in application.py
     def list_installed_packages(self, status):
         """This function return a list of the installed packages. """
-        adb_command = ["shell", "cmd", "package", "list", "packages", "-" + status]
+        adb_command = ["shell", "pm", "list", "packages", "-" + status]
         output_command = self.adb_exec(adb_command)
         list_installed_apps = []
         for line in output_command.split("\n"):

@@ -26,7 +26,7 @@ class Status(Enum):
 
 
 # variables
-out = Out("Linux")
+out = {"std": Out("Linux")}
 devices = []
 dump_apks = False
 apks_dump_folder = "out"
@@ -124,11 +124,11 @@ def args_parse(print_help=False):
     args = parser.parse_args()
 
     if (args.rar or args.R) and not args.sA:
-        out.print_error("Option depend on scan application '-sA' ")
+        out["std"].print_error("Option depend on scan application '-sA' ")
         sys.exit(1)
 
     if args.H and not args.sS:
-        out.print_error("Option depend on scan -sS")
+        out["std"].print_error("Option depend on scan -sS")
         sys.exit(1)
 
     if print_help:
@@ -141,11 +141,11 @@ def args_parse(print_help=False):
 def set_output_std():
     global out
     if platform == "linux" or platform == "linux2":
-        out = Out("Linux")
+        out["std"] = Out("Linux")
     elif platform == "darwin":
-        out = Out("Darwin")
+        out["std"] = Out("Darwin")
     elif platform == "win32":
-        out = Out("Windows")
+        out["std"] = Out("Windows")
 
 
 def init_vars(arguments):
@@ -166,12 +166,12 @@ def init_vars(arguments):
     else:
         if platform == "linux" or platform == "linux2" or platform == "Darwin":
             if which("adb") is None and not os.path.isfile(ADB_BINARY):
-                out.print_error("adb not found please use '-a' to specify the path")
+                out["std"].print_error("adb not found please use '-a' to specify the path")
                 args_parse(True)
                 sys.exit(1)
         else:  # Windows
             if which("adb") is None and not os.path.isfile(ADB_WINDOWS_PATH):
-                out.print_error("adb not found please use '-a' to specify the path")
+                out["std"].print_error("adb not found please use '-a' to specify the path")
                 sys.exit(1)
 
     global devices
@@ -184,7 +184,7 @@ def init_vars(arguments):
             devices.append(arguments.devices)
 
     elif not ADB(adb_path).list_devices():
-        out.print_error("No device found")
+        out["std"].print_error("No device found")
         sys.exit(1)
 
     # Related to APKs dump
@@ -258,7 +258,7 @@ def init_vars(arguments):
     # Check if one of the operation are chosen
     if not scan_settings and not scan_applications and not dump_apks and not harden and not list_apps and \
             not list_processes and not snapshot and not cmp_snap and not restore_snap:
-        out.print_error("Please choose an operation")
+        out["std"].print_error("Please choose an operation")
         args_parse(True)
         exit(1)
 
@@ -281,21 +281,21 @@ def init_vars(arguments):
         rm_admin_recv = True
 
     if app_type.value == 'e':
-        out.print_info("Scanning system apps may takes a while ...")
+        out["std"].print_info("Scanning system apps may takes a while ...")
 
 
 def process_settings(adb_instance, device_id):
     if harden:
-        settings_check = Settings(SETTINGS_FILE, adb_instance, True, out)
+        settings_check = Settings(SETTINGS_FILE, adb_instance, True, out[device_id])
     else:
-        settings_check = Settings(SETTINGS_FILE, adb_instance, out=out)
+        settings_check = Settings(SETTINGS_FILE, adb_instance, out=out[device_id])
 
     if scan_settings:
 
         with open(f"{output_dir}/{device_id}_report_settings.json", 'w') as fp:
             json.dump(settings_check.check(), fp, indent=4)
 
-        out.print_info("Report generated: %s_report_settings.json" % device_id)
+        out["std"].print_info("Report generated: %s_report_settings.json" % device_id)
 
 
 def process_applications(adb_instance, device_id):
@@ -307,7 +307,7 @@ def process_applications(adb_instance, device_id):
 
     for package in packages:
         if not list_apps:
-            out.print_info(package)
+            out[device_id].print_info(package)
 
         report_apps[package] = dict()
 
@@ -315,16 +315,16 @@ def process_applications(adb_instance, device_id):
         perms, dangerous_perms, is_device_admin, known_malware = app.check_app()
 
         if known_malware:
-            out.print_error(f"{package} is known as malware")
+            out[device_id].print_error(f"{package} is known as malware")
             report_apps[package]["malware"] = True
 
         if scan_applications:
             if dangerous_perms and dangerous_perms.items():
-                out.print_warning_header("Package {} has some dangerous permissions: ".format(package))
+                out[device_id].print_warning_header("Package {} has some dangerous permissions: ".format(package))
 
                 for perm, desc in dangerous_perms.items():
-                    out.print_warning("\t " + perm + ": ")
-                    out.print_warning("\t\t" + desc)
+                    out[device_id].print_warning("\t " + perm + ": ")
+                    out[device_id].print_warning("\t\t" + desc)
 
                 report_apps[package]["permissions"] = dict()
                 report_apps[package]["permissions"] = {"all_permissions": list(perms.keys()),
@@ -332,24 +332,24 @@ def process_applications(adb_instance, device_id):
                 report_apps[package]["is_device_admin"] = is_device_admin
 
             else:
-                out.print_info("Package {} has no dangerous permissions".format(package))
+                out[device_id].print_info("Package {} has no dangerous permissions".format(package))
 
             if is_device_admin:
                 message = f"/!\ \t {package} is device admin \t /!\ "
                 padding = len(message)
-                out.print_warning("-" * padding)
-                out.print_warning(message)
-                out.print_warning("-" * padding)
+                out[device_id].print_warning("-" * padding)
+                out[device_id].print_warning(message)
+                out[device_id].print_warning("-" * padding)
 
                 report_apps[package] = {"device_admin": is_device_admin}
 
                 if rm_admin_recv:
                     removed, dpm = app.remove_device_admin_for_app()
                     if removed:
-                        report_apps[package] = {"device_admin_revoked": True}
-                        out.print_info("Device admin receivers for {} removed\n".format(app.package_name))
+                        out[device_id][package] = {"device_admin_revoked": True}
+                        out[device_id].print_info("Device admin receivers for {} removed\n".format(app.package_name))
                     else:
-                        out.print_error("An error occured while removing the device admin " + dpm + " .")
+                        out[device_id].print_error("An error occured while removing the device admin " + dpm + " .")
 
             # Revoke all Dangerous permissions
             if revoke and app.dangerous_perms:
@@ -358,29 +358,29 @@ def process_applications(adb_instance, device_id):
 
                 if succeeded:
                     report_apps[package]["revoked_dangerous_pemissions"] = "succeeded"
-                    out.print_info("Dangerous permissions revoked\n")
+                    out[device_id].print_info("Dangerous permissions revoked\n")
                 else:
-                    out.print_error(f"An error occured while revoking"
+                    out[device_id].print_error(f"An error occured while revoking"
                                     "permission {perm} to package {app.package_name}")
 
             elif revoke and not app.dangerous_perms:
-                out.print_info("No dangerous permissions granted for this package\n")
+                out[device_id].print_info("No dangerous permissions granted for this package\n")
 
             if app.malware_confidence > 0 or app.score < 0:
-                out.print_high_warning("----------------------------MALWARE SCAN--------------------------------")
-                out.print_high_warning("The application uses some permissions used also by malware")
+                out[device_id].print_high_warning("----------------------------MALWARE SCAN--------------------------------")
+                out[device_id].print_high_warning("The application uses some permissions used also by malware")
                 if app.malware_confidence > 0:
-                    out.print_high_warning(str(app.malware_confidence) + " permissions combinations used also by "
+                    out[device_id].print_high_warning(str(app.malware_confidence) + " permissions combinations used also by "
                                                                          "malware")
 
             if app.score < 0:
-                out.print_high_warning("The application uses frequent malware permissions ")
+                out[device_id].print_high_warning("The application uses frequent malware permissions ")
 
     if scan_applications:
         with open(f"{output_dir}/{device_id}_report_apps.json", 'w') as fp:
             json.dump(report_apps, fp, indent=4)
 
-        out.print_info("Report generated: %s_report_apps.json" % device_id)
+        out[device_id].print_info("Report generated: %s_report_apps.json" % device_id)
 
     return report_apps
 
@@ -392,7 +392,7 @@ def process_snapshot(adb_instance, device_id):
         # set stay_awake to 1
     adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
 
-    out.print_info("Starting snapshot")
+    out["std"].print_info("Starting snapshot")
     if not os.path.isdir(snapshot_dir):
         os.makedirs(snapshot_dir)
 
@@ -411,20 +411,20 @@ def process_snapshot(adb_instance, device_id):
         json.dump(report, fp, indent=4)
 
     adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
-    out.print_info("Snapshot finished")
+    out["std"].print_info("Snapshot finished")
 
 
 def process_snapshot_cmp(adb_instance):
     cmp_report = Snapshot(adb_instance, snapshot_file=snapshot_report, backup=backup).snapshot_compare()
 
-    out.print_info("Installed Apps after snapshot was taken")
-    out.print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
-    out.print_info("Apps exists in snapshot")
+    out["std"].print_info("Installed Apps after snapshot was taken")
+    out["std"].print(json.dumps(cmp_report["apps"]["new_installed_apps"], indent=4))
+    out["std"].print_info("Apps exists in snapshot")
     print(json.dumps(cmp_report["apps"]["apps_exist_in_snap"], indent=4))
-    out.print_info("Uninstalled after snapshot was taken")
+    out["std"].print_info("Uninstalled after snapshot was taken")
     print(json.dumps(cmp_report["apps"]["uninstalled_apps"], indent=4))
 
-    out.print_info("Changed settings after snapshot was taken")
+    out["std"].print_info("Changed settings after snapshot was taken")
     print(json.dumps(cmp_report["settings"], indent=4))
 
 
@@ -432,13 +432,13 @@ def process_snapshot_restore(adb_instance):
     input("Unlock your phone and press ENTER key to continue")
 
     adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
-    out.print_info("Starting restore")
+    out["std"].print_info("Starting restore")
     restore_report = Snapshot(adb_instance, snapshot_file=snap_to_restore, backup=False).snapshot_restore()
 
     adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
-    out.print_info("Restore finished")
+    out["std"].print_info("Restore finished")
 
-    out.print_info("Restore report")
+    out["std"].print_info("Restore report")
     print(json.dumps(restore_report, indent=4))
 
 
@@ -535,41 +535,41 @@ def interactive_list_apps(adb_instance, device_id):
         if action == 'd':
             try:
                 adb_instance.disable_app(packages[int(id_app) - 1])
-                out.print_success(packages[int(id_app) - 1] + " disabled")
+                out["std"].print_success(packages[int(id_app) - 1] + " disabled")
 
             except Exception as e:
-                out.print_error("An Error occurred while disabling " + packages[int(id_app) - 1])
+                out["std"].print_error("An Error occurred while disabling " + packages[int(id_app) - 1])
 
         elif action == 'u':
             try:
                 adb_instance.uninstall_app(packages[int(id_app) - 1])
-                out.print_success(packages[int(id_app) - 1] + " uninstalled")
+                out["std"].print_success(packages[int(id_app) - 1] + " uninstalled")
 
             except Exception as e:
-                out.print_error("An Error occurred while uninstalling " + packages[int(id_app) - 1])
+                out["std"].print_error("An Error occurred while uninstalling " + packages[int(id_app) - 1])
 
         elif action == 's':
             app = App(adb_instance, packages[int(id_app) - 1], dump_apk=True, out_dir=apks_dump_folder)
-            out.print_info(f"Package {packages[int(id_app) - 1]}")
+            out["std"].print_info(f"Package {packages[int(id_app) - 1]}")
             package_info = app.static_analysis()
             print(package_info)
-            out.print_info("\tMalware identification")
+            out["std"].print_info("\tMalware identification")
 
             for key, value in package_info["detected_malware"].items():
                 if value > 0:
-                    out.print_error("\t\t " + key + ": " + str(value) + " positives tests")
+                    out["std"].print_error("\t\t " + key + ": " + str(value) + " positives tests")
                 else:
-                    out.print_info("\t\t " + key + ": " + str(value) + " positive test")
+                    out["std"].print_info("\t\t " + key + ": " + str(value) + " positive test")
 
             if package_info and package_info["packed_file"] and \
                     package_info["packed_file"][packages[int(id_app) - 1]].keys():
 
-                out.print_info("\tPacked files")
-                out.print_error(f"The package {packages[int(id_app) - 1]} has another Application (APK) inside")
+                out["std"].print_info("\tPacked files")
+                out["std"].print_error(f"The package {packages[int(id_app) - 1]} has another Application (APK) inside")
 
                 for file in package_info["packed_file"][packages[int(id_app) - 1]]:
                     for perm in package_info["packed_file"][packages[int(id_app) - 1]][file]:
-                        out.print_error("\tDangerous Permission: " + perm)
+                        out["std"].print_error("\tDangerous Permission: " + perm)
 
         elif action == 'e':
             break
@@ -578,12 +578,14 @@ def interactive_list_apps(adb_instance, device_id):
 def process(device_id):
     global out
     adb_instance = ADB(adb_path, device_id)
-    out = Out(filename=f"{output_dir}/{device_id}.log")
+
+    lock.acquire()
+    out[device_id] = Out(filename=f"{output_dir}/{device_id}.log")
+    lock.release()
 
     if adb_instance.check_pending_update():
-        lock.acquire()
-        out.print_warning("%s: The system has a pending updates!" % device_id)
-        lock.release()
+        out["std"].print_warning("%s: The system has a pending updates!" % device_id)
+        out[device_id].print_warning("%s: The system has a pending updates!" % device_id)
 
     if scan_applications or dump_apks or list_apps:
         process_applications(adb_instance, device_id)
@@ -613,13 +615,13 @@ def check_device_up():
     connected_devices = ADB(adb_path).list_devices()
     for device in devices:
         if device not in connected_devices.keys():
-            out.print_error(f"{device} not found")
+            out["std"].print_error(f"{device} not found")
             sys.exit(1)
 
         device_status = connected_devices[device]
         if "offline" in device_status or "unauthorized" in device_status \
                 or "no permissions" in device_status:
-            out.print_error(f"The device {device} cannot be used. Reason: {connected_devices[device]}")
+            out["std"].print_error(f"The device {device} cannot be used. Reason: {connected_devices[device]}")
             sys.exit(1)
 
 
@@ -630,11 +632,11 @@ def amdh():
 
     if not devices:
         if len(connected_devices) == 0:
-            out.print_error("No device founded")
+            out["std"].print_error("No device founded")
             sys.exit(1)
         elif len(connected_devices) > 1:
-            out.print_error("Please use -d to specify the devices to use")
-            out.print_info("Current connected devices")
+            out["std"].print_error("Please use -d to specify the devices to use")
+            out["std"].print_info("Current connected devices")
             for device in connected_devices:
                 print(device)
             sys.exit(1)
@@ -643,14 +645,14 @@ def amdh():
 
     check_device_up()
 
-    out.print_info("Start ...")
+    out["std"].print_info("Start ...")
 
     with ThreadPoolExecutor(max_workers=len(devices)) as executor:
         results = {executor.submit(process, device): device for device in devices}
         as_completed(results)
 
     set_output_std()
-    out.print_info("Finished")
+    out["std"].print_info("Finished")
 
 
 if __name__ == "__main__":

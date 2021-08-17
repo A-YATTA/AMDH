@@ -42,6 +42,7 @@ and also to protect privacy.
    - [x] ActionSpy
    - [x] WolfRat
    - [x] Anubis
+   - [] Pegasus
 - [x] Snapshot the current phone state to a JSON file:
   - [x] Applications:
     - [x] APK
@@ -57,7 +58,7 @@ and also to protect privacy.
   - [x] Settings
 - [ ] Restore Snapshot
   - [x] Applications
-  - [ ] Contacts
+  - [ ] Contacts 
 - [x] Manage multiple device at once (snapshot comparison and restore are not supported yet)
   - For each device a new thread is created
 - [ ] HTML report
@@ -139,6 +140,7 @@ malware only permissions are those used only by malware. The malware analyzed ar
 - <a href="https://github.com/sk3ptre/AndroidMalware_2018">https://github.com/sk3ptre/AndroidMalware_2018</a>
 - <a href="https://github.com/sk3ptre/AndroidMalware_2019">https://github.com/sk3ptre/AndroidMalware_2019</a>
 - <a href="https://github.com/sk3ptre/AndroidMalware_2019">https://github.com/sk3ptre/AndroidMalware_2020</a>
+- <a href="https://github.com/MalwareSamples/Android-Malware-Samples">https://github.com/MalwareSamples/Android-Malware-Samples</a>
 
 The command "aapt" was used to dump the permissions. The second part was to dump permissions of legitimate Apps 
 (around 400 Apps).
@@ -162,6 +164,8 @@ Snapshot can help to monitor the system state and backup the phone data:
 
 ## Known Issues
 - The command "pm revoke" return exit success code but does not revoke permissions for some malware.
+- Backup SMS may fail on some devices as the ADB shell does not have permission to access SMS database.
+In case is encountered, please create an issue. 
 
 # Examples
 **Scan**

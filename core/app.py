@@ -22,7 +22,8 @@ class App:
         self.device_policy_out = self.adb_instance.dumpsys(["device_policy"])
         self.dangerous_perms = {}
         self.scan = scan
-        self.malware_confidence = 0
+        self.malware_only_perms = 0
+        self.malware_combination = 0
         self.score = 0
         dumpsys_out = adb_instance.dumpsys(["package", package_name])
         self.perms_list = adb_instance.get_req_perms_dumpsys_package(dumpsys_out)
@@ -30,13 +31,13 @@ class App:
     def check_app(self):
         if self.dump_apk:
             if not os.path.isdir(self.out_dir):
-                os.mkdir(self.out_dir)
+                os.makedirs(self.out_dir)
             try:
                 out_file = self.out_dir + "/" + self.package_name + ".apk"
                 self.adb_instance.dump_apk_from_device(self.package_name, out_file)
             except Exception as e:
+                print(e)
                 return None, None, None, None
-
         if self.scan:
             perm_desc, self.dangerous_perms = self.check_perms()
             return perm_desc, self.dangerous_perms, self.is_app_device_owner(), self.known_malware()
@@ -49,10 +50,9 @@ class App:
 
         perms_desc = {}
         self.dangerous_perms = {}
-        self.malware_perms_detect(self.perms_list)
+        self.malware_perms_detect()
 
         for perm in self.perms_list:
-
             try:
                 perms_desc[perm] = {"description": permissions[perm]["description"],
                                     "level": permissions[perm]["protection_lvl"]}
@@ -78,6 +78,7 @@ class App:
                 self.adb_instance.remove_dpm(device_admin_receiver)
                 return True, device_admin_receiver
             except Exception as e:
+                print(e)
                 return False, device_admin_receiver
 
     def revoke_dangerous_perms(self):
@@ -85,39 +86,41 @@ class App:
             try:
                 self.adb_instance.revoke_perm_pkg(self.package_name, perm)
             except Exception as e:
+                print(e)
                 continue
         return True
 
-    def malware_perms_detect(self, perms):
+    def malware_perms_detect(self):
         with open(main.MALWARE_PERMS) as json_file:
             malware_perms = json.load(json_file)
 
-        if not perms:
-            return 0
-
-        for perm in perms:
-            # check malware only permissions
-            for p in malware_perms["malware_only"]:
-                if perm.split(".")[-1] == p:
-                    self.malware_confidence = self.malware_confidence + 1
-
-        # check permissions combinations
-        for nb in malware_perms["combinations"]:
-            for p in malware_perms["combinations"][nb]:
-
-                if set(p["permissions"]).issubset(set([item.split(".")[-1] for item in perms])):
-                    self.malware_confidence = self.malware_confidence + 1
-
+        nb_combinations = 0
         dict_all_perms = malware_perms["all"]
         sum_malware = 0
         sum_benign = 0
-        for perm in perms:
+
+        if not self.perms_list:
+            return 0
+
+        for perm in self.perms_list:
+            # check malware only permissions
+            for p in malware_perms["malware_only"]:
+                if perm.split(".")[-1] == p:
+                    self.malware_only_perms += 1
             current_perm = perm.split(".")[-1]
+
             if current_perm in dict_all_perms.keys():
                 sum_malware = sum_malware + dict_all_perms[current_perm]["malware"]
                 sum_benign = sum_benign + dict_all_perms[current_perm]["benign"]
 
-        self.score = sum_benign - sum_malware
+        # check permissions combinations
+        for nb in malware_perms["combinations"]:
+            for p in malware_perms["combinations"][nb]:
+                nb_combinations += 1
+                if set(p["permissions"]).issubset(set([item.split(".")[-1] for item in self.perms_list])):
+                    self.malware_combination += 1
+
+        self.score = round((sum_benign - sum_malware) % 100, 2)
 
     def static_analysis(self):
         if self.dump_apk:
@@ -133,9 +136,11 @@ class App:
             return androhelper.analyze()
 
     def known_malware(self):
-        with open(main.MALWARE_PACKAGES_FILE) as json_file:
-            malware_packages = json.load(json_file)
-
+        try:
+            with open(main.MALWARE_PACKAGES_FILE) as json_file:
+                malware_packages = json.load(json_file)
+        except Exception as e:
+            print(e)
         if self.package_name in malware_packages["packages"]:
             return True
 

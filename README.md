@@ -14,9 +14,6 @@
 # AMDH
 Android Mobile Device Hardening written with python3.
 
-### Android App
-[PObY-A](https://github.com/ICTrust/PObY-A)
-
 ## Motivations
 AMDH was created to help automate scanning installed applications on Android devices, detect some known malware
 and also to protect privacy.

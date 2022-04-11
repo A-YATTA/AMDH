@@ -1,6 +1,6 @@
 import os
 
-
+# TO-DO: Add Enum for headers
 def check_header(header):
     if header == "504b0304":
         return "JAR"

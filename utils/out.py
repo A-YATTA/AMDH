@@ -1,5 +1,5 @@
 
-class bcolors:
+class BColors:
     HEADER = '\033[95m'
     INFO = '\033[94m'
     OKGREEN = '\033[92m'
@@ -30,7 +30,7 @@ class Out:
             return
 
         if self.platform == "Linux" or self.platform == "Darwin":
-            print(bcolors.INFO + "[-] INFO: " + bcolors.ENDC + f"{message}" )
+            print(BColors.INFO + "[-] INFO: " + BColors.ENDC + f"{message}")
         else:
             print("[-] INFO: " + f"{message}")
 
@@ -40,7 +40,7 @@ class Out:
             return
 
         if self.platform == "Linux" or self.platform == "Darwin":
-            print(bcolors.WARNING + "[!] WARNING: " + f"{message}" + bcolors.ENDC)
+            print(BColors.WARNING + "[!] WARNING: " + f"{message}" + BColors.ENDC)
         else:
             print("[!] WARNING: " + f"{message}")
 
@@ -50,7 +50,7 @@ class Out:
             return
 
         if self.platform == "Linux" or self.platform == "Darwin":
-            print(bcolors.WARNING_HEADER + "[!]  " + f"{message}" + bcolors.ENDC)
+            print(BColors.WARNING_HEADER + "[!]  " + f"{message}" + BColors.ENDC)
         else:
             print("[!] WARNING: " + f"{message}")
 
@@ -60,7 +60,7 @@ class Out:
             return
 
         if self.platform == "Linux" or self.platform == "Darwin":
-            print(bcolors.FAIL + "[X] ERROR: " + f"{message}" + bcolors.ENDC)
+            print(BColors.FAIL + "[X] ERROR: " + f"{message}" + BColors.ENDC)
         else:
             print("[X] ERROR: " + f"{message}")
 
@@ -70,7 +70,7 @@ class Out:
             return
 
         if self.platform == "Linux" or self.platform == "Darwin":
-            print(bcolors.OKGREEN + "[+] OK: " + f"{message}" + bcolors.ENDC)
+            print(BColors.OKGREEN + "[+] OK: " + f"{message}" + BColors.ENDC)
         else:
             print("[+] OK: " + f"{message}")
 
@@ -80,6 +80,6 @@ class Out:
             return
 
         if self.platform == "Linux" or self.platform == "Darwin":
-            print(bcolors.FAIL + "[!] WARNING: " + f"{message}" + bcolors.ENDC)
+            print(BColors.FAIL + "[!] WARNING: " + f"{message}" + BColors.ENDC)
         else:
             print("[!] WARNING (HIGH): %s" % message)

@@ -119,13 +119,14 @@ def process_applications(adb_instance, device_id=""):
 
 
 def process_snapshot(adb_instance, device_id):
-    with main_settings.lock:
-        input("Unmain_settings.lock device %s and press ENTER key to continue" % device_id)
-
-        # set stay_awake to 1
+    main_settings.lock.acquire()
+    input("Unlock the device %s and press ENTER key to continue" % device_id)
+    # TODO: Check if device is unlocked
+    # set stay_awake to 1
     adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
 
-    main_settings.out["std"].print_info("Starting snapshot")
+    main_settings.out["std"].print_info(f"Starting snapshot on {device_id}")
+
     if not os.path.isdir(main_settings.snapshot_dir):
         os.makedirs(main_settings.snapshot_dir)
 
@@ -134,17 +135,21 @@ def process_snapshot(adb_instance, device_id):
     if not os.path.isdir(snapshot_path):
         os.makedirs(snapshot_path)
 
-    if main_settings.app_type:
-        snapshot_obj = Snapshot(adb_instance, main_settings.app_type.value, out_dir=snapshot_path)
-    else:
-        snapshot_obj = Snapshot(adb_instance, out_dir=snapshot_path)
-    report = snapshot_obj.get_report()
+    main_settings.lock.release()
 
+    if main_settings.app_type:
+        snapshot = Snapshot(adb_instance, main_settings.app_type.value, out_dir=snapshot_path)
+    else:
+        snapshot = Snapshot(adb_instance, out_dir=snapshot_path)
+    report = snapshot.get_report()
+
+    main_settings.lock.acquire()
     with open(snapshot_path + "/snapshot.json", 'w') as fp:
         json.dump(report, fp, indent=4)
 
     adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "0", "i")
-    main_settings.out["std"].print_info("Snapshot finished")
+    main_settings.out["std"].print_info(f"Snapshot {device_id} finished")
+    main_settings.lock.release()
 
 
 def process_snapshot_cmp(adb_instance):
@@ -163,7 +168,7 @@ def process_snapshot_cmp(adb_instance):
 
 
 def process_snapshot_restore(adb_instance):
-    input("Unmain_settings.lock your phone and press ENTER key to continue")
+    input("Unlock your phone and press ENTER key to continue")
 
     adb_instance.content_insert_settings("global", "stay_on_while_plugged_in", "1", "i")
     main_settings.out["std"].print_info("Starting restore")

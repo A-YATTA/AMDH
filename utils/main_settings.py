@@ -6,7 +6,6 @@ import threading
 import argparse
 import sys
 
-import config.main
 from core.adb import ADB
 from utils.out import Out
 from config.main import *
@@ -23,29 +22,6 @@ class Status(Enum):
 
 
 class MainSettings:
-    # variables
-    out = {"std": Out("Linux")}
-    devices = []
-    dump_apks = False
-    apks_dump_folder = "out"
-    scan_settings = False
-    scan_applications = False
-    harden = False
-    list_apps = False
-    list_processes = False
-    snapshot = False
-    snapshot_dir = "snap_out"
-    cmp_snap = False
-    snapshot_report = "snap_repot.json"
-    backup = False
-    restore_snap = False
-    snap_to_restore = snapshot_report
-    app_type = Status.THIRD_PARTY
-    revoke = False
-    rm_admin_recv = False
-    lock = threading.Lock()
-    adb_path = "adb"
-    output_dir = "out"
 
     def __init__(self):
         # variables

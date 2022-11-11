@@ -135,15 +135,12 @@ def process_snapshot(adb_instance, device_id):
     if not os.path.isdir(snapshot_path):
         os.makedirs(snapshot_path)
 
-    main_settings.lock.release()
-
     if main_settings.app_type:
         snapshot = Snapshot(adb_instance, main_settings.app_type.value, out_dir=snapshot_path)
     else:
         snapshot = Snapshot(adb_instance, out_dir=snapshot_path)
     report = snapshot.get_report()
 
-    main_settings.lock.acquire()
     with open(snapshot_path + "/snapshot.json", 'w') as fp:
         json.dump(report, fp, indent=4)
 
@@ -265,7 +262,6 @@ def interactive_list_apps(adb_instance, device_id):
         action = action.replace(" ", "")
 
         if action == 'd' or action == 'u' or action == 'e':
-            main_settings.lock.release()
             break
         elif action == 's':
             break
@@ -318,14 +314,13 @@ def interactive_list_apps(adb_instance, device_id):
         elif action == 'e':
             break
 
-        main_settings.lock.release()
+    main_settings.lock.release()
 
 
 def process(device_id):
     global main_settings
 
-    result = {}
-    result[device_id] = {}
+    result = {device_id: {}}
 
     adb_instance = ADB(main_settings.adb_path, device_id)
 
@@ -394,7 +389,7 @@ def amdh():
 
     if len(main_settings.devices) == 0 or not main_settings.devices:
         if len(connected_devices) == 0:
-            main_settings.out["std"].print_error("No device founded")
+            main_settings.out["std"].print_error("No device found")
             sys.exit(1)
         elif len(connected_devices) > 1:
             main_settings.out["std"].print_error("Please use -d to specify the devices to use")

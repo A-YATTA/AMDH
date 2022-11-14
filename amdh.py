@@ -68,7 +68,7 @@ def process_applications(adb_instance, device_id=""):
                     main_settings.out[device_id].print_warning(message)
                     main_settings.out[device_id].print_warning("-" * padding)
 
-                    report_apps[package] = {"device_admin": is_device_admin}
+                    report_apps[package] = {"is_device_admin": is_device_admin}
 
                     if main_settings.rm_admin_recv:
                         removed, dpm = app.remove_device_admin_for_app()

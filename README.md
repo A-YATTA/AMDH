@@ -3,8 +3,6 @@
 <img src="https://img.shields.io/lgtm/grade/python/g/SecTheTech/AMDH.svg?logo=lgtm&logoWidth=18" /></a>
 <a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPLv3-green.svg" /></a>
 <a href="https://github.com/secthetech/AMDH"><img src="https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg" /></a>
-<a href="https://www.patreon.com/secthetech"><img src="https://img.shields.io/badge/patreon-donate-green.svg" /></a>
-
 </p>
 
 <div align="center">
@@ -13,6 +11,13 @@
 
 # AMDH
 Android Mobile Device Hardening written with python3.
+> Android version, PObY-A (Privacy Owned by You - Android), with malware and settings scans is available on the Play 
+> Store and the source code can be found [HERE](https://github.com/ICTrust/PObY-A) 
+
+
+<div align="center"><a href='https://play.google.com/store/apps/details?id=ch.ictrust.pobya'>
+<img src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width="40%"/>
+</a></div>
 
 ## Motivations
 AMDH was created to help automate scanning installed applications on Android devices, detect some known malware
@@ -39,13 +44,12 @@ and also to protect privacy.
    - [x] ActionSpy
    - [x] WolfRat
    - [x] Anubis
-   - [] Pegasus
 - [x] Snapshot the current phone state to a JSON file:
   - [x] Applications:
     - [x] APK
     - [x] first install time
     - [x] last update time
-    - [x] current permissions 
+    - [x] current permissions
     - [x] is the app device admin
   - [x] SMS: current SMS messages
   - [x] Contacts: current list of contacts

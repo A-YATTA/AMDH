@@ -1,3 +1,6 @@
+#!/usr/bin/env -S python
+# -*- coding: utf-8 -*-
+
 import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime

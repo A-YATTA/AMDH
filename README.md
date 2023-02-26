@@ -342,9 +342,12 @@ Unlock device SERIAL and press ENTER key to continue
 }
 ```
 
+## Building the binary
+```
+(amdh) $ pip install pyinstaller 
+(amdh) $ pyinstaller --clean amdh.spec
+```
+**Output binary:** `dist/amdh`.
+
 ## Participation and Ideas
 Thank you for the interesting of this project! If you have any ideas on how to improve this tool, please create new issue or send a pull request.  
-
-
-
-

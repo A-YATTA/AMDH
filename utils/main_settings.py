@@ -222,7 +222,7 @@ class MainSettings:
                 and not self.restore_snap:
             self.out["std"].print_error("Please choose an operation")
             self.args_parse(True)
-            exit(1)
+            sys.exit(1)
 
         self.app_type = Status.THIRD_PARTY.value
         if self.arguments.app_type:
